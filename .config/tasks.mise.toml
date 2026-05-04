@@ -1,5 +1,8 @@
 actionlint = "actionlint"
 
+ansible-lint = "ansible-lint -c .config/.ansible-lint.yml"
+"ansible-lint:fix" = "ansible-lint -c .config/.ansible-lint.yml --fix"
+
 shellcheck = "rg --ignore --hidden -l '^#!' . | xargs -r -t shellcheck -a -Calways"
 
 shfmt = "shfmt -d --apply-ignore -s -bn -ci -sr -kp ."
@@ -20,7 +23,7 @@ depends = ["shfmt:fix"]
 depends = ["zizmor", "actionlint"]
 
 [lint]
-depends = ["typos", "shellcheck"]
+depends = ["ansible-lint", "typos", "shellcheck"]
 
 ["lint:fix"]
-depends = []
+depends = ["ansible-lint:fix"]

@@ -1,8 +1,10 @@
 *
 
 !.config/
+!.config/.ansible-lint.yml
 !.config/.shellcheckrc
 !.config/.typos.toml
+!.config/requirements.yml
 !.config/tasks.mise.toml
 
 !.custom-containers/
@@ -19,3 +21,5 @@
 !.editorconfig
 !.gitignore
 !.mise.toml
+!pyproject.toml
+!uv.lock
