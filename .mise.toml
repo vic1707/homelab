@@ -1,0 +1,18 @@
+[task_config]
+dir = "{{ config_root }}"
+includes = [".config/tasks.mise.toml"]
+
+[tools]
+actionlint = "1.7.12"
+dive = "0.13.1"
+dockle = "0.4.15"
+grype = "0.112.0"
+jq = "1.8.1"
+rg = "15.1.0"
+shellcheck = "0.11.0"
+shfmt = "3.13.1"
+typos = "1.46.0"
+zizmor = "1.24.1"
+
+[plugins]
+zizmor = "asdf:vic1707/asdf-zizmor"

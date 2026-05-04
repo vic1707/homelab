@@ -1,0 +1,19 @@
+{
+	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
+	"extends": ["config:recommended"],
+	"timezone": "Europe/Paris",
+	"packageRules": [
+		{
+			"matchManagers": ["docker-compose", "dockerfile"],
+			"groupName": "Container images"
+		},
+		{
+			"matchManagers": ["github-actions"],
+			"groupName": "GitHub Actions"
+		},
+		{
+			"matchManagers": ["mise", "ansible-galaxy", "pip_requirements"],
+			"groupName": "Tools"
+		}
+	]
+}

@@ -1,0 +1,26 @@
+actionlint = "actionlint"
+
+shellcheck = "rg --ignore --hidden -l '^#!' . | xargs -r -t shellcheck -a -Calways"
+
+shfmt = "shfmt -d --apply-ignore -s -bn -ci -sr -kp ."
+"shfmt:fix" = "shfmt -w --apply-ignore -s -bn -ci -sr -kp ."
+
+typos = "typos -c .config/.typos.toml"
+
+zizmor = "zizmor ."
+
+
+[format]
+depends = ["shfmt"]
+
+["format:fix"]
+depends = ["shfmt:fix"]
+
+[ci-lint]
+depends = ["zizmor", "actionlint"]
+
+[lint]
+depends = ["typos", "shellcheck"]
+
+["lint:fix"]
+depends = []

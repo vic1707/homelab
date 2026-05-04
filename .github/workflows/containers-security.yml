@@ -1,0 +1,217 @@
+name: Check Container Images
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "**/*.containerfile"
+      - "**/*.bu.yml"
+      - "**/*.container"
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+    paths:
+      - "**/*.containerfile"
+      - "**/*.bu.yml"
+      - "**/*.container"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  detect-image-changes:
+    name: Detect and dedup containerfiles & inline images
+    runs-on: ubuntu-latest
+    outputs:
+      targets: ${{ steps.matrix.outputs.targets }}
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0 # Needed by tj-actions/changed-files
+
+      - uses: jdx/mise-action@146a28175021df8ca24f8ee1828cc2a60f980bd5 # v3.5.1
+
+      - name: Get changed containerfiles
+        if: ${{ github.event_name != 'workflow_dispatch' }}
+        id: changed-containerfiles
+        uses: tj-actions/changed-files@24d32ffd492484c1d75e0c0b894501ddb9d30d62 # v47.0.0
+        with:
+          files: "**/*.containerfile"
+          matrix: true
+
+      - name: Get all containerfiles
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        id: all-containerfiles
+        run: |
+          CONTAINER_FILES=$(
+            find . -type f -name '*.containerfile' \
+              | jq -R . \
+              | jq -s -c .
+          )
+          echo "containerfiles=$CONTAINER_FILES" >> "$GITHUB_OUTPUT"
+
+      - name: Get changed inline images
+        if: ${{ github.event_name != 'workflow_dispatch' }}
+        id: changed-inline
+        run: |
+          # Get diff for PR, or last commit for push
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            DIFF_RANGE="origin/$GITHUB_BASE_REF...HEAD"
+          else
+            DIFF_RANGE="HEAD~1..HEAD"
+          fi
+
+          images=$(
+            git diff "$DIFF_RANGE" -- '*.bu.yml' '*.container' \
+              | grep '^+' | grep -v '+++' \
+              | grep -Eo 'Image=[^ ]+' \
+              | sed -E 's/^Image=//' \
+              | sort -u \
+              | jq -R . | jq -s -c .
+          )
+
+          echo "images=$images" >> "$GITHUB_OUTPUT"
+
+      - name: Get all inline images
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        id: all-inline
+        run: |
+          IMAGES=$(
+            rg -N --no-heading --no-line-number --no-filename \
+              -o 'Image=\S+' . \
+              -g '**/*.bu.yml' -g '**/*.container' \
+              | sed -E 's/^Image=//' \
+              | sort -u \
+              | jq -R \
+              | jq -s -c
+          )
+          echo "images=$IMAGES" >> "$GITHUB_OUTPUT"
+
+      - name: Set outputs
+        id: set
+        env:
+          CHANGED_CF: ${{ steps.changed-containerfiles.outputs.all_changed_files }}
+          ALL_CF: ${{ steps.all-containerfiles.outputs.containerfiles }}
+          CHANGED_IMG: ${{ steps.changed-inline.outputs.images }}
+          ALL_IMG: ${{ steps.all-inline.outputs.images }}
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "containerfiles=${ALL_CF:-[]}" >> "$GITHUB_OUTPUT"
+            echo "images=${ALL_IMG:-[]}" >> "$GITHUB_OUTPUT"
+          else
+            echo "containerfiles=${CHANGED_CF:-[]}" >> "$GITHUB_OUTPUT"
+            echo "images=${CHANGED_IMG:-[]}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Deduplicate images
+        id: dedup
+        env:
+          CONTAINERFILES: ${{ steps.set.outputs.containerfiles }}
+          IMAGES: ${{ steps.set.outputs.images }}
+        run: |
+          BASENAMES=$(
+            jq -r '.[]' <<< "$CONTAINERFILES" \
+              | xargs -n1 basename -s .containerfile \
+              | jq -R -s -c 'split("\n")[:-1]'
+          )
+          IMAGES=$(jq -n -c \
+            --argjson images "$IMAGES" \
+            --argjson basenames "$BASENAMES" \
+            '$images - [$images[] as $i | $basenames[] as $b | $i | select(contains($b))]'
+          )
+
+          echo "Filtered images: $IMAGES"
+          echo "images=$IMAGES" >> "$GITHUB_OUTPUT"
+
+      - name: Build job matrix array
+        id: matrix
+        env:
+          CONTAINERFILES: ${{ steps.set.outputs.containerfiles }}
+          IMAGES: ${{ steps.dedup.outputs.images }}
+        run: |
+          ARRAY=$(
+            jq -n -c \
+              --argjson containerfiles "$CONTAINERFILES" \
+              --argjson images "$IMAGES" \
+              '[
+                ($containerfiles[]? | { type: "containerfile", target: . }),
+                ($images[]? | { type: "image", target: . })
+              ]'
+          )
+          echo "targets=$ARRAY" >> "$GITHUB_OUTPUT"
+
+  check-images:
+    name: Build & Check containerfiles + inline images
+    needs: detect-image-changes
+    runs-on: ubuntu-latest
+    if: needs.detect-image-changes.outputs.targets != '[]'
+    strategy:
+      matrix:
+        include: ${{ fromJson(needs.detect-image-changes.outputs.targets) }}
+      max-parallel: 4
+      fail-fast: false
+
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          persist-credentials: false
+
+      - uses: jdx/mise-action@146a28175021df8ca24f8ee1828cc2a60f980bd5 # v3.5.1
+
+      - name: Cache
+        id: cache
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: img.tar
+          key: >-
+            ${{ 
+                matrix.type == 'containerfile' && hashFiles(matrix.target) || 
+                matrix.target 
+            }}
+
+      - name: Build image from containerfile
+        if: matrix.type == 'containerfile' && steps.cache.outputs.cache-hit != 'true'
+        # --format needs to be in sync with build job
+        run: |
+          podman build --network=host --format docker -t img -f "${{ matrix.target }}" "$(dirname "${{ matrix.target }}")"
+          podman save -o img.tar img
+
+      - name: Pull inline image
+        if: matrix.type == 'image' && steps.cache.outputs.cache-hit != 'true'
+        run: |
+          podman pull "${{ matrix.target }}"
+          podman save -o img.tar "${{ matrix.target }}"
+
+      - name: Run scans
+        env:
+          DOCKER_CONTENT_TRUST: 1
+        run: |
+          EXITCODE=0
+
+          echo "=== Dockle ==="
+          dockle --debug --exit-code 1 --input img.tar || EXITCODE=$?
+
+          echo "=== Grype ==="
+          grype --fail-on low img.tar || EXITCODE=$?
+
+          echo "=== Dive ==="
+          dive --ci docker-archive://./img.tar || EXITCODE=$?
+
+          if [ $EXITCODE -ne 0 ]; then
+            echo "One or more scans failed"
+            exit $EXITCODE
+          fi

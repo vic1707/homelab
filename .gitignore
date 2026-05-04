@@ -1,3 +1,21 @@
 *
 
+!.config/
+!.config/.shellcheckrc
+!.config/.typos.toml
+!.config/tasks.mise.toml
+
+!.custom-containers/
+!.custom-containers/import-libs.sh
+
+!.github/
+!.github/renovate.json
+!.github/workflows/
+!.github/workflows/build-containers.yml
+!.github/workflows/code-hygiene.yml
+!.github/workflows/containers-security.yml
+!.github/workflows/dependency-review.yml
+
+!.editorconfig
 !.gitignore
+!.mise.toml

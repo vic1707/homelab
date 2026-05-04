@@ -1,0 +1,184 @@
+name: Build & Push Custom Container Images
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - &containerfiles-paths "**/*.containerfile"
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+    paths:
+      - *containerfiles-paths
+  pull_request_target:
+    types: [closed]
+  workflow_dispatch:
+    inputs:
+      containerfile:
+        description: The container to build
+        type: string
+
+permissions: {}
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PLATFORMS: linux/amd64,linux/arm64
+
+jobs:
+  detect-changes:
+    name: Detect changed containerfiles
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'pull_request_target' && github.event.action != 'closed' }}
+    outputs:
+      containerfiles: ${{ steps.set-containerfiles.outputs.containerfiles }}
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          persist-credentials: false
+
+      - name: Get changed containerfiles paths
+        if: ${{ github.event_name != 'workflow_dispatch' }}
+        id: changed-containerfiles
+        uses: tj-actions/changed-files@24d32ffd492484c1d75e0c0b894501ddb9d30d62 # v47.0.0
+        with:
+          files: *containerfiles-paths
+          matrix: true
+
+      - name: Workflow Dispatch
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        id: manual-containerfile
+        env:
+          CONTAINER_FILE: ${{ inputs.containerfile }}
+        run: |
+          if [ ! -f "$CONTAINER_FILE" ]; then
+            echo "Containerfile '$CONTAINER_FILE' not found!"
+            exit 1
+          fi
+          echo "containerfiles=[\"$CONTAINER_FILE\"]" >> "$GITHUB_OUTPUT"
+
+      - name: Set containerfiles
+        id: set-containerfiles
+        env:
+          CHANGED_FILES: ${{ steps.changed-containerfiles.outputs.all_changed_files }}
+          MANUAL: ${{ steps.manual-containerfile.outputs.containerfiles }}
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "containerfiles=$MANUAL" >> "$GITHUB_OUTPUT"
+          else
+            echo "containerfiles=$CHANGED_FILES" >> "$GITHUB_OUTPUT"
+          fi
+
+  build:
+    name: Build & Push custom containers
+    needs: detect-changes
+    runs-on: ubuntu-latest
+    if: ${{ needs.detect-changes.outputs.containerfiles != '[]' }}
+    strategy:
+      matrix:
+        file: ${{ fromJson(needs.detect-changes.outputs.containerfiles) }}
+      max-parallel: 4
+      fail-fast: false
+    permissions:
+      packages: write
+
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          persist-credentials: false
+
+      - uses: docker/setup-qemu-action@ce360397dd3f832beb865e1373c09c0e9f86d70a # v4.0.0
+        with:
+          platforms: ${{ env.PLATFORMS }}
+
+      - name: Determine tags and image name
+        id: set-env
+        env:
+          CONTAINER_FILE: ${{ matrix.file }}
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            tags="pr-${{ github.event.pull_request.number }}"
+          else
+            tags="latest"
+          fi
+
+          echo "image=$(basename "$CONTAINER_FILE" .containerfile)" >> "$GITHUB_OUTPUT"
+          echo "tags=$tags" >> "$GITHUB_OUTPUT"
+
+      - name: Get build dir
+        id: build-dir
+        env:
+          CONTAINER_FILE: ${{ matrix.file }}
+        run: echo "build-dir=$(dirname "$CONTAINER_FILE")" >> "$GITHUB_OUTPUT"
+
+      - name: Build Image
+        id: build_image
+        uses: redhat-actions/buildah-build@7a95fa7ee0f02d552a32753e7414641a04307056 # v2.13
+        with:
+          extra-args: --network=host
+          image: ${{ steps.set-env.outputs.image }}
+          tags: ${{ steps.set-env.outputs.tags }}
+          platforms: ${{ env.PLATFORMS }}
+          containerfiles: ${{ matrix.file }}
+          context: ${{ steps.build-dir.outputs.build-dir }}
+          layers: true
+          # needs to be in sync with check job --format
+          oci: false
+
+      - name: Push to ghcr.io
+        uses: redhat-actions/push-to-registry@5ed88d269cf581ea9ef6dd6806d01562096bee9c # v2.8
+        with:
+          image: ${{ steps.build_image.outputs.image }}
+          tags: ${{ steps.build_image.outputs.tags }}
+          registry: ghcr.io/${{ github.repository_owner }}/homelab
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+  cleanup-pr-images:
+    name: Cleanup PR images
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request_target' && github.event.action == 'closed' }}
+    permissions:
+      packages: write
+    steps:
+      - name: Delete PR images from GHCR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OWNER: ${{ github.repository_owner }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          TAG="pr-$PR"
+
+          echo "Deleting images with tag: $TAG"
+
+          IDS=$(gh api "/orgs/$OWNER/packages/container/homelab/versions" \
+              --paginate \
+              --jq '.[] | select(.metadata.container.tags[]? == $tag) | .id' \
+              --arg tag "$TAG")
+
+          if [ -z "$IDS" ]; then
+              echo "No images found for tag $TAG"
+              exit 0
+          fi
+
+          for id in $IDS; do
+              echo "Deleting version $id"
+              gh api \
+                  -X DELETE \
+                  "/orgs/$OWNER/packages/container/homelab/versions/$id"
+          done
