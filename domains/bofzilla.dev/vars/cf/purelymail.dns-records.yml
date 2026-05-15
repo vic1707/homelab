@@ -1,0 +1,38 @@
+---
+purelymail_api_token: >-
+    {{ lookup('community.sops.sops', '../../.secrets/bofzilla.dev.yml', extract='["purelymail"]["api_token"]') }}
+purelymail_ownership_record: >-
+    {{ lookup('bofzilla.purelymail.purelymail_ownership_code', api_token=purelymail_api_token).record }}
+
+purelymail_dns_records_map:
+    CNAME:
+        - record: "purelymail1._domainkey.bofzilla.dev"
+          value: "key1.dkimroot.purelymail.com"
+          proxied: false
+
+        - record: "purelymail2._domainkey.bofzilla.dev"
+          value: "key2.dkimroot.purelymail.com"
+          proxied: false
+
+        - record: "purelymail3._domainkey.bofzilla.dev"
+          value: "key3.dkimroot.purelymail.com"
+          proxied: false
+
+        - record: "_dmarc.bofzilla.dev"
+          value: "dmarcroot.purelymail.com"
+          proxied: false
+
+    MX:
+        - record: "bofzilla.dev"
+          value: "mailserver.purelymail.com"
+          priority: 50
+          proxied: false
+
+    TXT:
+        - record: "bofzilla.dev"
+          value: '"v=spf1 include:_spf.purelymail.com ~all"'
+          proxied: false
+
+        - record: "bofzilla.dev"
+          value: '"{{ purelymail_ownership_record }}"'
+          proxied: false

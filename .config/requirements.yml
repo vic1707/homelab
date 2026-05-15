@@ -1,3 +1,9 @@
 ---
 ## ansible-galaxy install -f -r .config/requirements.yml
-collections: []
+collections:
+  - name: linuxhq.cloudflare
+    version: 2.0.7
+  - name: moreati.jq
+    version: 0.2.1
+  - name: https://github.com/vic1707/ansible-collection-purelymail#ansible_collections/bofzilla/purelymail
+    type: git

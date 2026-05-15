@@ -1,0 +1,45 @@
+waf:
+    block:
+        - description: Known Bots
+          expression: (cf.client.bot)
+
+        - description: "[Path] Hidden Files"
+          expression: (http.request.uri.path contains "/." and not http.request.uri.path contains "/.well-known/")
+
+        - description: "[Path] Traversal (..)"
+          expression: (http.request.uri.path contains "..")
+
+        - description: Encoded Dot (%2e)
+          expression: (http.request.uri.path contains "%2e")
+
+        - description: "[Path] Double Slash"
+          expression: (http.request.uri.path contains "//")
+
+        - description: Identified Threatening Sources
+          expression: (cf.threat_score gt 50)
+
+        - description: Potential SQL Injection Attempts
+          expression: >
+              (http.request.uri.query contains "'")
+              or (http.request.uri.query contains "--")
+              or (http.request.uri.query contains "/*")
+              or (http.request.uri.query contains "xp_")
+
+        - description: Dangerous or Unused HTTP Methods
+          expression: (http.request.method in {"TRACE" "CONNECT" "PRI" "TRACK" "DEBUG"})
+
+        - description: "[Paths] Sensitive"
+          expression: >
+              (http.request.uri.path contains "/.git")
+              or (http.request.uri.path contains "/wp-admin")
+              or (http.request.uri.path contains "/phpmyadmin")
+
+    challenge:
+        - description: HTTP/1.0 (and is not Lynx browser)
+          expression: (http.request.version eq "HTTP/1.0" and not http.user_agent contains "Lynx/")
+
+        - description: Empty User-Agent
+          expression: (http.user_agent eq "")
+
+        - description: Requests with No Referrer and No User-Agent
+          expression: (http.user_agent eq "" and http.referer eq "")

@@ -4,6 +4,8 @@ _.python.venv = { path = "{{ config_root }}/.venv", create = true }
 ANSIBLE_HOME = "{{ config_root }}/.ansible"
 SOPS_AGE_KEY_FILE = "{{ config_root }}/.age-keys/master.age"
 SOPS_CONFIG = "{{ config_root }}/.config/.sops.yml"
+# TODO: enable only for a certain playbook (required by lookup purelymail ownership code because macos bug)
+OBJC_DISABLE_INITIALIZE_FORK_SAFETY = "YES"
 
 [task_config]
 dir = "{{ config_root }}"

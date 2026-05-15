@@ -1,5 +1,16 @@
 domain: bofzilla.dev
 
+cloudflare:
+    _permissions:
+        - "[Edit] Account.Account WAF"
+        - "[Edit] Zone.Zone Settings"
+        - "[Read] Zone.Zone"
+        - "[Edit] Zone.DNS"
+    api_key: ENC[AES256_GCM,data:+Z5g5qdn3YPFDoBqE+YXPJzN4d7PEfJHpy4fmpuOg2rtXWPsTAdlKocdmD961F34XilH3JU=,iv:jpvd4sUprQk7bcsuRJYwbl7a/sQJ3EsiMegoXRcw68Q=,tag:m9sR69Ze2JluJFpwPVOYvg==,type:str]
+
+purelymail:
+    api_token: ENC[AES256_GCM,data:EsVo7ukLRbFI4+WLxyLV2L7gcQZIe/50zARQpTjljA6cfCzbDFa238tQad0=,iv:ESuRr+pdsChTW+HClX8SYeGNrUPo1J9Pdai8P824uUI=,tag:fxhFJkOyOa8KxYmsAUMITA==,type:str]
+
 sops:
     age:
         - enc: |
@@ -12,6 +23,6 @@ sops:
               -----END AGE ENCRYPTED FILE-----
           recipient: age1q9gm9fgduf5scr3dadl7yarh4wxzlr6psl4zp02k2r9edjngasssd266k4
     encrypted_regex: (?i)(secret|token|password|key)$
-    lastmodified: "2026-05-15T17:32:50Z"
-    mac: ENC[AES256_GCM,data:nw/U1idrfnf01ibSZmlOTYXDCYFEii6b6f7CTwtUidy0UKjHoF7Lq446D2NusGfi+KpOiojqV/cUIFAhJ1QoEFy9GKNWBPjfd1OrUKCGLATKC1BvYW+3T+rJBtAQg9qIAl5ycviHTC4cOhY8lW77IclTTxlx0CbNIWW9Z9sCG9g=,iv:3QZA+7SLxzL3YGpllTrHnVQn34ucXVuVv6LfQZ8UZrA=,tag:jbuvkgPaXAZBjxl2XOG6Fg==,type:str]
+    lastmodified: "2026-05-15T17:38:14Z"
+    mac: ENC[AES256_GCM,data:5ONbQpfjpBzEXQEkDBIRzDRiAIpAUrzuIDtlcOFAJK+WzYwCJGRnhZv8pDrSSGXRSTuGaO4ptez1pS3DKPPewKGh0tIqPqnwTrMPUJ/gqWJxO93LUCvkX7tb+ySy5h6GCvTYM6lhJ9jzmIZ41+QTFc21htp0p3Sigu6C9M0l87o=,iv:GB1pz5cEZsU0M09xpK1vt0PagLtrBTdZsgKcamaNZgo=,tag:k9w7jn3yyWC9AzBzX/nj8g==,type:str]
     version: 3.13.0

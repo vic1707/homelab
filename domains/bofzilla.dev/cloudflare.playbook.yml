@@ -1,0 +1,170 @@
+---
+- name: Manage {{ domain }}
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+      domain: "bofzilla.dev"
+      cloudflare_api_token: >-
+          {{ lookup('community.sops.sops', '../../.secrets/bofzilla.dev.yml', extract='["cloudflare"]["api_key"]') }}
+
+  vars_files:
+      - vars/cf/purelymail.dns-records.yml
+      - vars/cf/waf.yml
+
+  tasks:
+      - name: Gather zones
+        # Zone:Zone:[Read]
+        linuxhq.cloudflare.zones_info:
+            api_token: "{{ cloudflare_api_token }}"
+        register: _zones_info
+
+      #   - ansible.builtin.debug:
+      #         var: _zones_info
+
+      - name: Store zone ID
+        ansible.builtin.set_fact:
+            cloudflare_zone_id: >-
+                {{
+                    (_zones_info.zones
+                    | selectattr('name', 'equalto', domain)
+                    | first).id
+                }}
+
+      #   - ansible.builtin.debug:
+      #         var: cloudflare_zone_id
+
+      - name: Configure Zone
+        # Zone:ZoneSettings:[Edit]
+        linuxhq.cloudflare.zones:
+            api_token: "{{ cloudflare_api_token }}"
+            name: "{{ domain }}"
+            type: full
+            state: present
+
+            settings:
+                # ============================================================
+                # SSL / TLS
+                # ============================================================
+                - id: always_use_https
+                  value: "on"
+                - id: automatic_https_rewrites
+                  value: "on"
+                - id: security_header
+                  value:
+                      strict_transport_security:
+                          enabled: true
+                          include_subdomains: true
+                          max_age: 86400 # in seconds
+                          preload: false
+                          nosniff: true
+                - id: min_tls_version
+                  value: "1.2"
+                - id: opportunistic_encryption
+                  value: "off"
+                - id: opportunistic_onion
+                  value: "off"
+                - id: ssl
+                  value: strict # TODO: test 'origin_pull'
+                - id: tls_1_3
+                  value: "on"
+
+                # ============================================================
+                # CONNECTIVITY
+                # ============================================================
+                - id: ipv6
+                  value: "on"
+                - id: pseudo_ipv4
+                  value: "off"
+                - id: websockets
+                  value: "on"
+                - id: http2
+                  value: "on"
+                - id: http3
+                  value: "on"
+                - id: 0rtt
+                  value: "off"
+
+                # ============================================================
+                # SECURITY
+                # ============================================================
+                - id: browser_check
+                  value: "on"
+                - id: challenge_ttl
+                  value: 1800 # in seconds
+                - id: security_level
+                  value: high
+
+                # ============================================================
+                # PERFORMANCE
+                # ============================================================
+                - id: development_mode
+                  value: "off"
+                - id: brotli
+                  value: "on"
+                - id: early_hints
+                  value: "on"
+                # Rocket Loader can break JS apps
+                - id: rocket_loader
+                  value: "off"
+
+                # ============================================================
+                # CONTENT / PRIVACY
+                # ============================================================
+                - id: email_obfuscation
+                  value: "on"
+                - id: hotlink_protection
+                  value: "on"
+                - id: ip_geolocation
+                  value: "on"
+                # Legacy feature
+                - id: server_side_exclude
+                  value: "off"
+
+      - name: Zone WAF
+        # Account:AccountWAF:[Edit]
+        linuxhq.cloudflare.rulesets:
+            api_token: "{{ cloudflare_api_token }}"
+            zone_id: "{{ cloudflare_zone_id }}"
+            name: default
+            state: present
+
+            rules: >-
+                {{
+                  waf
+                  | moreati.jq.jq('to_entries | map({ action: .key, enabled: true, expression: (.value | map(.expression) | join(" or ")) })')
+                }}
+
+      # Requires paid plan
+      #   - name: Enable DNSSEC
+      #     # Zone:DNS:[Edit]
+      #     linuxhq.cloudflare.dnssec:
+      #         api_token: "{{ cloudflare_api_token }}"
+      #         zone_id: "{{ cloudflare_zone_id }}"
+      #         status: active
+      #         dnssec_multi_signer: false
+      #         dnssec_presigned: false
+      #         dnssec_use_nsec3: true
+
+      - name: DNS records
+        # Zone:DNS:[Edit]
+        community.general.cloudflare_dns:
+            api_token: "{{ cloudflare_api_token }}"
+            zone: "{{ domain }}"
+            state: present
+
+            type: "{{ item.type | mandatory }}"
+            record: "{{ item.record | mandatory }}"
+            value: "{{ item.value | mandatory }}"
+            proxied: "{{ item.proxied | mandatory }}"
+            priority: "{{ item.priority | default(omit) }}"
+
+            comment: "{{ item.comment | default(omit) }}"
+        loop: >-
+            {{
+              purelymail_dns_records_map
+              | moreati.jq.jq('to_entries | map(.value[] + { type: .key })')
+            }}
+        loop_control:
+            label: "{{ item.record }} | {{ item.type }} | {{ (item.value | string)[:20] }}..."
