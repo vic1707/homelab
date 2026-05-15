@@ -2,6 +2,8 @@
 _.path = "{{ env.PATH }}:{{ config_root }}/bin"
 _.python.venv = { path = "{{ config_root }}/.venv", create = true }
 ANSIBLE_HOME = "{{ config_root }}/.ansible"
+SOPS_AGE_KEY_FILE = "{{ config_root }}/.age-keys/master.age"
+SOPS_CONFIG = "{{ config_root }}/.config/.sops.yml"
 
 [task_config]
 dir = "{{ config_root }}"
@@ -9,6 +11,7 @@ includes = [".config/tasks.mise.toml"]
 
 [tools]
 actionlint = "1.7.12"
+age = "1.3.1"
 dive = "0.13.1"
 dockle = "0.4.15"
 grype = "0.112.0"
@@ -17,6 +20,7 @@ python = "3.14.3"
 rg = "15.1.0"
 shellcheck = "0.11.0"
 shfmt = "3.13.1"
+sops = "3.13.0"
 typos = "1.46.0"
 uv = "0.11.8"
 zizmor = "1.24.1"

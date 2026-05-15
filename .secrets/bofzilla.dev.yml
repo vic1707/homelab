@@ -1,0 +1,17 @@
+domain: bofzilla.dev
+
+sops:
+    age:
+        - enc: |
+              -----BEGIN AGE ENCRYPTED FILE-----
+              YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBWYW1kc0U5SGR0WkRWTldU
+              b2NKK0hHS2NML1RxbEhhRWE2UWRER2FxYW0wCjJycXQ2YVh3MkJ0a0VBWUp2bGlh
+              Z2xCazM4TGpQWE1oeUl3VU5FOWtVaWsKLS0tIFdCMkk5akdPaVQrMHRJaldsQTJE
+              VExCWFM3eVR6VjdNeThlRy9ON3IxN1EKyDvZPfhJrTtSzZG4+bSGUx7qWZ3AOdBO
+              JSRrAT1FaKAmMs/VaUeeTA20qjegIQHLSTy513xUGgaPTXH8hQtTAA==
+              -----END AGE ENCRYPTED FILE-----
+          recipient: age1q9gm9fgduf5scr3dadl7yarh4wxzlr6psl4zp02k2r9edjngasssd266k4
+    encrypted_regex: (?i)(secret|token|password|key)$
+    lastmodified: "2026-05-15T17:32:50Z"
+    mac: ENC[AES256_GCM,data:nw/U1idrfnf01ibSZmlOTYXDCYFEii6b6f7CTwtUidy0UKjHoF7Lq446D2NusGfi+KpOiojqV/cUIFAhJ1QoEFy9GKNWBPjfd1OrUKCGLATKC1BvYW+3T+rJBtAQg9qIAl5ycviHTC4cOhY8lW77IclTTxlx0CbNIWW9Z9sCG9g=,iv:3QZA+7SLxzL3YGpllTrHnVQn34ucXVuVv6LfQZ8UZrA=,tag:jbuvkgPaXAZBjxl2XOG6Fg==,type:str]
+    version: 3.13.0

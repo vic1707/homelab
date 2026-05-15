@@ -3,6 +3,7 @@
 !.config/
 !.config/.ansible-lint.yml
 !.config/.shellcheckrc
+!.config/.sops.yml
 !.config/.typos.toml
 !.config/requirements.yml
 !.config/tasks.mise.toml
@@ -17,6 +18,9 @@
 !.github/workflows/code-hygiene.yml
 !.github/workflows/containers-security.yml
 !.github/workflows/dependency-review.yml
+
+!.secrets/
+!.secrets/bofzilla.dev.yml
 
 !.editorconfig
 !.gitignore
