@@ -1,0 +1,32 @@
+---
+- name: Manage Purelymail account
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars_files:
+      - vars/purelymail.yml
+
+  tasks:
+      - name: Configure purelymail domains
+        bofzilla.purelymail.domains:
+            api_token: "{{ api_token }}"
+            canonical: true
+            domains: >-
+                {{ domains }}
+
+      - name: Configure purelymail users
+        bofzilla.purelymail.users:
+            api_token: "{{ api_token }}"
+            password_mode: ignore-if-exists # TODO: dunno, `update-if-provided`?
+            canonical: true
+            users: >-
+                {{ users }}
+
+      - name: Configure purelymail routing rules
+        bofzilla.purelymail.routing_rules:
+            api_token: "{{ api_token }}"
+            canonical: [bofzilla.dev]
+            inferred_safety: true
+            rules: >-
+                {{ routing_rules }}

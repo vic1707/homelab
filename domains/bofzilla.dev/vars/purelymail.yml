@@ -1,0 +1,53 @@
+---
+admin_email: "bofzilla@purelymail.com"
+api_token: >-
+    {{ lookup('community.sops.sops', '../../.secrets/bofzilla.dev.yml', extract='["purelymail"]["api_token"]') }}
+
+domains:
+    - name: bofzilla.dev
+      allow_account_reset: false
+      symbolic_subaddressing: false # true?
+      recheck_dns: false
+
+users:
+    - name: "{{ admin_email }}"
+      password: >-
+          {{ lookup('community.sops.sops', '../../.secrets/bofzilla.dev.yml', extract='["purelymail"]["users"]["' ~ admin_email ~ '"]["password"]') }}
+      enable_search_indexing: false
+      require_two_factor_authentication: false # TODO: true
+      enable_password_reset: false
+      recovery_phone: >-
+          {{ lookup('community.sops.sops', '../../.secrets/bofzilla.dev.yml', extract='["purelymail"]["users"]["' ~ admin_email ~ '"]["phone_password_recovery_secret"]') }}
+      recovery_phone_allow_mfa_reset: true
+
+    - name: admin@bofzilla.dev
+      password: >-
+          {{ lookup('community.sops.sops', '../../.secrets/bofzilla.dev.yml', extract='["purelymail"]["users"]["admin@bofzilla.dev"]["password"]') }}
+      enable_search_indexing: false
+      require_two_factor_authentication: false
+      recovery_email: "{{ admin_email }}"
+      recovery_email_description: backup
+      recovery_email_allow_mfa_reset: false
+
+    - name: contact@bofzilla.dev
+      password: >-
+          {{ lookup('community.sops.sops', '../../.secrets/bofzilla.dev.yml', extract='["purelymail"]["users"]["contact@bofzilla.dev"]["password"]') }}
+      enable_search_indexing: false
+      require_two_factor_authentication: false
+      recovery_email: "{{ admin_email }}"
+      recovery_email_description: backup
+      recovery_email_allow_mfa_reset: false
+
+    - name: no-reply@bofzilla.dev
+      password: >-
+          {{ lookup('community.sops.sops', '../../.secrets/bofzilla.dev.yml', extract='["purelymail"]["users"]["no-reply@bofzilla.dev"]["password"]') }}
+      enable_search_indexing: false
+      require_two_factor_authentication: false
+      recovery_email: "{{ admin_email }}"
+      recovery_email_description: backup
+      recovery_email_allow_mfa_reset: false
+
+routing_rules:
+    - domain_name: bofzilla.dev
+      preset: catchall_except_valid
+      target_addresses: ["admin@bofzilla.dev"]

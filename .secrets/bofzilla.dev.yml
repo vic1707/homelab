@@ -10,6 +10,16 @@ cloudflare:
 
 purelymail:
     api_token: ENC[AES256_GCM,data:EsVo7ukLRbFI4+WLxyLV2L7gcQZIe/50zARQpTjljA6cfCzbDFa238tQad0=,iv:ESuRr+pdsChTW+HClX8SYeGNrUPo1J9Pdai8P824uUI=,tag:fxhFJkOyOa8KxYmsAUMITA==,type:str]
+    users:
+        bofzilla@purelymail.com:
+            phone_password_recovery_secret: ENC[AES256_GCM,data:0fs8/tDdWWh6cRqZ,iv:8QEhp1q7kFbGmtnrj4M1NKD8QYtVZBg/EdsMro5bhIs=,tag:r42HkkjeB+t9vQVs8zsxhg==,type:str]
+            password: ENC[AES256_GCM,data:gU0lbTwet4PMFsDoTHKH2howpJac2RpO0kbJxrprEmikrRYWHwCIUYWzP0PdGgmYBFs=,iv:NTQGAHNWHVn7cTAF6gMilkZb3IheLJL2cttMgDgK4Ys=,tag:oCvn/otIkfwj9wNNZ38MJg==,type:str]
+        admin@bofzilla.dev:
+            password: ENC[AES256_GCM,data:fjtczisRcUsBF6PQNqBhh0X8RbRytqew5PtthsAaz+WYQ+Gm3d6sGyJHWPjZGrcdBUc=,iv:6kYVN3/wFNSb4mPqIdKF0Q/VT0XXVBE2LCnpl+FSc8E=,tag:z3l4Dgq3zOLAF6E8yIppow==,type:str]
+        contact@bofzilla.dev:
+            password: ENC[AES256_GCM,data:J9p7W9HH1+7z0IbM3JbW+/Py6+JnutcobirNbJInTb3x53kGOeFz5O5s+Oe39fVVqD4=,iv:6tH1jQYLKEwigXyl85YW7F/j8SxFXYP4aiLkrcda9ds=,tag:TehTJL32jerpruXudmHBzQ==,type:str]
+        no-reply@bofzilla.dev:
+            password: ENC[AES256_GCM,data:7idu0zWKvby4/4/gvU5buCFaa3L+s0nTeSm5iiGzApHsf3pKGoJvMRC2cuGRBKvcOck=,iv:QSPbX0whrgbEi/qOjlIEAgZu2F81GQwCDgtojv9cN2I=,tag:qG88/LE+acVEsY2Y3nijFg==,type:str]
 
 sops:
     age:
@@ -23,6 +33,6 @@ sops:
               -----END AGE ENCRYPTED FILE-----
           recipient: age1q9gm9fgduf5scr3dadl7yarh4wxzlr6psl4zp02k2r9edjngasssd266k4
     encrypted_regex: (?i)(secret|token|password|key)$
-    lastmodified: "2026-05-15T17:38:14Z"
-    mac: ENC[AES256_GCM,data:5ONbQpfjpBzEXQEkDBIRzDRiAIpAUrzuIDtlcOFAJK+WzYwCJGRnhZv8pDrSSGXRSTuGaO4ptez1pS3DKPPewKGh0tIqPqnwTrMPUJ/gqWJxO93LUCvkX7tb+ySy5h6GCvTYM6lhJ9jzmIZ41+QTFc21htp0p3Sigu6C9M0l87o=,iv:GB1pz5cEZsU0M09xpK1vt0PagLtrBTdZsgKcamaNZgo=,tag:k9w7jn3yyWC9AzBzX/nj8g==,type:str]
+    lastmodified: "2026-05-21T14:18:29Z"
+    mac: ENC[AES256_GCM,data:X2PDrTks+JYW6NKYirfixCXnKSZ4nkqDNVfNnp/U3JyOO4weu+REnrzJQzU2dL0Nc0a8MMRVcx+QxnWfrPv5QeRAW3+Ft4HFXohDW6QVPFUVgEVV92/QjZnboj4qAw3apgk6juF93D1GTq5p1HcWIykBH70tsIrgvEczxON6Nfg=,iv:jRKKhV6xTpex4PZa7c82AMw2UW9uO/0GwI/gsopJOvw=,tag:BljHCHpbZ7JUAgPEW/l2Vg==,type:str]
     version: 3.13.0

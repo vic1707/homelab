@@ -31,7 +31,9 @@
 !domains/
 !domains/bofzilla.dev
 !domains/bofzilla.dev/vars/
+!domains/bofzilla.dev/vars/purelymail.yml
 !domains/bofzilla.dev/vars/cf/
 !domains/bofzilla.dev/vars/cf/waf.yml
 !domains/bofzilla.dev/vars/cf/purelymail.dns-records.yml
 !domains/bofzilla.dev/cloudflare.playbook.yml
+!domains/bofzilla.dev/purelymail.playbook.yml
