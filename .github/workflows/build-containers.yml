@@ -167,8 +167,7 @@ jobs:
 
           IDS=$(gh api "/orgs/$OWNER/packages/container/homelab/versions" \
               --paginate \
-              --jq '.[] | select(.metadata.container.tags[]? == $tag) | .id' \
-              --arg tag "$TAG")
+              | jq -r --arg tag "$TAG" '.[] | select(.metadata.container.tags[]? == $tag) | .id')
 
           if [ -z "$IDS" ]; then
               echo "No images found for tag $TAG"

@@ -141,7 +141,9 @@ jobs:
           persist-credentials: false
 
       - name: Build OpenWrt image
-        run: .openwrt-base/build.sh --out-dir dist/openwrt "${{ matrix.preset }}"
+        env:
+          PRESET: ${{ matrix.preset }}
+        run: .openwrt-base/build.sh --out-dir dist/openwrt "$PRESET"
 
       - name: Publish releases
         env:
