@@ -5,28 +5,51 @@
 !.config/.shellcheckrc
 !.config/.sops.yml
 !.config/.typos.toml
+!.config/inventory.yml
 !.config/requirements.yml
 !.config/tasks.mise.toml
 
 !.custom-containers/
 !.custom-containers/import-libs.sh
 
+!.openwrt-base/
+!.openwrt-base/build.sh
+!.openwrt-base/*/
+!.openwrt-base/*/preset.env
+!.openwrt-base/*/files/
+!.openwrt-base/*/files/**
+
 !.github/
 !.github/renovate.json
 !.github/workflows/
+!.github/workflows/build-openwrt.yml
 !.github/workflows/build-containers.yml
 !.github/workflows/code-hygiene.yml
 !.github/workflows/containers-security.yml
 !.github/workflows/dependency-review.yml
 
+!.ssh-keys/
+!.ssh-keys/*.pub
+
 !.secrets/
 !.secrets/bofzilla.dev.yml
+!.secrets/devices/
+!.secrets/devices/*.yml
 
 !.editorconfig
 !.gitignore
 !.mise.toml
 !pyproject.toml
 !uv.lock
+
+!devices/
+!devices/*/
+!devices/*/openwrt.env
+!devices/*/*.playbook.yml
+!devices/*/vars/
+!devices/*/vars/**
+!devices/*/files/
+!devices/*/files/**
 
 !domains/
 !domains/bofzilla.dev

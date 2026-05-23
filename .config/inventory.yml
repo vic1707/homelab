@@ -1,0 +1,9 @@
+---
+openwrt:
+    hosts:
+        bacon:
+            ansible_host: bacon.lan
+            ansible_user: root
+            ansible_connection: ssh
+            ansible_ssh_transfer_method: scp
+            ansible_scp_extra_args: "-O"

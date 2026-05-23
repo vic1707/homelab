@@ -1,0 +1,128 @@
+name: Build OpenWrt images
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".openwrt-base/**"
+      - ".ssh-keys/**"
+      - "devices/**/openwrt.env"
+      - "devices/**/files/**"
+      - ".github/workflows/build-openwrt.yml"
+  workflow_dispatch:
+    inputs:
+      preset:
+        description: OpenWrt preset env file to build
+        required: true
+        default: devices/bacon/openwrt.env
+
+permissions: {}
+
+concurrency:
+  group: openwrt-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  select-presets:
+    name: Select OpenWrt presets
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    outputs:
+      presets: ${{ steps.presets.outputs.presets }}
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          persist-credentials: false
+
+      - name: Get changed OpenWrt files
+        if: ${{ github.event_name == 'push' }}
+        id: changed-files
+        uses: tj-actions/changed-files@24d32ffd492484c1d75e0c0b894501ddb9d30d62 # v47.0.0
+        with:
+          files: |
+            .openwrt-base/**
+            .ssh-keys/**
+            devices/**/openwrt.env
+            devices/**/files/**
+            .github/workflows/build-openwrt.yml
+
+      - name: Select presets
+        id: presets
+        env:
+          CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
+          DISPATCH_PRESET: ${{ inputs.preset }}
+        run: |
+          presets_file="$(mktemp)"
+
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            test -f "$DISPATCH_PRESET"
+            printf '%s\n' "$DISPATCH_PRESET" > "$presets_file"
+          else
+            for file in $CHANGED_FILES; do
+              case "$file" in
+                .openwrt-base/*|.github/workflows/build-openwrt.yml)
+                  find devices -mindepth 2 -maxdepth 2 -name openwrt.env >> "$presets_file"
+                  ;;
+                devices/*/openwrt.env)
+                  printf '%s\n' "$file" >> "$presets_file"
+                  ;;
+                devices/*/files/*)
+                  printf '%s/openwrt.env\n' "${file%%/files/*}" >> "$presets_file"
+                  ;;
+                .ssh-keys/*)
+                  grep -R -l -F "$file" devices/*/openwrt.env >> "$presets_file" || true
+                  ;;
+              esac
+            done
+          fi
+
+          presets="$(sort -u "$presets_file" | jq -R -s -c 'split("\n") | map(select(length > 0)) | map({preset: ., device: (split("/")[-2])}) | {include: .}')"
+          echo "presets=$presets" >> "$GITHUB_OUTPUT"
+
+  build:
+    name: Build OpenWrt ${{ matrix.device }}
+    needs: select-presets
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.select-presets.outputs.presets) }}
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          persist-credentials: false
+
+      - name: Build OpenWrt image
+        run: .openwrt-base/build.sh --out-dir dist/openwrt "${{ matrix.preset }}"
+
+      - name: Publish releases
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          image="$(find dist/openwrt -type f -name '*-sysupgrade.bin' | sort)"
+          name="$(basename "$image")"
+          device="${name%%-openwrt-*}"
+          version="${name#"$device-openwrt-"}"
+          version="${version%-sysupgrade.*}"
+          tag="openwrt-$device-$version"
+          title="OpenWrt $device $version"
+
+          if ! gh release view "$tag" > /dev/null 2>&1; then
+            gh release create "$tag" \
+              --title "$title" \
+              --notes "Custom OpenWrt sysupgrade image for $device on $version."
+          fi
+
+          gh release upload "$tag" "$image" --clobber

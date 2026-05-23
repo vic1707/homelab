@@ -2,6 +2,15 @@
 	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
 	"extends": ["config:recommended"],
 	"timezone": "Europe/Paris",
+	"customManagers": [
+		{
+			"customType": "regex",
+			"managerFilePatterns": ["/^devices/[^/]+/openwrt\\.env$/"],
+			"matchStrings": [
+				"# renovate: datasource=(?<datasource>[\\w-]+) depName=(?<depName>[^\\s]+) extractVersion=(?<extractVersion>[^\\n]+)\\nOPENWRT_VERSION=(?<currentValue>[^\\s]+)"
+			]
+		}
+	],
 	"packageRules": [
 		{
 			"matchManagers": ["docker-compose", "dockerfile"],
@@ -14,6 +23,10 @@
 		{
 			"matchManagers": ["mise", "ansible-galaxy", "pip_requirements"],
 			"groupName": "Tools"
+		},
+		{
+			"matchDepNames": ["openwrt/openwrt"],
+			"groupName": "OpenWrt firmware"
 		}
 	]
 }

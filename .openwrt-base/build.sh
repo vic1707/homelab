@@ -1,0 +1,123 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Build one device env preset into a sysupgrade image.
+# Example: .openwrt-base/build.sh --out-dir dist/openwrt devices/bacon/openwrt.env
+
+ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+OUT_DIR=""
+
+die() {
+	printf 'error: %s\n' "$*" >&2
+	exit 1
+}
+
+require_nonempty() {
+	local source_file="$1" name
+	shift
+	for name in "$@"; do
+		[ -n "${!name-}" ] || die "$source_file must set $name"
+	done
+}
+
+for cmd in curl find jq podman; do
+	command -v "$cmd" > /dev/null 2>&1 || die "$cmd is required"
+done
+
+while [ "$#" -gt 0 ]; do
+	case "$1" in
+		--out-dir)
+			OUT_DIR="${2:?}"
+			shift 2
+			;;
+		-*) die "unknown option: $1" ;;
+		*) break ;;
+	esac
+done
+
+[ "$#" -eq 1 ] || die "exactly one preset file is required"
+preset="$1"
+[ -f "$preset" ] || die "preset not found: $preset"
+# shellcheck disable=SC1090
+source "$preset"
+require_nonempty "$preset" OPENWRT_VERSION OPENWRT_TARGET OPENWRT_SUBTARGET OPENWRT_PROFILE OPENWRT_BASE OPENWRT_SSH_PUBLIC_KEY
+[[ $OPENWRT_VERSION =~ ^[0-9]+[.][0-9]+[.][0-9]+$ ]] || die "$preset must set OPENWRT_VERSION as major.minor.patch"
+
+base_preset="$ROOT/.openwrt-base/$OPENWRT_BASE/preset.env"
+[ -f "$base_preset" ] || die "base preset not found: $base_preset"
+# shellcheck source=/dev/null
+source "$base_preset"
+require_nonempty "$base_preset" OPENWRT_BASE_FILES
+
+ssh_key="$ROOT/$OPENWRT_SSH_PUBLIC_KEY"
+case "$ssh_key" in *.pub) ;; *) die "SSH public key must be a .pub file: $ssh_key" ;; esac
+[ -f "$ssh_key" ] || die "SSH public key not found: $ssh_key"
+
+preset_dir="$(cd -- "$(dirname -- "$preset")" && pwd)"
+device="$(basename "$preset_dir")"
+
+disabled_services="${OPENWRT_BASE_DISABLED_SERVICES:-} ${OPENWRT_DISABLED_SERVICES:-}"
+packages="${OPENWRT_BASE_ADD_PACKAGES:-} ${OPENWRT_ADD_PACKAGES:-}"
+for package in ${OPENWRT_BASE_REMOVE_PACKAGES:-} ${OPENWRT_REMOVE_PACKAGES:-}; do
+	packages="$packages -$package"
+done
+
+printf '\n==> %s: %s/%s %s on OpenWrt %s\n' "$device" "$OPENWRT_TARGET" "$OPENWRT_SUBTARGET" "$OPENWRT_PROFILE" "$OPENWRT_VERSION"
+
+work="$preset_dir/.build"
+files="$work/files"
+build_bin="$work/bin"
+out="${OUT_DIR:-$preset_dir/bin}"
+rm -rf "$work"
+
+profiles="$(curl -fsSL --retry 3 "https://downloads.openwrt.org/releases/$OPENWRT_VERSION/targets/$OPENWRT_TARGET/$OPENWRT_SUBTARGET/profiles.json")"
+printf '%s\n' "$profiles" | jq -e --arg profile "$OPENWRT_PROFILE" '.profiles[$profile]' > /dev/null \
+	|| die "$OPENWRT_PROFILE is not present in upstream profiles.json"
+for package in ${OPENWRT_BASE_REMOVE_PACKAGES:-} ${OPENWRT_REMOVE_PACKAGES:-}; do
+	printf '%s\n' "$profiles" | jq -e --arg profile "$OPENWRT_PROFILE" --arg package "$package" \
+		'.default_packages + .profiles[$profile].device_packages | index($package)' > /dev/null \
+		|| die "cannot remove non existant $package"
+done
+for package in ${OPENWRT_BASE_ADD_PACKAGES:-} ${OPENWRT_ADD_PACKAGES:-}; do
+	printf '%s\n' "$profiles" | jq -e --arg profile "$OPENWRT_PROFILE" --arg package "$package" \
+		'.default_packages + .profiles[$profile].device_packages | index($package) | not' > /dev/null \
+		|| die "no need to add $package, already there"
+done
+
+mkdir -p "$files/etc/config" "$files/etc/dropbear" "$build_bin" "$out"
+cp -a "$ROOT/$OPENWRT_BASE_FILES"/. "$files"/
+if [ -d "$preset_dir/files" ]; then
+	cp -a "$preset_dir/files"/. "$files"/
+fi
+find "$files" -name .gitkeep -delete
+
+cp -L "$ssh_key" "$files/etc/dropbear/authorized_keys"
+chmod 600 "$files/etc/dropbear/authorized_keys"
+chmod 0777 "$build_bin"
+
+image="${OPENWRT_IMAGE:-openwrt/imagebuilder:${OPENWRT_TARGET}-${OPENWRT_SUBTARGET}-openwrt-${OPENWRT_VERSION%.*}}"
+podman run --rm \
+	-e "TARGET=$OPENWRT_TARGET/$OPENWRT_SUBTARGET" \
+	-e "VERSION_PATH=releases/$OPENWRT_VERSION" \
+	-e "DOWNLOAD_FILE=imagebuilder-.*${OPENWRT_TARGET}-${OPENWRT_SUBTARGET}.Linux-x86_64.tar.[xz|zst]" \
+	-e "PROFILE=$OPENWRT_PROFILE" \
+	-e "PACKAGES=$packages" \
+	-e "FILES=/builder/files" \
+	-e "DISABLED_SERVICES=$disabled_services" \
+	-v "$files:/builder/files:ro" \
+	-e "BIN_DIR=/builder/bin" \
+	-v "$build_bin:/builder/bin" \
+	"$image" /bin/bash -lc '[ -d ./scripts ] || ./setup.sh; make image PROFILE="$PROFILE" PACKAGES="$PACKAGES" FILES="$FILES" BIN_DIR="$BIN_DIR" DISABLED_SERVICES="$DISABLED_SERVICES"'
+
+image_count=0
+sysupgrade_image=""
+while IFS= read -r candidate; do
+	image_count=$((image_count + 1))
+	sysupgrade_image="$candidate"
+done < <(find "$build_bin" -type f -name '*sysupgrade*.bin' | sort)
+[ "$image_count" -eq 1 ] || die "$device produced $image_count sysupgrade images"
+
+final="$out/$device-openwrt-$OPENWRT_VERSION-sysupgrade.${sysupgrade_image##*.}"
+cp "$sysupgrade_image" "$final"
+rm -rf "$work"
+printf 'Built %s\n' "$final"

@@ -1,6 +1,8 @@
 ---
 ## ansible-galaxy install -f -r .config/requirements.yml
 collections:
+  - name: community.openwrt
+    version: 1.4.0
   - name: linuxhq.cloudflare
     version: 2.0.7
   - name: moreati.jq
