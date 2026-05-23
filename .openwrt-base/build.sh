@@ -92,7 +92,9 @@ fi
 find "$files" -name .gitkeep -delete
 
 cp -L "$ssh_key" "$files/etc/dropbear/authorized_keys"
-chmod 600 "$files/etc/dropbear/authorized_keys"
+# The imagebuilder container may run as a non-root user in CI. This is a
+# public key, so keep the staged copy readable while still not writable.
+chmod 0644 "$files/etc/dropbear/authorized_keys"
 chmod 0777 "$build_bin"
 
 image="${OPENWRT_IMAGE:-openwrt/imagebuilder:${OPENWRT_TARGET}-${OPENWRT_SUBTARGET}-openwrt-${OPENWRT_VERSION%.*}}"
