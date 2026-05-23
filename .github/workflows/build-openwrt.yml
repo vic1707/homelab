@@ -30,6 +30,7 @@ jobs:
       contents: read
     outputs:
       presets: ${{ steps.presets.outputs.presets }}
+      has_presets: ${{ steps.presets.outputs.has_presets }}
     steps:
       - name: Harden the runner (Audit all outbound calls)
         uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
@@ -60,20 +61,48 @@ jobs:
         run: |
           presets_file="$(mktemp)"
 
+          all_presets() {
+            find devices -mindepth 2 -maxdepth 2 -name openwrt.env
+          }
+
+          add_preset() {
+            local preset="$1"
+            [ -f "$preset" ] || return 0
+            printf '%s\n' "$preset" >> "$presets_file"
+          }
+
+          preset_base() {
+            sed -n -E "s/^[[:space:]]*OPENWRT_BASE[[:space:]]*=[[:space:]]*['\"]?([^'\"#[:space:]]+)['\"]?.*/\1/p" "$1" | tail -n 1
+          }
+
+          add_presets_using_base() {
+            local base="$1" preset
+            while IFS= read -r preset; do
+              [ "$(preset_base "$preset")" = "$base" ] && add_preset "$preset"
+            done < <(all_presets)
+          }
+
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             test -f "$DISPATCH_PRESET"
             printf '%s\n' "$DISPATCH_PRESET" > "$presets_file"
           else
             for file in $CHANGED_FILES; do
               case "$file" in
-                .openwrt-base/*|.github/workflows/build-openwrt.yml)
-                  find devices -mindepth 2 -maxdepth 2 -name openwrt.env >> "$presets_file"
+                .github/workflows/build-openwrt.yml|.openwrt-base/build.sh)
+                  all_presets >> "$presets_file"
+                  ;;
+                .openwrt-base/*)
+                  base_path="${file#.openwrt-base/}"
+                  case "$base_path" in
+                    */*) add_presets_using_base "${base_path%%/*}" ;;
+                    *) all_presets >> "$presets_file" ;;
+                  esac
                   ;;
                 devices/*/openwrt.env)
-                  printf '%s\n' "$file" >> "$presets_file"
+                  add_preset "$file"
                   ;;
                 devices/*/files/*)
-                  printf '%s/openwrt.env\n' "${file%%/files/*}" >> "$presets_file"
+                  add_preset "${file%%/files/*}/openwrt.env"
                   ;;
                 .ssh-keys/*)
                   grep -R -l -F "$file" devices/*/openwrt.env >> "$presets_file" || true
@@ -85,10 +114,17 @@ jobs:
           presets="$(sort -u "$presets_file" | jq -R -s -c 'split("\n") | map(select(length > 0)) | map({preset: ., device: (split("/")[-2])}) | {include: .}')"
           echo "presets=$presets" >> "$GITHUB_OUTPUT"
 
+          if [ "$(jq '.include | length' <<< "$presets")" -gt 0 ]; then
+            echo "has_presets=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_presets=false" >> "$GITHUB_OUTPUT"
+          fi
+
   build:
     name: Build OpenWrt ${{ matrix.device }}
     needs: select-presets
     runs-on: ubuntu-24.04
+    if: ${{ needs.select-presets.outputs.has_presets == 'true' }}
     permissions:
       contents: write
     strategy:
