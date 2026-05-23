@@ -76,7 +76,7 @@ printf '%s\n' "$profiles" | jq -e --arg profile "$OPENWRT_PROFILE" '.profiles[$p
 for package in ${OPENWRT_BASE_REMOVE_PACKAGES:-} ${OPENWRT_REMOVE_PACKAGES:-}; do
 	printf '%s\n' "$profiles" | jq -e --arg profile "$OPENWRT_PROFILE" --arg package "$package" \
 		'.default_packages + .profiles[$profile].device_packages | index($package)' > /dev/null \
-		|| die "cannot remove non existant $package"
+		|| die "cannot remove non existent $package"
 done
 for package in ${OPENWRT_BASE_ADD_PACKAGES:-} ${OPENWRT_ADD_PACKAGES:-}; do
 	printf '%s\n' "$profiles" | jq -e --arg profile "$OPENWRT_PROFILE" --arg package "$package" \

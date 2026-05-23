@@ -2,4 +2,10 @@
 extend-ignore-re = [
 	# Ignore line following `# @typos-ignore` or `// @typos-ignore`
 	"(?m)^\\s*(#|//) @typos-ignore$\n.*",
+
+	# Ignore SOPS inline encrypted values
+	"ENC\\[AES256_GCM,[^\\]]+\\]",
+
+	# Ignore AGE encrypted blocks in sops metadata
+	"(?s)-----BEGIN AGE ENCRYPTED FILE-----.*?-----END AGE ENCRYPTED FILE-----",
 ]
