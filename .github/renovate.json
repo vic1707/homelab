@@ -21,7 +21,7 @@
 			"groupName": "GitHub Actions"
 		},
 		{
-			"matchManagers": ["mise", "ansible-galaxy", "pip_requirements"],
+			"matchManagers": ["mise", "ansible-galaxy", "pip_requirements", "pep621"],
 			"groupName": "Tools"
 		},
 		{
