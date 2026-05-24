@@ -40,7 +40,7 @@ radios:
 wifis:
     - name: main
       network: lan
-      ssid: AuMiens
+      ssid: AuMien
       encryption: sae-mixed # WPA2-PSK/WPA3-SAE
       ieee80211w: true # PMF; protects management frames.
       ieee80211k: true # Neighbor reports; helps clients discover nearby AP/radios.
@@ -66,7 +66,7 @@ wifis:
 
     - name: iot
       network: iot
-      ssid: IDIoT
+      ssid: idIoT
       encryption: psk2 # WPA2-PSK
       ieee80211w: false # PMF; protects management frames.
       ieee80211k: false # Neighbor reports; helps clients discover nearby AP/radios.
