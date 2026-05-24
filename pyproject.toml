@@ -4,7 +4,7 @@ version = "0.0.0"
 requires-python = "==3.14.3"
 
 dependencies = [
-	"ansible==13.6.0",
+	"ansible==13.7.0",
 	"ansible-lint==26.4.0",
 	"cloudflare==4.3.1",    # linuxhq.cloudflare v2.0.7 requires <5
 	"jmespath==1.1.0",
