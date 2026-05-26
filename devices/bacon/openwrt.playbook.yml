@@ -71,25 +71,25 @@
             command: section
             config: wireless
             type: wifi-iface
-            name: "{{ bacon_wifi_pair.0.name }}_{{ bacon_wifi_pair.1.name }}"
+            name: "{{ bacon_wifi_pair[0].name }}_{{ bacon_wifi_pair[1].name }}"
             value:
-                device: "{{ bacon_wifi_pair.1.name }}"
-                network: "{{ bacon_wifi_pair.0.network }}"
+                device: "{{ bacon_wifi_pair[1].name }}"
+                network: "{{ bacon_wifi_pair[0].network }}"
                 mode: ap
-                ssid: "{{ bacon_wifi_pair.0.ssid }}"
-                encryption: "{{ bacon_wifi_pair.0.encryption }}"
-                ieee80211w: "{{ '1' if bacon_wifi_pair.0.ieee80211w | default(false) else '0' }}"
-                ieee80211k: "{{ '1' if bacon_wifi_pair.0.ieee80211k | default(false) else '0' }}"
-                bss_transition: "{{ '1' if bacon_wifi_pair.0.bss_transition | default(false) else '0' }}"
-                rrm_neighbor_report: "{{ '1' if bacon_wifi_pair.0.rrm_neighbor_report | default(false) else '0' }}"
-                rrm_beacon_report: "{{ '1' if bacon_wifi_pair.0.rrm_beacon_report | default(false) else '0' }}"
-                disabled: "{{ '0' if bacon_wifi_pair.0.enabled else '1' }}"
+                ssid: "{{ bacon_wifi_pair[0].ssid }}"
+                encryption: "{{ bacon_wifi_pair[0].encryption }}"
+                ieee80211w: "{{ '1' if bacon_wifi_pair[0].ieee80211w | default(false) else '0' }}"
+                ieee80211k: "{{ '1' if bacon_wifi_pair[0].ieee80211k | default(false) else '0' }}"
+                bss_transition: "{{ '1' if bacon_wifi_pair[0].bss_transition | default(false) else '0' }}"
+                rrm_neighbor_report: "{{ '1' if bacon_wifi_pair[0].rrm_neighbor_report | default(false) else '0' }}"
+                rrm_beacon_report: "{{ '1' if bacon_wifi_pair[0].rrm_beacon_report | default(false) else '0' }}"
+                disabled: "{{ '0' if bacon_wifi_pair[0].enabled else '1' }}"
             replace: true
             keep_keys: key
             autocommit: true
         loop: "{{ wifis | product(radios) | list }}"
         loop_control:
-            label: "{{ bacon_wifi_pair.0.name }} on {{ bacon_wifi_pair.1.name }}"
+            label: "{{ bacon_wifi_pair[0].name }} on {{ bacon_wifi_pair[1].name }}"
             loop_var: bacon_wifi_pair
         notify: Bacon | Reload wifi
 
@@ -97,9 +97,9 @@
         community.openwrt.uci:
             command: set
             config: wireless
-            section: "{{ bacon_wifi_pair.0.name }}_{{ bacon_wifi_pair.1.name }}"
+            section: "{{ bacon_wifi_pair[0].name }}_{{ bacon_wifi_pair[1].name }}"
             option: key
-            value: "{{ bacon_wifi_pair.0.password }}"
+            value: "{{ bacon_wifi_pair[0].password }}"
             autocommit: true
         loop: "{{ wifis | product(radios) | list }}"
         loop_control:

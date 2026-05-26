@@ -12,12 +12,12 @@ domains:
 users:
     - name: "{{ admin_email }}"
       password: >-
-          {{ lookup('community.sops.sops', '../../.secrets/bofzilla.dev.yml', extract='["purelymail"]["users"]["' ~ admin_email ~ '"]["password"]') }}
+          {{ lookup('community.sops.sops', '../../.secrets/bofzilla.dev.yml', extract='["purelymail"]["users"]["%s"]["password"]' | format(admin_email)) }}
       enable_search_indexing: false
       require_two_factor_authentication: false # TODO: true
       enable_password_reset: false
       recovery_phone: >-
-          {{ lookup('community.sops.sops', '../../.secrets/bofzilla.dev.yml', extract='["purelymail"]["users"]["' ~ admin_email ~ '"]["phone_password_recovery_secret"]') }}
+          {{ lookup('community.sops.sops', '../../.secrets/bofzilla.dev.yml', extract='["purelymail"]["users"]["%s"]["phone_password_recovery_secret"]' | format(admin_email)) }}
       recovery_phone_allow_mfa_reset: true
 
     - name: admin@bofzilla.dev

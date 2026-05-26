@@ -1,7 +1,9 @@
 actionlint = "actionlint"
 
-ansible-lint = "ansible-lint -c .config/.ansible-lint.yml"
+ansible-lint = "git ls-files -z | xargs -0 -r -t ansible-lint -c .config/.ansible-lint.yml -x yaml"
 "ansible-lint:fix" = "ansible-lint -c .config/.ansible-lint.yml --fix"
+
+ansible-syntax-check = "rg --files -g '*.playbook.yml' | xargs -r -t ansible-playbook --syntax-check"
 
 shellcheck = "rg --ignore --hidden -l '^#!' . | xargs -r -t shellcheck -a -Calways"
 
@@ -23,7 +25,7 @@ depends = ["shfmt:fix"]
 depends = ["zizmor", "actionlint"]
 
 [lint]
-depends = ["ansible-lint", "typos", "shellcheck"]
+depends = ["ansible-lint", "ansible-syntax-check", "typos", "shellcheck"]
 
 ["lint:fix"]
 depends = ["ansible-lint:fix"]
