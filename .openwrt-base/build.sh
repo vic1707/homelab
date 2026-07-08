@@ -6,6 +6,7 @@ set -euo pipefail
 
 ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 OUT_DIR=""
+TEMPLATE_ENV_VARS=(OPENWRT_HOSTNAME)
 
 die() {
 	printf 'error: %s\n' "$*" >&2
@@ -20,7 +21,7 @@ require_nonempty() {
 	done
 }
 
-for cmd in curl find jq podman; do
+for cmd in curl envsubst find jq podman; do
 	command -v "$cmd" > /dev/null 2>&1 || die "$cmd is required"
 done
 
@@ -55,6 +56,14 @@ case "$ssh_key" in *.pub) ;; *) die "SSH public key must be a .pub file: $ssh_ke
 
 preset_dir="$(cd -- "$(dirname -- "$preset")" && pwd)"
 device="$(basename "$preset_dir")"
+hostname="${OPENWRT_HOSTNAME:-$device}"
+[[ $hostname =~ ^[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?$ ]] || die "invalid hostname: $hostname"
+OPENWRT_HOSTNAME="$hostname"
+envsubst_vars=""
+for name in "${TEMPLATE_ENV_VARS[@]}"; do
+	envsubst_vars="${envsubst_vars}\${$name}"
+done
+export "${TEMPLATE_ENV_VARS[@]}"
 
 disabled_services="${OPENWRT_BASE_DISABLED_SERVICES:-} ${OPENWRT_DISABLED_SERVICES:-}"
 packages="${OPENWRT_BASE_ADD_PACKAGES:-} ${OPENWRT_ADD_PACKAGES:-}"
@@ -89,6 +98,11 @@ cp -a "$ROOT/$OPENWRT_BASE_FILES"/. "$files"/
 if [ -d "$preset_dir/files" ]; then
 	cp -a "$preset_dir/files"/. "$files"/
 fi
+while IFS= read -r file; do
+	cp -p "$file" "$file.tmp"
+	envsubst "$envsubst_vars" < "$file" > "$file.tmp"
+	mv "$file.tmp" "$file"
+done < <(find "$files" -type f ! -name .gitkeep)
 find "$files" -name .gitkeep -delete
 
 cp -L "$ssh_key" "$files/etc/dropbear/authorized_keys"
