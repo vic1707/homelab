@@ -1,5 +1,5 @@
 creation_rules:
     - path_regex: ".secrets/.*"
-      encrypted_regex: "(?i)(secret|token|password|key)$"
+      encrypted_regex: "(?i)(secret|token|password|key|mac)$"
       age: >
         age1q9gm9fgduf5scr3dadl7yarh4wxzlr6psl4zp02k2r9edjngasssd266k4

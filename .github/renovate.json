@@ -5,9 +5,9 @@
 	"customManagers": [
 		{
 			"customType": "regex",
-			"managerFilePatterns": ["/^devices/[^/]+/openwrt\\.env$/"],
+			"managerFilePatterns": ["/^devices/[^/]+/(openwrt\\.env|install\\.sh)$/"],
 			"matchStrings": [
-				"# renovate: datasource=(?<datasource>[\\w-]+) depName=(?<depName>[^\\s]+) extractVersion=(?<extractVersion>[^\\n]+)\\nOPENWRT_VERSION=(?<currentValue>[^\\s]+)"
+				"# renovate: datasource=(?<datasource>[\\w-]+) depName=(?<depName>[^\\s]+) extractVersion=(?<extractVersion>[^\\n]+)\\n(?:OPENWRT_VERSION|VERSION)=(?<currentValue>[^\\s]+)"
 			]
 		}
 	],

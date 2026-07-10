@@ -149,18 +149,20 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          image="$(find dist/openwrt -type f -name '*-sysupgrade.bin' | sort)"
+          mapfile -t images < <(find dist/openwrt -type f | sort)
+          [ "${#images[@]}" -eq 1 ]
+          image="${images[0]}"
           name="$(basename "$image")"
-          device="${name%%-openwrt-*}"
-          version="${name#"$device-openwrt-"}"
-          version="${version%-sysupgrade.*}"
+          [[ "$name" =~ ^(.+)-openwrt-([0-9]+\.[0-9]+\.[0-9]+)- ]] || exit 1
+          device="${BASH_REMATCH[1]}"
+          version="${BASH_REMATCH[2]}"
           tag="openwrt-$device-$version"
           title="OpenWrt $device $version"
 
           if ! gh release view "$tag" > /dev/null 2>&1; then
             gh release create "$tag" \
               --title "$title" \
-              --notes "Custom OpenWrt sysupgrade image for $device on $version."
+              --notes "Custom OpenWrt image for $device on $version."
           fi
 
           gh release upload "$tag" "$image" --clobber

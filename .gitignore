@@ -44,6 +44,7 @@
 
 !devices/
 !devices/*/
+!devices/*/install.sh
 !devices/*/openwrt.env
 !devices/*/*.playbook.yml
 !devices/*/vars/

@@ -125,15 +125,16 @@ podman run --rm \
 	-v "$build_bin:/builder/bin" \
 	"$image" /bin/bash -lc '[ -d ./scripts ] || ./setup.sh; make image PROFILE="$PROFILE" PACKAGES="$PACKAGES" FILES="$FILES" BIN_DIR="$BIN_DIR" DISABLED_SERVICES="$DISABLED_SERVICES"'
 
+artifact_glob="${OPENWRT_ARTIFACT_GLOB:-*sysupgrade*.bin}"
 image_count=0
-sysupgrade_image=""
+artifact=""
 while IFS= read -r candidate; do
 	image_count=$((image_count + 1))
-	sysupgrade_image="$candidate"
-done < <(find "$build_bin" -type f -name '*sysupgrade*.bin' | sort)
-[ "$image_count" -eq 1 ] || die "$device produced $image_count sysupgrade images"
+	artifact="$candidate"
+done < <(find "$build_bin" -type f -name "$artifact_glob" | sort)
+[ "$image_count" -eq 1 ] || die "$device produced $image_count matching $artifact_glob"
 
-final="$out/$device-openwrt-$OPENWRT_VERSION-sysupgrade.${sysupgrade_image##*.}"
-cp "$sysupgrade_image" "$final"
+final="$out/$device-openwrt-$OPENWRT_VERSION-${OPENWRT_ARTIFACT_NAME:-sysupgrade.${artifact##*.}}"
+cp "$artifact" "$final"
 rm -rf "$work"
 printf 'Built %s\n' "$final"
