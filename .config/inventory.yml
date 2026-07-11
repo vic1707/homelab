@@ -7,3 +7,10 @@ openwrt:
             ansible_connection: ssh
             ansible_ssh_transfer_method: scp
             ansible_scp_extra_args: "-O"
+
+        fedex:
+            ansible_host: "{{ lookup('env', 'FEDEX_HOST') | default('fedex.lan', true) }}"
+            ansible_user: root
+            ansible_connection: ssh
+            ansible_ssh_transfer_method: scp
+            ansible_scp_extra_args: "-O"

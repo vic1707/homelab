@@ -1,0 +1,169 @@
+---
+- name: Manage fedex OpenWrt
+  hosts: fedex
+  gather_facts: false
+
+  vars_files:
+      - vars/openwrt.yml
+
+  pre_tasks:
+      - name: Fedex | Check OpenWrt access
+        community.openwrt.ping:
+
+  tasks:
+      - name: Fedex | Configure Bbox WAN VLAN device
+        community.openwrt.uci:
+            command: section
+            config: network
+            type: device
+            name: wan_vlan
+            value:
+                name: "{{ bbox_wan.device }}"
+                type: 8021q
+                ifname: "{{ bbox_wan.ifname }}"
+                vid: "{{ bbox_wan.vlan }}"
+                macaddr: "{{ bbox_wan.macaddr }}"
+            replace: true
+            autocommit: true
+        notify: Fedex | Reload network
+
+      - name: Fedex | Configure Bbox WAN DHCP
+        community.openwrt.uci:
+            command: section
+            config: network
+            type: interface
+            name: wan
+            value:
+                device: "{{ bbox_wan.device }}"
+                proto: dhcp
+                vendorid: "{{ bbox_wan.vendorid }}"
+                delegate: "0"
+            replace: true
+            autocommit: true
+        notify: Fedex | Reload network
+
+      - name: Fedex | Restrict SSH to rescue
+        community.openwrt.uci:
+            command: set
+            config: dropbear
+            section: "@dropbear[0]"
+            option: Interface
+            value: rescue
+            autocommit: true
+        notify: Fedex | Restart dropbear
+
+      - name: Fedex | Configure WAN firewall zone
+        community.openwrt.uci:
+            command: section
+            config: firewall
+            type: zone
+            name: wan
+            value:
+                name: wan
+                network: wan
+                input: REJECT
+                output: ACCEPT
+                forward: REJECT
+                masq: "1"
+                mtu_fix: "1"
+            replace: true
+            autocommit: true
+        notify: Fedex | Reload firewall
+
+      - name: Fedex | Configure temporary LAN
+        community.openwrt.uci:
+            command: section
+            config: network
+            type: interface
+            name: lan
+            value:
+                device: "{{ temp_lan.device }}"
+                proto: static
+                ipaddr: "{{ temp_lan.ipaddr }}"
+                netmask: "{{ temp_lan.netmask }}"
+                delegate: "0"
+            replace: true
+            autocommit: true
+        notify: Fedex | Reload network
+
+      - name: Fedex | Configure temporary LAN DHCP
+        community.openwrt.uci:
+            command: section
+            config: dhcp
+            type: dhcp
+            name: lan
+            value:
+                interface: lan
+                start: "{{ temp_lan.dhcp_start }}"
+                limit: "{{ temp_lan.dhcp_limit }}"
+                leasetime: "{{ temp_lan.dhcp_leasetime }}"
+            replace: true
+            autocommit: true
+        notify: Fedex | Restart dnsmasq
+
+      - name: Fedex | Configure LAN firewall zone
+        community.openwrt.uci:
+            command: section
+            config: firewall
+            type: zone
+            name: lan
+            value:
+                name: lan
+                network: lan
+                input: ACCEPT
+                output: ACCEPT
+                forward: REJECT
+            replace: true
+            autocommit: true
+        notify: Fedex | Reload firewall
+
+      - name: Fedex | Allow LAN to WAN
+        community.openwrt.uci:
+            command: section
+            config: firewall
+            type: forwarding
+            name: lan_wan
+            value:
+                src: lan
+                dest: wan
+            replace: true
+            autocommit: true
+        notify: Fedex | Reload firewall
+
+      - name: Fedex | Allow WAN DHCP replies
+        community.openwrt.uci:
+            command: section
+            config: firewall
+            type: rule
+            name: allow_dhcp_renew
+            value:
+                name: Allow-DHCP-Renew
+                src: wan
+                proto: udp
+                dest_port: "68"
+                target: ACCEPT
+                family: ipv4
+            replace: true
+            autocommit: true
+        notify: Fedex | Reload firewall
+
+  handlers:
+      - name: Fedex | Reload network
+        community.openwrt.service:
+            name: network
+            state: reloaded
+
+      - name: Fedex | Reload firewall
+        community.openwrt.service:
+            name: firewall
+            state: reloaded
+
+      - name: Fedex | Restart dnsmasq
+        community.openwrt.service:
+            name: dnsmasq
+            state: restarted
+
+      - name: Fedex | Restart dropbear
+        community.openwrt.service:
+            name: dropbear
+            state: restarted

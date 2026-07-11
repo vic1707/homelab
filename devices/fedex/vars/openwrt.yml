@@ -1,0 +1,27 @@
+---
+ports:
+    rj45_1: eth0 # 20:7c:14:f7:24:3d
+    rj45_2: eth1 # 20:7c:14:f7:24:3e
+    rj45_3: eth2 # 20:7c:14:f7:24:3f
+    rj45_4: eth3 # 20:7c:14:f7:24:40
+    rj45_5: eth4 # 20:7c:14:f7:24:41
+    sfp_6: eth5 # 20:7c:14:f7:24:42
+    sfp_7: eth6 # 20:7c:14:f7:24:43
+    sfp_8: eth7 # 20:7c:14:f7:24:44
+    sfp_9: eth8 # 20:7c:14:f7:24:45
+
+bbox_wan:
+    ifname: "{{ ports.sfp_6 }}"
+    vlan: 100
+    device: "{{ ports.sfp_6 }}.100"
+    vendorid: BYGTELIAD
+    macaddr: >-
+        {{ lookup('community.sops.sops', '../../.secrets/devices/fedex.yml', extract='["bbox"]["mac"]') | trim }}
+
+temp_lan:
+    device: "{{ ports.sfp_7 }}"
+    ipaddr: 192.168.1.1
+    netmask: 255.255.255.0
+    dhcp_start: 100
+    dhcp_limit: 150
+    dhcp_leasetime: 12h
