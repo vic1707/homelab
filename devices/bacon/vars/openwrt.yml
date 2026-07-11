@@ -3,6 +3,9 @@ bridge:
     name: br-lan
     ports: [eth0]
 
+root_password: >-
+    {{ lookup('community.sops.sops', '../../.secrets/devices/bacon.yml', extract='["accounts"]["root"]["password"]') | trim }}
+
 networks:
     - name: lan
       device: "{{ bridge.name }}"

@@ -1,6 +1,10 @@
 # load with `sops decrypt --extract '["ssh-private-key"]' .secrets/devices/bacon.yml | ssh-add -`
 ssh-private-key: ENC[AES256_GCM,data:MV2ootDHcL3T15BpQAH81TwyA8L8YYwfvvvmUs305khB/Ak95quCiTmLF9Se+IOuJzFPUl0nyW9FtrtTAzkKkUxb3ibQIbB6vN6UNafu2GD8ZJgu74XI2TpvGCceip6l+YX1zh3jCdSVVK0FGzlTBt53MytLLquP2txGT6ugmv43TFVWxUJWl3lHwlsZAuzMsoM3+4B56dyEtYoiGBjkRfH9nxlSQ3MJet5tvJJdFhWJimCCBEdMkY+v2OFMAQFQM1RmrvSBrXdwpHSpNyk6d2F4QLcaVF3OSX03Xfe0WDpULM/0UYl1+v0EM/qPzef3b5ymk5Z0uvbvKzuPD+4W1OIhXcN/GA47zXwG6ES3+CKbwJVaAsag7n4q3CWF1FmrSG864T+R0SZHkvzS42ohk4Vy1idW+VGKDkoDcmEmHnDEIegjzjOrrreeHMgBvFXClQa/ReYrKHgOb4MQV3qlgnivHt7N8soB9YOdKv01RnpfCi8naLjMvA5jqj7ntOguUSU1cYTViZvRMULGm4o5,iv:oD9C6CHpf7oZMctREwK5Mj+utlosh0d0GiDncSYzL4U=,tag:wpPBWTrnAOS9/uDg4rocTw==,type:str]
 
+accounts:
+    root:
+        password: ENC[AES256_GCM,data:INxnrZkpHD+tRUYDzErziiGQVU8CK4QpxIXCCPBkxi4xNJDmicFPk4xWNz2+hWbHnio=,iv:Q16mr7J4DeLNbyUgl5b90xDxza8NuGRt/bM57/GQcqU=,tag:bXXJ7gLgMK6p2rlQn6pmPQ==,type:str]
+
 wifi:
     main:
         password: ENC[AES256_GCM,data:2u1u/fzKyLllMb2w3XCX4Hio8fxEOkd5YacSNc2Bfe5V9N9o6o0hK6B5wcSFURHcD/Q=,iv:3K1xCG4jwVXPO8K+68dKuvZo0l1NSEAkNfu4Rdae2uk=,tag:mNNekfsPbK0BJz1DAVNS1A==,type:str]
@@ -21,6 +25,6 @@ sops:
               -----END AGE ENCRYPTED FILE-----
           recipient: age1q9gm9fgduf5scr3dadl7yarh4wxzlr6psl4zp02k2r9edjngasssd266k4
     encrypted_regex: (?i)(secret|token|password|key)$
-    lastmodified: "2026-06-06T14:13:32Z"
-    mac: ENC[AES256_GCM,data:39mfKtRMGtxhrwa2nKBbQ9Siuvx9y2GC6+DUga4/4IFn8VNdFarCc/VfQaoRyMcoqyh5ZB1cp8ToEDO0zTs0ztSYoc/0fFrdgyqa2bNxTc5DugITFPeuKmFnW7O3IEodlK5iwq6z6tEEETXY7fd/PtDBsVOYAkSuUq4eg0O7938=,iv:k5H7/y5XDYKzC6dCxgjxNI3nDNnE2UuTrETYYqHFqGc=,tag:UlNZHc9UAefOC5/eJxJ4jQ==,type:str]
-    version: 3.13.1
+    lastmodified: "2026-07-11T23:12:34Z"
+    mac: ENC[AES256_GCM,data:9+cfCRiOU6nCLlKb6YVnwlYix0J/IB9sN2k6V7/Jhf2B5o+bK2/Ax/uaMWcPOnPtQs80zvvHmprLYzDjbj3wYutEtgP/awfoxl5tKmmDipKJcOfFz0qLa/T5e3HHF0+LMsjJDX+UXLI24/Sg2Q0my9Qdg6Ia/MpzlzGwVSwC4fo=,iv:UeVQfqSY1PuuFB4p/UXKc4gTB7ZK1YzZrcIQARlF1X8=,tag:EfOyAyPeDv8b3z2GYngq+w==,type:str]
+    version: 3.13.2

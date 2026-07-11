@@ -11,6 +11,13 @@
         community.openwrt.ping:
 
   tasks:
+      - name: Bacon | Set root password
+        community.openwrt.command:
+            cmd: >-
+                printf '%s\n%s\n' {{ root_password | quote }} {{ root_password | quote }} | passwd root
+            uses_shell: true
+        no_log: true
+
       - name: Bacon | Configure LAN bridge
         community.openwrt.uci:
             command: section
