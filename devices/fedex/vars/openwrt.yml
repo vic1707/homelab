@@ -18,6 +18,9 @@ bbox_wan:
     macaddr: >-
         {{ lookup('community.sops.sops', '../../.secrets/devices/fedex.yml', extract='["bbox"]["mac"]') | trim }}
 
+root_password: >-
+    {{ lookup('community.sops.sops', '../../.secrets/devices/fedex.yml', extract='["accounts"]["root"]["password"]') | trim }}
+
 temp_lan:
     device: "{{ ports.sfp_7 }}"
     ipaddr: 192.168.1.1

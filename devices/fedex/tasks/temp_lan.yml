@@ -1,0 +1,60 @@
+---
+- name: temp_lan | Configure temporary LAN
+  community.openwrt.uci:
+      command: section
+      config: network
+      type: interface
+      name: lan
+      value:
+          device: "{{ temp_lan.device }}"
+          proto: static
+          ipaddr: "{{ temp_lan.ipaddr }}"
+          netmask: "{{ temp_lan.netmask }}"
+          delegate: "0"
+      replace: true
+      autocommit: true
+  notify: Fedex | Reload network
+
+- name: temp_lan | Configure temporary LAN DHCP
+  community.openwrt.uci:
+      command: section
+      config: dhcp
+      type: dhcp
+      name: lan
+      value:
+          interface: lan
+          start: "{{ temp_lan.dhcp_start }}"
+          limit: "{{ temp_lan.dhcp_limit }}"
+          leasetime: "{{ temp_lan.dhcp_leasetime }}"
+      replace: true
+      autocommit: true
+  notify: Fedex | Restart dnsmasq
+
+- name: temp_lan | Configure LAN firewall zone
+  community.openwrt.uci:
+      command: section
+      config: firewall
+      type: zone
+      name: lan
+      value:
+          name: lan
+          network: lan
+          input: ACCEPT
+          output: ACCEPT
+          forward: REJECT
+      replace: true
+      autocommit: true
+  notify: Fedex | Reload firewall
+
+- name: temp_lan | Allow LAN to WAN
+  community.openwrt.uci:
+      command: section
+      config: firewall
+      type: forwarding
+      name: lan_wan
+      value:
+          src: lan
+          dest: wan
+      replace: true
+      autocommit: true
+  notify: Fedex | Reload firewall

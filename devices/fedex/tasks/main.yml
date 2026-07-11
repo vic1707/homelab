@@ -1,0 +1,32 @@
+---
+- name: Fedex | Set root password
+  community.openwrt.command: # https://github.com/ansible-collections/community.openwrt/issues/143
+      cmd: >-
+          printf '%s\n%s\n' {{ root_password | quote }} {{ root_password | quote }} | passwd root
+      uses_shell: true
+  no_log: true
+
+- name: Fedex | Restrict SSH to rescue
+  community.openwrt.uci:
+      command: set
+      config: dropbear
+      section: "@dropbear[0]"
+      option: Interface
+      value: rescue
+      autocommit: true
+  notify: Fedex | Restart dropbear
+
+- name: Fedex | Restrict LuCI to rescue
+  community.openwrt.uci:
+      command: section
+      config: uhttpd
+      type: uhttpd
+      name: main
+      value:
+          listen_http:
+              - 192.168.255.1:80
+          listen_https:
+              - 192.168.255.1:443
+      replace: false
+      autocommit: true
+  notify: Fedex | Restart uhttpd

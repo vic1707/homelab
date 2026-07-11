@@ -1,0 +1,66 @@
+---
+- name: wan | Configure Bbox WAN VLAN device
+  community.openwrt.uci:
+      command: section
+      config: network
+      type: device
+      name: wan_vlan
+      value:
+          name: "{{ bbox_wan.device }}"
+          type: 8021q
+          ifname: "{{ bbox_wan.ifname }}"
+          vid: "{{ bbox_wan.vlan }}"
+          macaddr: "{{ bbox_wan.macaddr }}"
+      replace: true
+      autocommit: true
+  notify: Fedex | Reload network
+
+- name: wan | Configure Bbox WAN DHCP
+  community.openwrt.uci:
+      command: section
+      config: network
+      type: interface
+      name: wan
+      value:
+          device: "{{ bbox_wan.device }}"
+          proto: dhcp
+          vendorid: "{{ bbox_wan.vendorid }}"
+          delegate: "0"
+      replace: true
+      autocommit: true
+  notify: Fedex | Reload network
+
+- name: wan | Configure WAN firewall zone
+  community.openwrt.uci:
+      command: section
+      config: firewall
+      type: zone
+      name: wan
+      value:
+          name: wan
+          network: wan
+          input: REJECT
+          output: ACCEPT
+          forward: REJECT
+          masq: "1"
+          mtu_fix: "1"
+      replace: true
+      autocommit: true
+  notify: Fedex | Reload firewall
+
+- name: wan | Allow WAN DHCP replies
+  community.openwrt.uci:
+      command: section
+      config: firewall
+      type: rule
+      name: allow_dhcp_renew
+      value:
+          name: Allow-DHCP-Renew
+          src: wan
+          proto: udp
+          dest_port: "68"
+          target: ACCEPT
+          family: ipv4
+      replace: true
+      autocommit: true
+  notify: Fedex | Reload firewall
