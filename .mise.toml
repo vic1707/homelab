@@ -29,12 +29,12 @@ typos = "1.48.0"
 uv = "0.11.28"
 zizmor = "1.26.1"
 
-[plugins]
+[tool_alias]
 zizmor = "asdf:vic1707/asdf-zizmor"
 
 [settings.python]
 compile = false     ## Forces download of precompiled bin
-uv_venv_auto = true
+uv_venv_auto = "create|source"
 
 [hooks]
 postinstall = [
