@@ -1,11 +1,11 @@
 # load with `sops decrypt --extract '["ssh-private-key"]' .secrets/devices/fedex.yml | ssh-add -`
-ssh-private-key: ENC[AES256_GCM,data:DyMvfepJxoHUGdJ8qOJqbLlDg0RzRfw9LiC0F2JO5KdA8S3cgYpxEz6m+m5E1DM+P15U6pnAzKnxTY/VWKzwJ0ZZnE55zA1hJcmV9si27Yp01uPuCG6aS0rRL6tcPZNIxgqWslXhJbJfjEt4PFMJ/vOUNqk+iZyfX5CgJYcOnVzWBKc4ddXOC36p24WDqOLXJDbHF3SsRyE7S85ja8dD8VMZIgPQhZnufgBfvVMSj/YVHzLo9/a/uSSeEpfS+kuSiC0alOqBaSj+E9id1fkSo0GFRG1zUwOW1/uq5lFWwmtL2dGwdQZY//G5uQAZ2wV0+ck8RSz6sb1NnEN7CKpQEw4INGa0FKbWCLWLdcO/rymu/+w9acsM6tTeJAO9ixsIDjns06OjYKdcZ82X6pAB2djdf2e6OEkDdnfS0bgE3qElnBCzHZXP0b7iKJOqQ1P0e286oqONhYcPk4cnRvQJ3wF2eHsDB5AQ0QyaR5YuY5PGz4qtvAfhMDmaXwjEyE2fK2VanXgmcplzJdLUSdGz,iv:maQJQgRHFnYuFdj9ltnYGRIZ+04bqBzC5C+VtlAThTQ=,tag:iandaupwzxrNCR4MJsOKow==,type:str]
+ssh-private-key: ENC[AES256_GCM,data:F9p+JKNbNQm/QefJpN1edYAfLptMghFEo8pp4y0HR3hB1VVQMtXZnZfWXz7iKye5VLsSEneZ7gwoSF1a+BUQiND/tJbnjXyyvdZ+TfPIfvWgQ9D3DuKI+AyayWwz0lB/lX8h5CS6GVvKNlboBQ6UQnbjnuKj76s7yVKpObZXB0COgJVWcb+EoY6DYRh0k5OgsfJ0T29+TYKSoOfSGtpqY4CADVah6KwipvZ2Y3pq6gLLUJ7iKO+BqOVaOWv6W8q6sTwfClw+zlMRvEgTjfysA/y1fpwDK7RRlHlPxxfga+wPjoOTgbwfnoWuXsT0OjOHddcV+2afeM0fSKoaD0L3Vp8bxgejxOUpQFFkXU9G8Qdz+Gj5KuL2sYRwavZuCNtmWVU0zjdoVj99pRSRcOArCkF1Soq9dN2ett9oJmI48lt9CwLfithgV9vm0AbftNUWO2ly++dfG3d1gZjo9xO8MWfQVIRC4HmGPbB7BpItd91v3rCpdnqszyqkD/qj/EqV7Qtx8d5WL5qbzouzGQgU,iv:zNLY9jUq01jbAYjPu5pdAg+JsZNbuUvk+Sly7hhn884=,tag:Ff+11aoFTFWzj+TZuRxCpQ==,type:str]
 
 accounts:
     root:
-        password: ENC[AES256_GCM,data:wekY9sR1Do7StRxpdxzqBmNeOW8H2TJvbksivLPzQPfOE6pXAKumqEOZYCNfaqvt+b0=,iv:R7dO88RLXKQiAeLOQ7rvN6A19CPNuMvPxD/HK/CzuFg=,tag:NBzH14FRVzKUNl0DbJne4w==,type:str]
+        password: ENC[AES256_GCM,data:6c3eqxxH/kbACGbKO+stVlv8tAZHKjqsIIY92cvwp/2HSJ0LDKzMMB0fD1FFTJyZ3qM=,iv:HrFz81wQYMLa1ScJ+EWLp3U/BNBUrmNwTCv4C9fCcbs=,tag:MCtn1m5CBKztenzcfjTbBA==,type:str]
     nut:
-        password: ENC[AES256_GCM,data:mlec+YX0oznHdAcHXWDeXCqVSzklOksydippZD1BGaCm/jBh9glVaWxj5rRNUJRGMaTFLbQnH+T8N4UILA28tw==,iv:85kn6NAkhzY/ulNZ+sLMoODNv4CWgXscxHIMP33dDsg=,tag:olDmgLcz9QnJHNHtg+dt1g==,type:str]
+        password: ENC[AES256_GCM,data:WlLxiesS7osBVvZySRZZfmjOclRLgYemeMC4w8RSv6QM6crya4biRCjjnqNMjbF85R8=,iv:/64G6PcuptpO1SdK7/HiJkzlkGFCqWq3oXVo2s5DgmE=,tag:MOEiAI/1feObr/HHSXXIxA==,type:str]
 
 bbox:
     mac: ENC[AES256_GCM,data:GvSPdbeGboe5BFuGd4WsMvA=,iv:JMP1Ob1v/opBIwqSNWtgybn+m5j1KWXGt5a8S2npeYM=,tag:hPk6OBYyeB3dRvISSDvMDw==,type:str]
@@ -22,6 +22,6 @@ sops:
               -----END AGE ENCRYPTED FILE-----
           recipient: age1q9gm9fgduf5scr3dadl7yarh4wxzlr6psl4zp02k2r9edjngasssd266k4
     encrypted_regex: (?i)(secret|token|password|key|mac)$
-    lastmodified: "2026-07-12T14:01:46Z"
-    mac: ENC[AES256_GCM,data:NBVGoeYsFAaSu1V3yoQwxJZAfkImhDtmGLPmFOcg0dXZXyfKgl0vZnRigLkkSYa8aP4tVp0qrUWU8Z4PJd0bXcM3WZTPw2Y5Vf6SKwf/yybIyUvuZD9I2CkBpfp9HC+N8r8KxUnON//jIxQWlKouIcjllY2gc54u7CNHwpAQnCg=,iv:mUibQW0CXgFPNUQejsgVxBClzXvVgmH6SlK8qjYrpAk=,tag:qjuRnwFNrVV7NE3wFfbTWg==,type:str]
+    lastmodified: "2026-07-12T19:10:21Z"
+    mac: ENC[AES256_GCM,data:6ozMCmdqrrmx7Ln6cW2bp0QlusWjld6Soc9BdLe1G1jS7mMMWjAyIEicVFpr5h4Ast1GrWi1jU3XC5IgXcEQ7OcrnWgP9GqkmH6lgVLyd+etFyvVkV9rDC7H0tav0UJU0FawLRoGKCQT7WzxyohOUqsE+7kJwa+wHa8pY7Wniso=,iv:+L2NVWYFINePko/oGnXA+vY3BGMm1tP5NA8skB2ckfU=,tag:HFSizQrXii6lDCpv7utHSw==,type:str]
     version: 3.13.2
