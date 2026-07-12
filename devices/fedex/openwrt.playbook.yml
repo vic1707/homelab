@@ -5,6 +5,7 @@
 
   vars_files:
       - vars/openwrt.yml
+      - vars/nut.yml
 
   pre_tasks:
       - name: Fedex | Check OpenWrt access

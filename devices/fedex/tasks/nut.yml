@@ -4,27 +4,39 @@
       command: section
       config: nut_server
       type: driver
-      name: eaton_5px
+      name: "{{ nut.ups.name }}"
       value:
-          driver: usbhid-ups
-          port: auto
-          vendorid: "0463"
-          productid: "{{ nut_productid }}"
+          driver: "{{ nut.ups.driver }}"
+          port: "{{ nut.ups.port }}"
+          vendorid: "{{ nut.ups.vendorid }}"
+          productid: "{{ nut.ups.productid }}"
       replace: true
       autocommit: true
   notify: Fedex | Restart NUT server
 
-- name: nut | Listen on every interface
+- name: nut | Remove wildcard listener
+  community.openwrt.uci:
+      command: absent
+      config: nut_server
+      section: all
+      autocommit: true
+  notify: Fedex | Restart NUT server
+
+- name: nut | Listen on internal interfaces
   community.openwrt.uci:
       command: section
       config: nut_server
       type: listen_address
-      name: all
+      name: "{{ nut_listener.name }}"
       value:
-          address: "*"
-          port: "3493"
+          address: "{{ nut_listener.address }}"
+          port: "{{ nut.listen_port }}"
       replace: true
       autocommit: true
+  loop: "{{ nut.listeners }}"
+  loop_control:
+      label: "{{ nut_listener.name }}"
+      loop_var: nut_listener
   notify: Fedex | Restart NUT server
 
 - name: nut | Configure primary monitor user
@@ -34,8 +46,8 @@
       type: user
       name: local_monitor
       value:
-          username: local-monitor
-          password: "{{ nut_password }}"
+          username: "{{ nut.monitor.username }}"
+          password: "{{ nut.monitor.password }}"
           upsmon: master
       replace: true
       autocommit: true
@@ -59,13 +71,13 @@
       command: section
       config: nut_monitor
       type: master
-      name: eaton_5px
+      name: "{{ nut.ups.name }}"
       value:
-          upsname: eaton_5px
+          upsname: "{{ nut.ups.name }}"
           hostname: localhost
           powervalue: "1"
-          username: local-monitor
-          password: "{{ nut_password }}"
+          username: "{{ nut.monitor.username }}"
+          password: "{{ nut.monitor.password }}"
       replace: true
       autocommit: true
   no_log: true

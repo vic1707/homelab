@@ -2,7 +2,10 @@
 
 # On alpine run:
 # > setup-interfaces
+# > rc-service networking restart
 # > echo 1 > /proc/sys/net/ipv6/conf/all/disable_ipv6 # if needed
+# setup-apkrepos
+# > apk add sfdisk e2fsprogs-extra
 
 set -eu
 
@@ -32,7 +35,7 @@ grow_rootfs() {
 	root_part="$(part 2)"
 	for cmd in sfdisk e2fsck resize2fs; do
 		command -v "$cmd" > /dev/null 2>&1 || {
-			printf 'Skipping rootfs grow: %s is missing.\n' "$cmd" >&2
+			printf 'Skipping rootfs grow: %s is missing (on Alpine: apk add sfdisk e2fsprogs-extra).\n' "$cmd" >&2
 			return 0
 		}
 	done
@@ -53,7 +56,7 @@ grow_rootfs() {
 disk="$1"
 [ -b "$disk" ] || die "not a block device: $disk"
 
-for cmd in curl dd gzip mktemp mount; do
+for cmd in wget dd gzip mktemp mount; do
 	command -v "$cmd" > /dev/null 2>&1 || die "$cmd is required"
 done
 
@@ -74,7 +77,7 @@ IFS= read -r answer < /dev/tty
 tmp="$(mktemp "${TMPDIR:-/tmp}/fedex-openwrt.XXXXXX")"
 trap 'rm -f "$tmp"' EXIT INT TERM
 
-curl -fL "$URL" -o "$tmp"
+wget -O "$tmp" "$URL"
 gzip -t "$tmp"
 gzip -dc "$tmp" | dd of="$disk" bs=16M conv=fsync
 sync

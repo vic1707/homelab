@@ -1,0 +1,20 @@
+---
+nut:
+    ups:
+        name: eaton_5px
+        driver: usbhid-ups
+        port: auto
+        vendorid: "0463"
+        productid: ffff
+    listeners:
+        - name: localhost
+          address: 127.0.0.1
+        - name: rescue
+          address: 192.168.255.1
+        - name: lan
+          address: "{{ temp_lan.ipaddr }}"
+    listen_port: "3493"
+    monitor:
+        username: local-monitor
+        password: >-
+            {{ lookup('community.sops.sops', '../../.secrets/devices/fedex.yml', extract='["accounts"]["nut"]["password"]') | trim }}

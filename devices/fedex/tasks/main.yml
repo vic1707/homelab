@@ -6,6 +6,12 @@
       uses_shell: true
   no_log: true
 
+- name: Fedex | Keep firewall enabled
+  community.openwrt.service:
+      name: firewall
+      enabled: true
+      state: started
+
 - name: Fedex | Restrict SSH to rescue
   community.openwrt.uci:
       command: set
