@@ -1,0 +1,83 @@
+---
+- name: nut | Configure Eaton UPS
+  community.openwrt.uci:
+      command: section
+      config: nut_server
+      type: driver
+      name: eaton_5px
+      value:
+          driver: usbhid-ups
+          port: auto
+          vendorid: "0463"
+          productid: "{{ nut_productid }}"
+      replace: true
+      autocommit: true
+  notify: Fedex | Restart NUT server
+
+- name: nut | Listen on every interface
+  community.openwrt.uci:
+      command: section
+      config: nut_server
+      type: listen_address
+      name: all
+      value:
+          address: "*"
+          port: "3493"
+      replace: true
+      autocommit: true
+  notify: Fedex | Restart NUT server
+
+- name: nut | Configure primary monitor user
+  community.openwrt.uci:
+      command: section
+      config: nut_server
+      type: user
+      name: local_monitor
+      value:
+          username: local-monitor
+          password: "{{ nut_password }}"
+          upsmon: master
+      replace: true
+      autocommit: true
+  no_log: true
+  notify: Fedex | Restart NUT server
+
+- name: nut | Configure monitor defaults
+  community.openwrt.uci:
+      command: section
+      config: nut_monitor
+      type: upsmon
+      name: upsmon
+      value:
+          defaultnotify: SYSLOG
+      replace: true
+      autocommit: true
+  notify: Fedex | Restart NUT monitor
+
+- name: nut | Monitor Eaton UPS
+  community.openwrt.uci:
+      command: section
+      config: nut_monitor
+      type: master
+      name: eaton_5px
+      value:
+          upsname: eaton_5px
+          hostname: localhost
+          powervalue: "1"
+          username: local-monitor
+          password: "{{ nut_password }}"
+      replace: true
+      autocommit: true
+  no_log: true
+  notify: Fedex | Restart NUT monitor
+
+- name: nut | Enable services
+  community.openwrt.service:
+      name: "{{ nut_service }}"
+      enabled: true
+      state: started
+  loop:
+      - nut-server
+      - nut-monitor
+  loop_control:
+      loop_var: nut_service

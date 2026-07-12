@@ -4,6 +4,8 @@ ssh-private-key: ENC[AES256_GCM,data:DyMvfepJxoHUGdJ8qOJqbLlDg0RzRfw9LiC0F2JO5Kd
 accounts:
     root:
         password: ENC[AES256_GCM,data:wekY9sR1Do7StRxpdxzqBmNeOW8H2TJvbksivLPzQPfOE6pXAKumqEOZYCNfaqvt+b0=,iv:R7dO88RLXKQiAeLOQ7rvN6A19CPNuMvPxD/HK/CzuFg=,tag:NBzH14FRVzKUNl0DbJne4w==,type:str]
+    nut:
+        password: ENC[AES256_GCM,data:mlec+YX0oznHdAcHXWDeXCqVSzklOksydippZD1BGaCm/jBh9glVaWxj5rRNUJRGMaTFLbQnH+T8N4UILA28tw==,iv:85kn6NAkhzY/ulNZ+sLMoODNv4CWgXscxHIMP33dDsg=,tag:olDmgLcz9QnJHNHtg+dt1g==,type:str]
 
 bbox:
     mac: ENC[AES256_GCM,data:GvSPdbeGboe5BFuGd4WsMvA=,iv:JMP1Ob1v/opBIwqSNWtgybn+m5j1KWXGt5a8S2npeYM=,tag:hPk6OBYyeB3dRvISSDvMDw==,type:str]
@@ -20,6 +22,6 @@ sops:
               -----END AGE ENCRYPTED FILE-----
           recipient: age1q9gm9fgduf5scr3dadl7yarh4wxzlr6psl4zp02k2r9edjngasssd266k4
     encrypted_regex: (?i)(secret|token|password|key|mac)$
-    lastmodified: "2026-07-11T23:13:54Z"
-    mac: ENC[AES256_GCM,data:mTEb/aAJo1VwM3V5i49iJdNLUnWX/n5JWdATMc41CsoIN4QIJCcQAwMImB3MNFachvysV0sDLt3CeZ29Pa1Nd7NKFZJuPwjtdroyf3/AGkyjZR8w+EVLVK61npOGh+ZeLdKZG9R57W7YweHaZA84E/ecbfO67dyYxnZz6qGXsYc=,iv:MfP6vbNaBgbyKBn+dhJGPfWS5RDuv5YiXcRbNgeDfmo=,tag:aVkVNHwaTXWW05A1pBP0iQ==,type:str]
+    lastmodified: "2026-07-12T14:01:46Z"
+    mac: ENC[AES256_GCM,data:NBVGoeYsFAaSu1V3yoQwxJZAfkImhDtmGLPmFOcg0dXZXyfKgl0vZnRigLkkSYa8aP4tVp0qrUWU8Z4PJd0bXcM3WZTPw2Y5Vf6SKwf/yybIyUvuZD9I2CkBpfp9HC+N8r8KxUnON//jIxQWlKouIcjllY2gc54u7CNHwpAQnCg=,iv:mUibQW0CXgFPNUQejsgVxBClzXvVgmH6SlK8qjYrpAk=,tag:qjuRnwFNrVV7NE3wFfbTWg==,type:str]
     version: 3.13.2

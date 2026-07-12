@@ -21,6 +21,10 @@ bbox_wan:
 root_password: >-
     {{ lookup('community.sops.sops', '../../.secrets/devices/fedex.yml', extract='["accounts"]["root"]["password"]') | trim }}
 
+nut_password: >-
+    {{ lookup('community.sops.sops', '../../.secrets/devices/fedex.yml', extract='["accounts"]["nut"]["password"]') | trim }}
+nut_productid: ffff
+
 temp_lan:
     device: "{{ ports.sfp_7 }}"
     ipaddr: 192.168.1.1

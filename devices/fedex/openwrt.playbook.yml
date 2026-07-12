@@ -20,6 +20,9 @@
       - name: Fedex | Configure temporary LAN
         ansible.builtin.import_tasks: tasks/temp_lan.yml
 
+      - name: Fedex | Configure NUT
+        ansible.builtin.import_tasks: tasks/nut.yml
+
   handlers:
       - name: Fedex | Reload network
         community.openwrt.service:
@@ -44,4 +47,14 @@
       - name: Fedex | Restart uhttpd
         community.openwrt.service:
             name: uhttpd
+            state: restarted
+
+      - name: Fedex | Restart NUT server
+        community.openwrt.service:
+            name: nut-server
+            state: restarted
+
+      - name: Fedex | Restart NUT monitor
+        community.openwrt.service:
+            name: nut-monitor
             state: restarted
