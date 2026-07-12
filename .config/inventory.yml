@@ -2,7 +2,7 @@
 openwrt:
     hosts:
         bacon:
-            ansible_host: bacon.lan
+            ansible_host: "{{ lookup('env', 'BACON_HOST') | default('bacon.lan', true) }}"
             ansible_user: root
             ansible_connection: ssh
             ansible_ssh_transfer_method: scp
