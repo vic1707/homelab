@@ -159,10 +159,11 @@ jobs:
           tag="openwrt-$device-$version"
           title="OpenWrt $device $version"
 
-          if ! gh release view "$tag" > /dev/null 2>&1; then
-            gh release create "$tag" \
-              --title "$title" \
-              --notes "Custom OpenWrt image for $device on $version."
+          if gh release view "$tag" > /dev/null 2>&1; then
+            gh release delete "$tag" --yes --cleanup-tag
           fi
+          gh release create "$tag" \
+            --title "$title" \
+            --notes "Custom OpenWrt image for $device on $version."
 
           gh release upload "$tag" "$image" --clobber
