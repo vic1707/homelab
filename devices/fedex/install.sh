@@ -18,7 +18,29 @@ die() {
 
 usage() {
 	printf 'usage: curl -fsSL https://raw.githubusercontent.com/vic1707/homelab/main/devices/fedex/install.sh | sh -s -- /dev/nvme0n1\n'
-	printf 'usage: wget -qO- https://raw.githubusercontent.com/vic1707/homelab/main/devices/fedex/install.sh | sh -s -- /dev/nvme0n1'
+	printf 'usage: wget -qO- https://raw.githubusercontent.com/vic1707/homelab/main/devices/fedex/install.sh | sh -s -- /dev/nvme0n1\n'
+}
+
+part() {
+	case "$disk" in
+		*mmcblk* | *nvme*) printf '%sp%s\n' "$disk" "$1" ;;
+		*) printf '%s%s\n' "$disk" "$1" ;;
+	esac
+}
+
+grow_rootfs() {
+	root_part="$(part 2)"
+	for cmd in sfdisk e2fsck resize2fs; do
+		command -v "$cmd" > /dev/null 2>&1 || {
+			printf 'Skipping rootfs grow: %s is missing.\n' "$cmd" >&2
+			return 0
+		}
+	done
+
+	printf ',+\n' | sfdisk -N 2 "$disk"
+	partprobe "$disk" > /dev/null 2>&1 || blockdev --rereadpt "$disk" > /dev/null 2>&1 || true
+	e2fsck -f -y "$root_part"
+	resize2fs "$root_part"
 }
 
 [ "${1:-}" != "" ] || {
@@ -55,6 +77,8 @@ trap 'rm -f "$tmp"' EXIT INT TERM
 curl -fL "$URL" -o "$tmp"
 gzip -t "$tmp"
 gzip -dc "$tmp" | dd of="$disk" bs=16M conv=fsync
+sync
+grow_rootfs
 sync
 
 printf 'Installed %s to %s. Reboot, then SSH to root@192.168.255.1 on RJ45-2.\n' "$IMAGE" "$disk"
