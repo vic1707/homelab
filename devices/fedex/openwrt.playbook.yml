@@ -50,6 +50,18 @@
             name: uhttpd
             state: restarted
 
+      - name: Fedex | Replay NUT USB hotplug
+        community.openwrt.command:
+            cmd: |
+                for vendor_file in /sys/bus/usb/devices/*/idVendor; do
+                    read -r vendorid < "$vendor_file"
+                    device="${vendor_file%/idVendor}"
+                    read -r productid < "$device/idProduct"
+                    [ "$vendorid:$productid" = "{{ nut.ups.vendorid }}:{{ nut.ups.productid }}" ] || continue
+                    printf '%s\n' add > "$device/uevent"
+                done
+            uses_shell: true
+
       - name: Fedex | Restart NUT server
         community.openwrt.service:
             name: nut-server

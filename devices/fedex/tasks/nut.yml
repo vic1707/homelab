@@ -12,7 +12,9 @@
           productid: "{{ nut.ups.productid }}"
       replace: true
       autocommit: true
-  notify: Fedex | Restart NUT server
+  notify:
+      - Fedex | Replay NUT USB hotplug
+      - Fedex | Restart NUT server
 
 - name: nut | Remove wildcard listener
   community.openwrt.uci:
