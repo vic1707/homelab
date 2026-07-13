@@ -21,7 +21,7 @@ require_nonempty() {
 	done
 }
 
-for cmd in curl envsubst find jq podman; do
+for cmd in curl envsubst find jq podman shasum; do
 	command -v "$cmd" > /dev/null 2>&1 || die "$cmd is required"
 done
 
@@ -97,6 +97,31 @@ mkdir -p "$files/etc/config" "$files/etc/dropbear" "$build_bin" "$out"
 cp -a "$ROOT/$OPENWRT_BASE_FILES"/. "$files"/
 if [ -d "$preset_dir/files" ]; then
 	cp -a "$preset_dir/files"/. "$files"/
+fi
+if [ "${OPENWRT_EXPAND_ROOT:-0}" = "1" ]; then
+	expand_root_url="https://openwrt.org/_export/code/docs/guide-user/advanced/expand_root?codeblock=0"
+	expand_root_sha256="4ac1431a833c37e0a8f298f9d50eeeddf35ec0b8513a296892ec6ad6a9d93aba"
+	expand_root_source="$work/expand-root.sh"
+	curl -fsSL -A "" "$expand_root_url" > "$expand_root_source"
+	[ "$(shasum -a 256 "$expand_root_source" | cut -d ' ' -f 1)" = "$expand_root_sha256" ] \
+		|| die "expand-root checksum mismatch"
+	mkdir -p "$files/etc/uci-defaults"
+	expand_root="$files/etc/uci-defaults/60-expand-root"
+	expand_root_script="$(< "$expand_root_source")"
+	cat > "$expand_root" <<EOF
+#!/bin/sh
+
+set -eu
+
+if [ -e /etc/uci-defaults/70-rootpt-resize ] && [ -e /etc/uci-defaults/80-rootfs-resize ]; then
+	exit 0
+fi
+
+$expand_root_script
+
+sh /etc/uci-defaults/70-rootpt-resize || true
+EOF
+	chmod 0755 "$expand_root"
 fi
 while IFS= read -r file; do
 	cp -p "$file" "$file.tmp"
