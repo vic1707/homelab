@@ -1,0 +1,20 @@
+#!/bin/sh
+
+set -eu
+
+if [ -e /etc/uci-defaults/70-rootpt-resize ] \
+	&& [ -e /etc/uci-defaults/80-rootfs-resize ]; then
+	exit 0
+fi
+
+url="https://openwrt.org/_export/code/docs/guide-user/advanced/expand_root?codeblock=0"
+checksum="4ac1431a833c37e0a8f298f9d50eeeddf35ec0b8513a296892ec6ad6a9d93aba"
+script="$(mktemp /tmp/expand-root.XXXXXX)"
+trap 'rm -f "$script"' EXIT
+
+wget -U "" -O "$script" "$url"
+printf '%s  %s\n' "$checksum" "$script" | sha256sum -c -
+# shellcheck disable=SC1090
+. "$script"
+
+sh /etc/uci-defaults/70-rootpt-resize || true
