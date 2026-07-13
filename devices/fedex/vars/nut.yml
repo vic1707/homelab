@@ -9,8 +9,6 @@ nut:
     listeners:
         - name: localhost
           address: 127.0.0.1
-        - name: rescue
-          address: 192.168.255.1
         - name: lan
           address: "{{ temp_lan.ipaddr }}"
     listen_port: "3493"
