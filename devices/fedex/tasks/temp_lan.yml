@@ -26,6 +26,8 @@
           start: "{{ temp_lan.dhcp_start }}"
           limit: "{{ temp_lan.dhcp_limit }}"
           leasetime: "{{ temp_lan.dhcp_leasetime }}"
+          dhcp_option:
+              - "6,{{ temp_lan.ipaddr }}"
       replace: true
       autocommit: true
   notify: Fedex | Restart dnsmasq

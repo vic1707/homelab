@@ -49,6 +49,10 @@
 !devices/*/*.playbook.yml
 !devices/*/tasks/
 !devices/*/tasks/**
+!devices/*/templates/
+!devices/*/templates/**
+!devices/*/filter_plugins/
+!devices/*/filter_plugins/*.py
 !devices/*/vars/
 !devices/*/vars/**
 !devices/*/files/
