@@ -58,9 +58,61 @@
       value:
           name: lan
           network: lan
-          input: ACCEPT
+          input: REJECT
           output: ACCEPT
           forward: REJECT
+      replace: true
+      autocommit: true
+  notify: Fedex | Reload firewall
+
+- name: temp_lan | Allow LAN DHCP
+  community.openwrt.uci:
+      command: section
+      config: firewall
+      type: rule
+      name: allow_lan_dhcp
+      value:
+          name: Allow-LAN-DHCP
+          src: lan
+          proto: udp
+          src_port: "68"
+          dest_port: "67"
+          target: ACCEPT
+          family: ipv4
+      replace: true
+      autocommit: true
+  notify: Fedex | Reload firewall
+
+- name: temp_lan | Allow LAN DNS
+  community.openwrt.uci:
+      command: section
+      config: firewall
+      type: rule
+      name: allow_lan_dns
+      value:
+          name: Allow-LAN-DNS
+          src: lan
+          proto:
+              - tcp
+              - udp
+          dest_port: "53"
+          target: ACCEPT
+      replace: true
+      autocommit: true
+  notify: Fedex | Reload firewall
+
+- name: temp_lan | Allow LAN NUT status
+  community.openwrt.uci:
+      command: section
+      config: firewall
+      type: rule
+      name: allow_lan_nut
+      value:
+          name: Allow-LAN-NUT
+          src: lan
+          proto: tcp
+          dest_port: "3493"
+          target: ACCEPT
       replace: true
       autocommit: true
   notify: Fedex | Reload firewall
