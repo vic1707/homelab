@@ -6,6 +6,7 @@
   vars_files:
       - vars/openwrt.yml
       - vars/nut.yml
+      - vars/adguardhome.yml
 
   pre_tasks:
       - name: Fedex | Check OpenWrt access
@@ -20,6 +21,9 @@
 
       - name: Fedex | Configure temporary LAN
         ansible.builtin.import_tasks: tasks/temp_lan.yml
+
+      - name: Fedex | Configure AdGuard Home
+        ansible.builtin.import_tasks: tasks/adguardhome.yml
 
       - name: Fedex | Configure NUT
         ansible.builtin.import_tasks: tasks/nut.yml

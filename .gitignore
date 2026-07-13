@@ -49,6 +49,8 @@
 !devices/*/*.playbook.yml
 !devices/*/tasks/
 !devices/*/tasks/**
+!devices/*/templates/
+!devices/*/templates/**
 !devices/*/vars/
 !devices/*/vars/**
 !devices/*/files/

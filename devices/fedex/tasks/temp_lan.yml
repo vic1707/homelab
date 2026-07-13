@@ -117,6 +117,44 @@
       autocommit: true
   notify: Fedex | Reload firewall
 
+- name: temp_lan | Redirect LAN DNS to AdGuard Home
+  community.openwrt.uci:
+      command: section
+      config: firewall
+      type: redirect
+      name: redirect_lan_dns
+      value:
+          name: Redirect-LAN-DNS
+          src: lan
+          proto:
+              - tcp
+              - udp
+          src_dport: "53"
+          dest_port: "53"
+          target: DNAT
+      replace: true
+      autocommit: true
+  notify: Fedex | Reload firewall
+
+- name: temp_lan | Block encrypted DNS bypass
+  community.openwrt.uci:
+      command: section
+      config: firewall
+      type: rule
+      name: block_lan_dot
+      value:
+          name: Block-LAN-DoT-DoQ
+          src: lan
+          dest: wan
+          proto:
+              - tcp
+              - udp
+          dest_port: "853"
+          target: REJECT
+      replace: true
+      autocommit: true
+  notify: Fedex | Reload firewall
+
 - name: temp_lan | Allow LAN to WAN
   community.openwrt.uci:
       command: section

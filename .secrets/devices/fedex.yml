@@ -6,6 +6,8 @@ accounts:
         password: ENC[AES256_GCM,data:6c3eqxxH/kbACGbKO+stVlv8tAZHKjqsIIY92cvwp/2HSJ0LDKzMMB0fD1FFTJyZ3qM=,iv:HrFz81wQYMLa1ScJ+EWLp3U/BNBUrmNwTCv4C9fCcbs=,tag:MCtn1m5CBKztenzcfjTbBA==,type:str]
     nut:
         password: ENC[AES256_GCM,data:WlLxiesS7osBVvZySRZZfmjOclRLgYemeMC4w8RSv6QM6crya4biRCjjnqNMjbF85R8=,iv:/64G6PcuptpO1SdK7/HiJkzlkGFCqWq3oXVo2s5DgmE=,tag:MOEiAI/1feObr/HHSXXIxA==,type:str]
+    adguardhome:
+        password: ENC[AES256_GCM,data:XEqZwWEANrAQ+WVX0e9XHjm7GyZmJuJUOFun1crd6kXU9nb1cxn4+JPBs3WGWWgvaD8=,iv:tW542yrfsorNcW5srczu3+IFG03pMYZgkLU4ktLzNTQ=,tag:MQ7wkuj8aYEjoAnUsPakrQ==,type:str]
 
 bbox:
     mac: ENC[AES256_GCM,data:GvSPdbeGboe5BFuGd4WsMvA=,iv:JMP1Ob1v/opBIwqSNWtgybn+m5j1KWXGt5a8S2npeYM=,tag:hPk6OBYyeB3dRvISSDvMDw==,type:str]
@@ -22,6 +24,6 @@ sops:
               -----END AGE ENCRYPTED FILE-----
           recipient: age1q9gm9fgduf5scr3dadl7yarh4wxzlr6psl4zp02k2r9edjngasssd266k4
     encrypted_regex: (?i)(secret|token|password|key|mac)$
-    lastmodified: "2026-07-12T19:10:21Z"
-    mac: ENC[AES256_GCM,data:6ozMCmdqrrmx7Ln6cW2bp0QlusWjld6Soc9BdLe1G1jS7mMMWjAyIEicVFpr5h4Ast1GrWi1jU3XC5IgXcEQ7OcrnWgP9GqkmH6lgVLyd+etFyvVkV9rDC7H0tav0UJU0FawLRoGKCQT7WzxyohOUqsE+7kJwa+wHa8pY7Wniso=,iv:+L2NVWYFINePko/oGnXA+vY3BGMm1tP5NA8skB2ckfU=,tag:HFSizQrXii6lDCpv7utHSw==,type:str]
+    lastmodified: "2026-07-13T14:15:13Z"
+    mac: ENC[AES256_GCM,data:zxwpA2cRduE4LA5RRh+2gu6G0JZMkYUks4nn3g4M6RcAB1iR7MutKW7ktiOd3WQzEs9ZskvaX2HP+fLHHx7YmejuaW3pcKWDsE1GJoDBjrwx5CBl5NCOT8871zoVotczuMhsEGlvmr7lgLViMceDCVp6Mz0NndyJe+qVzr17UfM=,iv:DCdvY14lrbKYS4RgX52M1RAlJHPz3cmzXgFHl1kF7l4=,tag:4kgVlJN15STGeHn7n15Trg==,type:str]
     version: 3.13.2

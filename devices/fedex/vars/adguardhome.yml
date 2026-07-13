@@ -1,0 +1,5 @@
+---
+adguardhome:
+    username: admin
+    password: >-
+        {{ lookup('community.sops.sops', '../../.secrets/devices/fedex.yml', extract='["accounts"]["adguardhome"]["password"]') | trim }}

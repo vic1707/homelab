@@ -1,0 +1,48 @@
+---
+- name: adguardhome | Create configuration directory
+  community.openwrt.file:
+      path: /etc/adguardhome
+      state: directory
+      owner: adguardhome
+      group: adguardhome
+      mode: "0700"
+
+- name: adguardhome | Configure AdGuard Home
+  community.openwrt.template:
+      src: adguardhome.yaml.j2
+      dest: /etc/adguardhome/adguardhome.yaml
+      owner: adguardhome
+      group: adguardhome
+      mode: "0600"
+      validate: /usr/bin/AdGuardHome --check-config --config %s
+  register: adguardhome_config
+  no_log: true
+
+- name: adguardhome | Move dnsmasq DNS to local backend port
+  community.openwrt.uci:
+      command: set
+      config: dhcp
+      section: "@dnsmasq[0]"
+      option: port
+      value: "5353"
+      autocommit: true
+  notify: Fedex | Restart dnsmasq
+
+- name: adguardhome | Keep dnsmasq queries local
+  community.openwrt.uci:
+      command: set
+      config: dhcp
+      section: "@dnsmasq[0]"
+      option: noresolv
+      value: "1"
+      autocommit: true
+  notify: Fedex | Restart dnsmasq
+
+- name: adguardhome | Apply dnsmasq port change
+  ansible.builtin.meta: flush_handlers
+
+- name: adguardhome | Enable AdGuard Home
+  community.openwrt.service:
+      name: adguardhome
+      enabled: true
+      state: "{{ 'restarted' if adguardhome_config.changed else 'started' }}"
