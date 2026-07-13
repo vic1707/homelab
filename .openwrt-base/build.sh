@@ -108,7 +108,7 @@ if [ "${OPENWRT_EXPAND_ROOT:-0}" = "1" ]; then
 	mkdir -p "$files/etc/uci-defaults"
 	expand_root="$files/etc/uci-defaults/60-expand-root"
 	expand_root_script="$(< "$expand_root_source")"
-	cat > "$expand_root" <<EOF
+	cat > "$expand_root" << EOF
 #!/bin/sh
 
 set -eu
