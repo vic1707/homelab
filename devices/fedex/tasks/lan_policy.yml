@@ -1,0 +1,98 @@
+---
+- name: lan_policy | Configure firewall zone
+  community.openwrt.uci:
+      command: section
+      config: firewall
+      type: zone
+      name: "{{ lan_policy.zone }}"
+      value:
+          name: "{{ lan_policy.zone }}"
+          network: "{{ lan_policy.networks }}"
+          input: REJECT
+          output: ACCEPT
+          forward: REJECT
+      replace: true
+      autocommit: true
+  notify: Fedex | Reload firewall
+
+- name: lan_policy | Allow DHCP
+  community.openwrt.uci:
+      command: section
+      config: firewall
+      type: rule
+      name: allow_lan_dhcp
+      value:
+          name: Allow-LAN-DHCP
+          src: "{{ lan_policy.zone }}"
+          proto: udp
+          src_port: "68"
+          dest_port: "67"
+          target: ACCEPT
+          family: ipv4
+      replace: true
+      autocommit: true
+  notify: Fedex | Reload firewall
+
+- name: lan_policy | Allow DNS
+  community.openwrt.uci:
+      command: section
+      config: firewall
+      type: rule
+      name: allow_lan_dns
+      value:
+          name: Allow-LAN-DNS
+          src: "{{ lan_policy.zone }}"
+          proto:
+              - tcp
+              - udp
+          dest_port: "53"
+          target: ACCEPT
+      replace: true
+      autocommit: true
+  notify: Fedex | Reload firewall
+
+- name: lan_policy | Allow NUT status
+  community.openwrt.uci:
+      command: section
+      config: firewall
+      type: rule
+      name: allow_lan_nut
+      value:
+          name: Allow-LAN-NUT
+          src: "{{ lan_policy.zone }}"
+          proto: tcp
+          dest_port: "3493"
+          target: ACCEPT
+      replace: true
+      autocommit: true
+  notify: Fedex | Reload firewall
+
+- name: lan_policy | Allow ping
+  community.openwrt.uci:
+      command: section
+      config: firewall
+      type: rule
+      name: allow_lan_ping
+      value:
+          name: Allow-LAN-Ping
+          src: "{{ lan_policy.zone }}"
+          proto: icmp
+          icmp_type: echo-request
+          target: ACCEPT
+          family: ipv4
+      replace: true
+      autocommit: true
+  notify: Fedex | Reload firewall
+
+- name: lan_policy | Allow WAN access
+  community.openwrt.uci:
+      command: section
+      config: firewall
+      type: forwarding
+      name: lan_wan
+      value:
+          src: "{{ lan_policy.zone }}"
+          dest: wan
+      replace: true
+      autocommit: true
+  notify: Fedex | Reload firewall

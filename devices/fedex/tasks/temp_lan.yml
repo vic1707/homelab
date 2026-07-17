@@ -50,32 +50,3 @@
       label: "{{ static_host.name }}"
       loop_var: static_host
   notify: Fedex | Restart dnsmasq
-
-- name: temp_lan | Configure LAN firewall zone
-  community.openwrt.uci:
-      command: section
-      config: firewall
-      type: zone
-      name: lan
-      value:
-          name: lan
-          network: lan
-          input: ACCEPT
-          output: ACCEPT
-          forward: REJECT
-      replace: true
-      autocommit: true
-  notify: Fedex | Reload firewall
-
-- name: temp_lan | Allow LAN to WAN
-  community.openwrt.uci:
-      command: section
-      config: firewall
-      type: forwarding
-      name: lan_wan
-      value:
-          src: lan
-          dest: wan
-      replace: true
-      autocommit: true
-  notify: Fedex | Reload firewall
