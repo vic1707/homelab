@@ -36,7 +36,8 @@ temp_lan:
           mac: "D0:65:B3:B1:60:71"
           ip: 192.168.1.218
 
-lan_policy:
-    zone: lan
-    networks:
-        - lan
+firewall_zones:
+    - name: lan
+      policy: policies/lan.yml
+      members:
+          - lan

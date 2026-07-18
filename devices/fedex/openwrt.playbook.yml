@@ -22,8 +22,8 @@
       - name: Fedex | Configure temporary LAN
         ansible.builtin.import_tasks: tasks/temp_lan.yml
 
-      - name: Fedex | Configure LAN policy
-        ansible.builtin.import_tasks: tasks/lan_policy.yml
+      - name: Fedex | Configure firewall zones
+        ansible.builtin.import_tasks: tasks/zones.yml
 
       - name: Fedex | Configure AdGuard Home
         ansible.builtin.import_tasks: tasks/adguardhome.yml

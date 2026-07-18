@@ -1,0 +1,7 @@
+---
+- name: zones | Apply firewall policies
+  ansible.builtin.include_tasks: "{{ firewall_zone.policy }}"
+  loop: "{{ firewall_zones }}"
+  loop_control:
+      label: "{{ firewall_zone.name }}"
+      loop_var: firewall_zone
