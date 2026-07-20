@@ -5,6 +5,7 @@
 
   vars_files:
       - vars/openwrt.yml
+      - vars/static_hosts.yml
       - vars/nut.yml
       - vars/adguardhome.yml
 
@@ -21,6 +22,9 @@
 
       - name: Fedex | Configure temporary LAN
         ansible.builtin.import_tasks: tasks/temp_lan.yml
+
+      - name: Fedex | Configure static DHCP hosts
+        ansible.builtin.import_tasks: tasks/static_hosts.yml
 
       - name: Fedex | Configure firewall zones
         ansible.builtin.import_tasks: tasks/zones.yml

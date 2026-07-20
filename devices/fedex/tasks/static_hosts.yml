@@ -1,0 +1,18 @@
+---
+- name: static_hosts | Configure DHCP hosts
+  community.openwrt.uci:
+      command: section
+      config: dhcp
+      type: host
+      name: "{{ static_host.name }}"
+      value:
+          name: "{{ static_host.name }}"
+          mac: "{{ static_host.mac }}"
+          dns: "1"
+      replace: true
+      autocommit: true
+  loop: "{{ static_hosts }}"
+  loop_control:
+      label: "{{ static_host.name }}"
+      loop_var: static_host
+  notify: Fedex | Restart dnsmasq

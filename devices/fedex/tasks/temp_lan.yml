@@ -31,22 +31,3 @@
       replace: true
       autocommit: true
   notify: Fedex | Restart dnsmasq
-
-- name: temp_lan | Configure static DHCP hosts
-  community.openwrt.uci:
-      command: section
-      config: dhcp
-      type: host
-      name: "{{ static_host.name }}"
-      value:
-          name: "{{ static_host.name }}"
-          mac: "{{ static_host.mac }}"
-          ip: "{{ static_host.ip }}"
-          dns: "1"
-      replace: true
-      autocommit: true
-  loop: "{{ temp_lan.static_hosts }}"
-  loop_control:
-      label: "{{ static_host.name }}"
-      loop_var: static_host
-  notify: Fedex | Restart dnsmasq
