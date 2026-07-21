@@ -36,3 +36,18 @@
       replace: false
       autocommit: true
   notify: Fedex | Restart uhttpd
+
+- name: Fedex | Ensure network globals section exists
+  community.openwrt.uci:
+      command: set
+      key: network.globals
+      value: globals
+      autocommit: false
+
+- name: Fedex | Disable packet steering
+  community.openwrt.uci:
+      command: set
+      key: network.globals.packet_steering
+      value: "0"
+      autocommit: true
+  notify: Fedex | Reload packet steering

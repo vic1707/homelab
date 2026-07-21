@@ -41,6 +41,11 @@
             name: network
             state: reloaded
 
+      - name: Fedex | Reload packet steering
+        community.openwrt.service:
+            name: packet_steering
+            state: reloaded
+
       - name: Fedex | Reload firewall
         community.openwrt.service:
             name: firewall
