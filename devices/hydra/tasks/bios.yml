@@ -1,0 +1,48 @@
+---
+- name: bios | Configure BIOS attributes
+  community.general.redfish_config:
+      category: Systems
+      command: [SetBiosAttributes]
+      bios_attributes:
+          Bootmodeselect: UEFI
+          SVMMode: Enabled # virtualization
+          IOMMU: Enabled # Required for PCIe passthrough
+          Above4GDecoding: Enabled
+          # ReBAR is unsupported by H11SSL-I firmware
+          SR-IOVSupport: Enabled
+          ACSEnable: Enable
+          SMEE: Enabled
+
+          SMTMode: Auto
+          CorePerformanceBoost: Auto
+          GlobalC-stateControl: Auto
+          DeterminismSlider: Performance # Auto, Power, Performance
+          cTDPControl: Auto
+          MemoryClock: Auto
+          Memoryinterleaving: Auto
+          Memoryinterleavingsize: Auto
+
+          VGAPriority: Onboard
+          TargetLinkSpeed: Auto
+          PCIeSpreadSpectrum: Disabled # EMI reduction.
+          NoSnoop: Enabled
+          CPUSLOT1PCI-E3.0X8Bifurcation: Auto # bottom slot
+          CPUSLOT2PCI-E3.0X16Bifurcation: x4x4x4x4
+          CPUSLOT3PCI-E3.0X8Bifurcation: Auto
+          CPUSLOT4PCI-E3.0X16Bifurcation: x4x4x4x4
+          CPUSLOT5PCI-E3.0X8Bifurcation: Auto
+          CPUSLOT6PCI-E3.0X16Bifurcation: Auto # top slot
+
+          NetworkStack: Disabled
+
+          'WaitFor"F1"IfError': Disabled
+          PowerButtonFunction: Instant Off
+          WatchDogFunction: Disabled # Enable only with configured HA/fencing.
+          RestoreonACPowerLoss: Last State
+          SMBIOSEventLog: Enabled
+
+# - name: bios | Enable Secure Boot
+#   community.general.redfish_config:
+#       category: Systems
+#       command: [SetSecureBoot]
+#       secure_boot_enable: true

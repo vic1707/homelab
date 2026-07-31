@@ -1,0 +1,53 @@
+---
+- name: Manage Hydra BMC over Redfish
+  hosts: hydra_ipmi
+  connection: local
+  gather_facts: false
+
+  vars_files:
+      - vars/ipmi.yml
+
+  module_defaults:
+      community.general.redfish_info: &redfish_defaults
+          baseuri: "{{ ansible_host }}"
+          username: "{{ ipmi_username }}"
+          password: "{{ ipmi_password }}"
+          validate_certs: false
+      community.general.redfish_config:
+          <<: *redfish_defaults
+      community.general.redfish_command:
+          <<: *redfish_defaults
+      ansible.builtin.uri:
+          url_username: "{{ ipmi_username }}"
+          url_password: "{{ ipmi_password }}"
+          force_basic_auth: true
+          validate_certs: false
+          return_content: true
+
+  pre_tasks:
+      - name: Hydra IPMI | Validate credentials
+        ansible.builtin.assert:
+            that:
+                - ipmi_username | length > 0
+                - ipmi_factory_password | length >= 8
+                - ipmi_password | length >= 12
+                - ipmi_password | length <= 20
+            fail_msg: >-
+                BMC credentials must be present and the desired password must contain 12-20 characters.
+        no_log: true
+        tags: always
+
+  tasks:
+      - name: Hydra IPMI | Configure BMC
+        ansible.builtin.import_tasks: tasks/bmc.yml
+        tags: bmc
+
+      - name: Hydra IPMI | Configure fans
+        ansible.builtin.import_tasks: tasks/bmc/fans.yml
+        vars:
+            fan_mode: Optimal # Standard, FullSpeed, Optimal, or HeavyIO.
+        tags: fans
+
+      - name: Hydra IPMI | Configure BIOS
+        ansible.builtin.import_tasks: tasks/bios.yml
+        tags: bios

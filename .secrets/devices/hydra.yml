@@ -1,0 +1,20 @@
+bmc:
+    username: ADMIN
+    factory_password: ENC[AES256_GCM,data:i9zq12QdZ6nJng==,iv:fXO/cGlBJbf4vTUjHAWhbhOH61q/UHbN8JSPXLKh6DE=,tag:zdi/2Dhq+2q0pVJWRj74RQ==,type:str]
+    password: ENC[AES256_GCM,data:NtWj+dJb8RergyXsVA68a8+9+cg=,iv:jj+8PtWn3/zpwYh9YmJNShA1/I0GaZobDCT/5KaMsAM=,tag:w+pFIDz1J8MYDsp0WzcTQA==,type:str]
+
+sops:
+    age:
+        - enc: |
+              -----BEGIN AGE ENCRYPTED FILE-----
+              YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBEVkc1RUluMXd6ME5idzgx
+              TnBCeGNaU2FvWTBkRFNDMkUvMFBNaWY2Z3d3CjNFazdwMUJvZ3JodVZJcE90YVBo
+              eXFyMnRxd3FSYTdDNUxkTXpZa2E5ckEKLS0tIEM2LzBvN0FMZWRHSnpUN3lQSHJz
+              ZG9GM0ZUa1ZkTCs5b3o1VkhMRUZKUHMK1unvzOnD4uyna8Ev3gRBDwRQmlawuruu
+              EruUf+tHPa7U5EF0aKwh/GNs0XM9EFwUXwoucU1R8LdumUhIFX6DMw==
+              -----END AGE ENCRYPTED FILE-----
+          recipient: age1q9gm9fgduf5scr3dadl7yarh4wxzlr6psl4zp02k2r9edjngasssd266k4
+    encrypted_regex: (?i)(secret|token|password|key|mac)$
+    lastmodified: "2026-08-01T13:30:18Z"
+    mac: ENC[AES256_GCM,data:AdF+7KTj4I/d3S21viReWvqeay4zhoMR4J9woeSrGIm8jKvenm407+vJMuZ8uznK+EqEEot119mYGjpeUTHTR3ZErslCr5tCNTtHnA4a8ws5dXE4F4mhdrPiNCz+Y9RdXWwkf4TKOsEwlczYycn+qHK9O0PaaVX6YAfyI6RXXsM=,iv:50d+4mc3LWx+mdVdEeZ9NAx75/6eum1Jer9UXvN23q0=,tag:i2gJJFjPKsMzfxkmUXLIGg==,type:str]
+    version: 3.13.2

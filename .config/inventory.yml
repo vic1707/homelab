@@ -14,3 +14,9 @@ openwrt:
             ansible_connection: ssh
             ansible_ssh_transfer_method: scp
             ansible_scp_extra_args: "-O"
+
+ipmi:
+    hosts:
+        hydra_ipmi:
+            ansible_host: "{{ lookup('env', 'HYDRA_IPMI_HOST') | default('hydra_ipmi.lan', true) }}"
+            ansible_python_interpreter: "{{ ansible_playbook_python }}"

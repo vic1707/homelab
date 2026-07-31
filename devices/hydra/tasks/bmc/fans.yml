@@ -1,0 +1,16 @@
+---
+- name: bmc | fans | Read fan mode
+  ansible.builtin.uri:
+      url: https://{{ ansible_host }}/redfish/v1/Managers/1/FanMode
+  register: ipmi_current_fan_mode
+
+- name: bmc | fans | Configure fan mode
+  ansible.builtin.uri:
+      url: https://{{ ansible_host }}/redfish/v1/Managers/1/FanMode
+      method: PATCH
+      body_format: json
+      body:
+          Mode: "{{ fan_mode }}"
+      status_code: [200, 204]
+  when: ipmi_current_fan_mode.json.Mode != fan_mode
+  changed_when: true

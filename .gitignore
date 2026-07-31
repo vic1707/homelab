@@ -11,6 +11,7 @@
 
 !.custom-containers/
 !.custom-containers/import-libs.sh
+!.custom-containers/*.containerfile
 
 !.openwrt-base/
 !.openwrt-base/build.sh
@@ -57,6 +58,7 @@
 !devices/*/vars/**
 !devices/*/files/
 !devices/*/files/**
+!devices/hydra/sum.containerfile
 
 !domains/
 !domains/bofzilla.dev

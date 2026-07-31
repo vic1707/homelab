@@ -20,3 +20,12 @@ static_hosts:
 
     - name: ecovacs
       mac: "50:31:23:79:3D:B9"
+
+    - name: hydra_ipmi
+      mac: "AC:1F:6B:E6:76:D2"
+
+    # - name: hydra_1G_top
+    #   mac: "AC:1F:6B:E6:79:D4"
+
+    # - name: hydra_1G_btm
+    #   mac: "AC:1F:6B:E6:79:D5"

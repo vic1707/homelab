@@ -1,0 +1,109 @@
+---
+- name: Boot Hydra into netboot.xyz
+  hosts: hydra_ipmi
+  connection: local
+  gather_facts: false
+
+  vars_files:
+      - vars/ipmi.yml
+
+  vars:
+      netboot_xyz_image: netboot.xyz-snp.efi.dsk
+      netboot_xyz_url: "https://boot.netboot.xyz/ipxe/{{ netboot_xyz_image }}"
+      netboot_xyz_checksum_url: https://boot.netboot.xyz/ipxe/netboot.xyz-sha256-checksums.txt
+      netboot_xyz_path: "/private/tmp/{{ netboot_xyz_image }}"
+      sum_container_image: localhost/util-sum:latest
+
+  pre_tasks:
+      - name: Hydra netboot | Validate credentials
+        ansible.builtin.assert:
+            that:
+                - ipmi_username | length > 0
+                - ipmi_password | length >= 12
+                - ipmi_password | length <= 20
+        no_log: true
+
+  tasks:
+      - name: Hydra netboot | Read system power state
+        community.general.redfish_info:
+            baseuri: "{{ ansible_host }}"
+            username: "{{ ipmi_username }}"
+            password: "{{ ipmi_password }}"
+            validate_certs: false
+            category: [Systems]
+            command: [GetSystemInventory]
+        register: ipmi_system
+
+      - name: Hydra netboot | Require powered-off host
+        ansible.builtin.assert:
+            that: ipmi_system.redfish_facts.system.entries[0][1].PowerState == "Off"
+            fail_msg: Shut down Hydra before requesting a netboot.
+
+      - name: Hydra netboot | Download floppy
+        ansible.builtin.get_url:
+            url: "{{ netboot_xyz_url }}"
+            dest: "{{ netboot_xyz_path }}"
+            checksum: "sha256:{{ netboot_xyz_checksum_url }}"
+            mode: "0644"
+
+      - name: Hydra netboot | Build SUM image
+        containers.podman.podman_image:
+            name: localhost/util-sum
+            tag: latest
+            state: build
+            force: true
+            pull: false
+            path: "{{ playbook_dir }}/../../.custom-containers"
+            build:
+                file: "{{ playbook_dir }}/sum.containerfile"
+
+      - name: Hydra netboot | Unmount existing floppy
+        containers.podman.podman_container:
+            name: hydra-sum
+            image: "{{ sum_container_image }}"
+            state: started
+            detach: false
+            rm: true
+            pull: never
+            network: [host]
+            command: >-
+                -i {{ ansible_host }} -u {{ ipmi_username }} -p {{ ipmi_password }}
+                -c UnmountFloppyImage
+        failed_when: false
+        no_log: true
+
+      - name: Hydra netboot | Mount floppy
+        containers.podman.podman_container:
+            name: hydra-sum
+            image: "{{ sum_container_image }}"
+            state: started
+            detach: false
+            rm: true
+            pull: never
+            network: [host]
+            volume:
+                - "{{ netboot_xyz_path }}:/media/netboot.img:ro"
+            command: >-
+                -i {{ ansible_host }} -u {{ ipmi_username }} -p {{ ipmi_password }}
+                -c MountFloppyImage --file /media/netboot.img
+        no_log: true
+
+      - name: Hydra netboot | Boot virtual floppy once
+        community.general.redfish_command:
+            baseuri: "{{ ansible_host }}"
+            username: "{{ ipmi_username }}"
+            password: "{{ ipmi_password }}"
+            validate_certs: false
+            category: Systems
+            command: [SetOneTimeBoot]
+            bootdevice: Usb
+            boot_override_mode: UEFI
+
+      - name: Hydra netboot | Power on
+        community.general.redfish_command:
+            baseuri: "{{ ansible_host }}"
+            username: "{{ ipmi_username }}"
+            password: "{{ ipmi_password }}"
+            validate_certs: false
+            category: Systems
+            command: [PowerOn]

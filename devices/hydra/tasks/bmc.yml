@@ -1,0 +1,77 @@
+---
+- name: bmc | Check desired credentials
+  community.general.redfish_info:
+      category: [Accounts]
+      command: [ListUsers]
+  register: ipmi_desired_access
+  failed_when: false
+  no_log: true
+
+- name: bmc | Check factory credentials
+  community.general.redfish_info:
+      password: "{{ ipmi_factory_password }}"
+      category: [Accounts]
+      command: [ListUsers]
+  register: ipmi_factory_access
+  when: ipmi_desired_access.redfish_facts is not defined
+  failed_when: false
+  no_log: true
+
+- name: bmc | Require valid credentials
+  ansible.builtin.assert:
+      that:
+          - >-
+              ipmi_desired_access.redfish_facts is defined or
+              ipmi_factory_access.redfish_facts is defined
+      fail_msg: Neither the desired nor factory BMC password is valid.
+  no_log: true
+
+- name: bmc | Set administrator password
+  community.general.redfish_command:
+      password: "{{ ipmi_factory_password }}"
+      category: Accounts
+      command: [UpdateUserPassword]
+      new_username: "{{ ipmi_username }}"
+      new_password: "{{ ipmi_password }}"
+  when:
+      - ipmi_desired_access.redfish_facts is not defined
+      - ipmi_factory_access.redfish_facts is defined
+  no_log: true
+
+- name: bmc | Configure account lockout
+  community.general.redfish_command:
+      category: Accounts
+      command: [UpdateAccountServiceProperties]
+      account_properties:
+          AccountLockoutThreshold: 5
+          AccountLockoutDuration: 600
+
+- name: bmc | Configure manager NIC
+  community.general.redfish_config:
+      category: Manager
+      command: [SetManagerNic]
+      nic_addr: "AC:1F:6B:E6:76:D2"
+      nic_config:
+          DHCPv4:
+              DHCPEnabled: true
+
+- name: bmc | Configure network services
+  community.general.redfish_config:
+      category: Manager
+      command: [SetNetworkProtocols]
+      network_protocols:
+          HTTP:
+              ProtocolEnabled: false
+          HTTPS:
+              ProtocolEnabled: true
+          SSH:
+              ProtocolEnabled: false
+          SSDP:
+              ProtocolEnabled: false
+          SNMP:
+              ProtocolEnabled: false
+          NTP:
+              ProtocolEnabled: true
+              NTPServers:
+                  - 0.pool.ntp.org
+                  - 1.pool.ntp.org
