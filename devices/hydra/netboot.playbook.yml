@@ -22,6 +22,7 @@
                 - ipmi_password | length >= 12
                 - ipmi_password | length <= 20
         no_log: true
+        tags: always
 
   tasks:
       - name: Hydra netboot | Read system power state
@@ -33,11 +34,13 @@
             category: [Systems]
             command: [GetSystemInventory]
         register: ipmi_system
+        tags: [never, reload]
 
       - name: Hydra netboot | Require powered-off host
         ansible.builtin.assert:
             that: ipmi_system.redfish_facts.system.entries[0][1].PowerState == "Off"
             fail_msg: Shut down Hydra before requesting a netboot.
+        tags: [never, reload]
 
       - name: Hydra netboot | Download floppy
         ansible.builtin.get_url:
@@ -45,17 +48,18 @@
             dest: "{{ netboot_xyz_path }}"
             checksum: "sha256:{{ netboot_xyz_checksum_url }}"
             mode: "0644"
+        tags: [never, reload]
 
       - name: Hydra netboot | Build SUM image
         containers.podman.podman_image:
             name: localhost/util-sum
             tag: latest
             state: build
-            force: true
             pull: false
             path: "{{ playbook_dir }}/../../.custom-containers"
             build:
                 file: "{{ playbook_dir }}/sum.containerfile"
+        tags: [never, reload]
 
       - name: Hydra netboot | Unmount existing floppy
         containers.podman.podman_container:
@@ -71,6 +75,7 @@
                 -c UnmountFloppyImage
         failed_when: false
         no_log: true
+        tags: [never, reload]
 
       - name: Hydra netboot | Mount floppy
         containers.podman.podman_container:
@@ -87,6 +92,7 @@
                 -i {{ ansible_host }} -u {{ ipmi_username }} -p {{ ipmi_password }}
                 -c MountFloppyImage --file /media/netboot.img
         no_log: true
+        tags: [never, reload]
 
       - name: Hydra netboot | Boot virtual floppy once
         community.general.redfish_command:
@@ -98,6 +104,7 @@
             command: [SetOneTimeBoot]
             bootdevice: Usb
             boot_override_mode: UEFI
+        tags: always
 
       - name: Hydra netboot | Power on
         community.general.redfish_command:
@@ -107,3 +114,4 @@
             validate_certs: false
             category: Systems
             command: [PowerOn]
+        tags: always
