@@ -1,7 +1,7 @@
 config usteer
 	option network 'lan'
 	option local_mode '1'
-	option aggressiveness '1'
+	option aggressiveness '2'
 	option band_steering_interval '30000'
 	option band_steering_min_snr '-60'
 	option band_steering_signal_threshold '0'
