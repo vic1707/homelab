@@ -4,7 +4,7 @@ collections:
   - name: community.openwrt
     version: 1.6.0
   - name: linuxhq.cloudflare
-    version: 2.1.4
+    version: 2.1.6
   - name: moreati.jq
     version: 0.2.1
   - name: https://github.com/vic1707/ansible-collection-purelymail#ansible_collections/bofzilla/purelymail
