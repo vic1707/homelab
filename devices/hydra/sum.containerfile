@@ -1,5 +1,5 @@
 # SUM 2.15.0
-    FROM docker.io/library/debian:13.2 AS sum
+    FROM docker.io/library/debian:13.6 AS sum
 
     ARG TARGETARCH
 
@@ -33,7 +33,7 @@
     RUN /bin/import-libs.sh /out/sum
 
 # FS
-    FROM docker.io/library/alpine:3.23.0 AS fs
+    FROM docker.io/library/alpine:3.24.1 AS fs
 
     RUN mkdir -p \
         /FS/bin \
