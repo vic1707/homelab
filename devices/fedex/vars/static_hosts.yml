@@ -9,13 +9,13 @@ static_hosts:
     - name: yeelight_billard
       mac: "5C:E5:0C:84:A1:BE"
 
-    - name: yeelight_bureau
+    - name: yeelight_office
       mac: "5C:E5:0C:84:CA:F9"
 
-    - name: yeelight_chambre
+    - name: yeelight_bedroom
       mac: "5C:E5:0C:86:09:22"
 
-    - name: yeelight_salon
+    - name: yeelight_tv
       mac: "5C:E5:0C:86:09:2C"
 
     - name: ecovacs
