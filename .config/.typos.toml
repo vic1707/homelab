@@ -1,3 +1,6 @@
+[files]
+extend-exclude = [".secrets/**"]
+
 [default]
 extend-ignore-re = [
 	# Ignore line following `# @typos-ignore` or `// @typos-ignore`
