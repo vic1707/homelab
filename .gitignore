@@ -6,8 +6,14 @@
 !.config/.sops.yml
 !.config/.typos.toml
 !.config/inventory.yml
+!.config/networks.yml
+!.config/networks.validate.playbook.yml
 !.config/requirements.yml
 !.config/tasks.mise.toml
+!.config/filter_plugins/
+!.config/filter_plugins/*.py
+!.config/tasks/
+!.config/tasks/**
 
 !.custom-containers/
 !.custom-containers/import-libs.sh

@@ -4,12 +4,16 @@
   gather_facts: false
 
   vars_files:
+      - ../../.config/networks.yml
       - vars/openwrt.yml
       - vars/static_hosts.yml
       - vars/nut.yml
       - vars/adguardhome.yml
 
   pre_tasks:
+      - name: Fedex | Validate shared networks
+        ansible.builtin.import_tasks: ../../.config/tasks/validate-networks.yml
+
       - name: Fedex | Check OpenWrt access
         community.openwrt.ping:
 

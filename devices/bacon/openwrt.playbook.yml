@@ -4,9 +4,13 @@
   gather_facts: false
 
   vars_files:
+      - ../../.config/networks.yml
       - vars/openwrt.yml
 
   pre_tasks:
+      - name: Bacon | Validate shared networks
+        ansible.builtin.import_tasks: ../../.config/tasks/validate-networks.yml
+
       - name: Bacon | Check OpenWrt access
         community.openwrt.ping:
 

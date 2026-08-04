@@ -4,6 +4,7 @@ ansible-lint = "git ls-files -z | xargs -0 -r -t ansible-lint -c .config/.ansibl
 "ansible-lint:fix" = "ansible-lint -c .config/.ansible-lint.yml --fix"
 
 ansible-syntax-check = "rg --files -g '*.playbook.yml' | xargs -r -t ansible-playbook --syntax-check"
+networks-validate = "ansible-playbook -i localhost, .config/networks.validate.playbook.yml"
 
 shellcheck = "rg --ignore --hidden -l '^#!.*\\b(sh|bash|dash|ksh|ash)(\\s|$)' . | xargs -r -t shellcheck -a -Calways"
 

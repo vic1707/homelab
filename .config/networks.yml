@@ -1,0 +1,103 @@
+---
+networks:
+    - name: mgmt
+      vlan_id: 10
+      subnet: 10.0.10.0/24
+      gateway: 10.0.10.1
+      gateway_owner: fedex
+      state: active
+
+    - name: user
+      vlan_id: 20
+      subnet: 10.0.20.0/24
+      gateway: 10.0.20.1
+      gateway_owner: fedex
+      state: planned
+
+    - name: automation
+      vlan_id: 30
+      subnet: 10.0.30.0/24
+      gateway: 10.0.30.1
+      gateway_owner: fedex
+      state: planned
+
+    - name: iot_offline
+      vlan_id: 31
+      subnet: 10.0.31.0/24
+      gateway: 10.0.31.1
+      gateway_owner: fedex
+      state: planned
+
+    - name: media_cloud
+      vlan_id: 32
+      subnet: 10.0.32.0/24
+      gateway: 10.0.32.1
+      gateway_owner: fedex
+      state: planned
+
+    - name: untrusted
+      vlan_id: 40
+      subnet: 10.0.40.0/24
+      gateway: 10.0.40.1
+      gateway_owner: fedex
+      state: planned
+
+    - name: edge
+      vlan_id: 50
+      subnet: 10.0.50.0/24
+      gateway: 10.0.50.1
+      gateway_owner: fedex
+      state: planned
+
+    - name: prod
+      vlan_id: 51
+      subnet: 10.0.51.0/24
+      gateway: 10.0.51.1
+      gateway_owner: fedex
+      state: planned
+
+    - name: staging
+      vlan_id: 60
+      subnet: 10.0.60.0/24
+      gateway: 10.0.60.1
+      gateway_owner: fedex
+      state: planned
+
+    - name: lab
+      vlan_id: 70
+      subnet: 10.0.70.0/24
+      gateway: 10.0.70.1
+      gateway_owner: fedex
+      state: reserved
+
+    - name: storage
+      vlan_id: 80
+      subnet: 10.0.80.0/24
+      gateway: 10.0.80.1
+      gateway_owner: fedex
+      state: planned
+
+    - name: backup
+      vlan_id: 90
+      subnet: 10.0.90.0/24
+      gateway: 10.0.90.1
+      gateway_owner: fedex
+      state: reserved
+
+    - name: parking
+      vlan_id: 999
+      subnet: null
+      gateway: null
+      gateway_owner: null
+      state: active
+
+# The WAN subnet is dynamic, so its VLAN ID is reserved instead.
+network_forbidden_vlan_ids:
+    - 100
+
+network_forbidden_subnets:
+    - 192.168.255.0/24 # Rescue
+    - 192.168.1.0/24 # temp_lan
+    - 10.0.12.0/24 # Physical OOB
+
+active_networks: "{{ networks | selectattr('state', 'equalto', 'active') | list }}"

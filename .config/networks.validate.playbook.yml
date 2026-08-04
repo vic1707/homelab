@@ -1,0 +1,12 @@
+---
+- name: Validate shared network intent
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars_files:
+      - networks.yml
+
+  tasks:
+      - name: Validate shared networks
+        ansible.builtin.import_tasks: tasks/validate-networks.yml

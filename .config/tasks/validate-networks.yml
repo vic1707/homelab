@@ -1,0 +1,47 @@
+---
+- name: validate-networks | Validate each shared network
+  ansible.builtin.assert:
+      that:
+          - network.name | length > 0
+          - network.vlan_id is integer
+          - network.vlan_id >= 2
+          - network.vlan_id <= 4094
+          - network.state in ['active', 'planned', 'reserved']
+          - network.gateway is none or network.subnet is not none
+          - network.gateway is none or network.gateway_owner == 'fedex'
+          - network.vlan_id != 999 or network.subnet is none
+          - network.vlan_id != 999 or network.gateway is none
+      fail_msg: "Invalid shared network: {{ network.name }}"
+  loop: "{{ networks }}"
+  loop_control:
+      label: "{{ network.name }}"
+      loop_var: network
+
+- name: validate-networks | Validate uniqueness and reservations
+  vars:
+      network_names: "{{ networks | map(attribute='name') | list }}"
+      network_subnets: "{{ networks | map(attribute='subnet') | reject('none') | list }}"
+      network_vlan_ids: "{{ networks | map(attribute='vlan_id') | list }}"
+      reserved_network_names: >-
+          {{ networks | selectattr('state', 'equalto', 'reserved') | map(attribute='name') | list }}
+      active_network_names: "{{ active_networks | map(attribute='name') | list }}"
+  ansible.builtin.assert:
+      that:
+          - network_names | unique | length == network_names | length
+          - network_subnets | unique | length == network_subnets | length
+          - network_vlan_ids | unique | length == network_vlan_ids | length
+          - network_vlan_ids | intersect(network_forbidden_vlan_ids) | length == 0
+          - network_vlan_ids | select('equalto', 999) | length == 1
+          - active_network_names | intersect(reserved_network_names) | length == 0
+
+- name: validate-networks | Validate subnet isolation
+  vars:
+      routed_subnets: "{{ networks | map(attribute='subnet') | reject('none') | list }}"
+      subnet_pairs: "{{ (routed_subnets + network_forbidden_subnets) | combinations(2) }}"
+  ansible.builtin.assert:
+      that: not (subnet_pair[0] | networks_overlap(subnet_pair[1]))
+      fail_msg: "Overlapping shared networks: {{ subnet_pair | join(' and ') }}"
+  loop: "{{ subnet_pairs }}"
+  loop_control:
+      label: "{{ subnet_pair | join(' / ') }}"
+      loop_var: subnet_pair
