@@ -1,0 +1,14 @@
+---
+- name: Validate Mycelium intent offline
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars_files:
+      - ../../.config/networks.yml
+      - vars/main.yml
+      - vars/ports.yml
+
+  tasks:
+      - name: Validate | Build Mycelium port intent
+        ansible.builtin.import_tasks: tasks/ports.yml

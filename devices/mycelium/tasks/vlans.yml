@@ -1,0 +1,10 @@
+---
+- name: vlans | Configure active Mycelium VLANs
+  bofzilla.icx.vlans:
+      vlans:
+          - id: "{{ mycelium_mgmt_network.vlan_id }}"
+            name: "{{ mycelium_mgmt_network.name }}"
+          - id: "{{ mycelium_parking_network.vlan_id }}"
+            name: "{{ mycelium_parking_network.name }}"
+      purge: false
+      save_when: "{{ mycelium_save_when }}"

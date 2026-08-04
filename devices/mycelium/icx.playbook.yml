@@ -1,0 +1,30 @@
+---
+- name: Manage Mycelium ICX through UART
+  hosts: mycelium_uart
+  gather_facts: false
+
+  module_defaults:
+      group/bofzilla.icx.all:
+          enable_password: "{{ ansible_password }}"
+
+  vars_files:
+      - ../../.config/networks.yml
+      - vars/main.yml
+      - vars/ports.yml
+
+  pre_tasks:
+      - name: ICX | Validate Mycelium intent
+        ansible.builtin.import_tasks: tasks/ports.yml
+
+  tasks:
+      - name: ICX | Configure system
+        ansible.builtin.import_tasks: tasks/system.yml
+
+      - name: ICX | Configure management
+        ansible.builtin.import_tasks: tasks/management.yml
+
+      - name: ICX | Configure VLANs
+        ansible.builtin.import_tasks: tasks/vlans.yml
+
+      - name: ICX | Configure interfaces
+        ansible.builtin.import_tasks: tasks/interfaces.yml

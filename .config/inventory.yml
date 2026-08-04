@@ -35,6 +35,7 @@ icx:
             ansible_network_os: bofzilla.icx.icx
             ansible_serial_port: /dev/cu.usbserial-A9A2C0QQ
             ansible_serial_baud: 9600
+            ansible_command_timeout: 300
 
         # mycelium_ssh:
         #     ansible_host: mycelium.lan

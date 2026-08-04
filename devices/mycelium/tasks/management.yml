@@ -1,0 +1,23 @@
+---
+- name: management | Configure local AAA
+  bofzilla.icx.auth:
+      users:
+          - name: "{{ ansible_user }}"
+            privilege: 0
+            password: "{{ ansible_password }}"
+            update_password: on_create
+            enabled: true
+      aaa:
+          login_methods: [local]
+          enable_methods: [local]
+          privilege_mode: true
+          enable_implicit_user: true
+      save_when: "{{ mycelium_save_when }}"
+
+- name: management | Disable Telnet and HTTP
+  bofzilla.icx.management_access:
+      telnet:
+          enabled: false
+      web:
+          http: false
+      save_when: "{{ mycelium_save_when }}"

@@ -1,0 +1,6 @@
+---
+mycelium_hostname: mycelium
+mycelium_save_when: changed
+
+mycelium_mgmt_network: "{{ networks | selectattr('name', 'equalto', 'mgmt') | first }}"
+mycelium_parking_network: "{{ networks | selectattr('name', 'equalto', 'parking') | first }}"

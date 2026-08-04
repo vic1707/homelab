@@ -11,9 +11,6 @@
       - vars/adguardhome.yml
 
   pre_tasks:
-      - name: Fedex | Validate shared networks
-        ansible.builtin.import_tasks: ../../.config/tasks/validate-networks.yml
-
       - name: Fedex | Check OpenWrt access
         community.openwrt.ping:
 

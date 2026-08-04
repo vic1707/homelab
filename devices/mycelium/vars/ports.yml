@@ -1,0 +1,53 @@
+---
+mycelium_port_defaults:
+    role: parking
+    enabled: false
+
+# Omitted ports are generated from mycelium_port_names using the defaults above.
+mycelium_ports:
+    1/1/2:
+        role: mgmt
+        description: admin-mgmt
+        enabled: true
+    1/1/4:
+        role: mgmt
+        description: mgmt
+        enabled: true
+    1/1/6:
+        role: mgmt
+        description: mgmt
+        enabled: true
+    1/1/8:
+        role: mgmt
+        description: mgmt
+        enabled: true
+    1/1/10:
+        role: mgmt
+        description: mgmt
+        enabled: true
+    1/1/12:
+        role: mgmt
+        description: mgmt
+        enabled: true
+    1/2/1:
+        role: parking
+        description: fedex-reserved
+        enabled: false
+
+mycelium_port_names: >-
+    {{
+        query('ansible.builtin.sequence', 'start=1 end=48 format=1/1/%d')
+        + query('ansible.builtin.sequence', 'start=1 end=4 format=1/2/%d')
+    }}
+mycelium_interface_intent: >-
+    {{
+        mycelium_port_names
+        | mycelium_interfaces(
+            mycelium_ports,
+            mycelium_port_defaults,
+            mycelium_mgmt_network.vlan_id,
+            mycelium_parking_network.vlan_id
+        )
+    }}
+
+# Physical management 1 remains disconnected and is reserved for the later OOB phase.
