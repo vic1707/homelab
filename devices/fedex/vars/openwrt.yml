@@ -29,6 +29,7 @@ firewall_zones:
           - lan
       gateway: "{{ temp_lan.ipaddr }}"
       allow_nut: true
+      allow_wan: true
     - name: mgmt
       policy: policies/mgmt.yml
       members:
@@ -38,3 +39,16 @@ firewall_zones:
       members:
           - user
       gateway: "{{ (fedex_networks | selectattr('name', 'equalto', 'user') | first).gateway }}"
+      allow_wan: true
+    - name: iot_offline
+      policy: policies/client.yml
+      members:
+          - iot_offline
+      gateway: "{{ (fedex_networks | selectattr('name', 'equalto', 'iot_offline') | first).gateway }}"
+      allow_ntp: true
+    - name: untrusted
+      policy: policies/client.yml
+      members:
+          - untrusted
+      gateway: "{{ (fedex_networks | selectattr('name', 'equalto', 'untrusted') | first).gateway }}"
+      allow_wan: true

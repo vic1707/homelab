@@ -62,6 +62,11 @@
             name: dnsmasq
             state: restarted
 
+      - name: Fedex | Restart sysntpd
+        community.openwrt.service:
+            name: sysntpd
+            state: restarted
+
       - name: Fedex | Restart dropbear
         community.openwrt.service:
             name: dropbear

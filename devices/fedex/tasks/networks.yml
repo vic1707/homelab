@@ -61,3 +61,13 @@
       label: "{{ fedex_network.name }}"
       loop_var: fedex_network
   notify: Fedex | Restart dnsmasq
+
+- name: networks | Enable local NTP service
+  community.openwrt.uci:
+      command: set
+      config: system
+      section: ntp
+      option: enable_server
+      value: "1"
+      autocommit: true
+  notify: Fedex | Restart sysntpd

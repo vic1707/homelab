@@ -36,7 +36,11 @@ networks:
       subnet: 10.0.31.0/24
       gateway: 10.0.31.1
       gateway_owner: fedex
-      state: planned
+      dhcp:
+          start: 50
+          limit: 205
+          leasetime: 12h
+      state: active
 
     - name: media_cloud
       vlan_id: 32
@@ -50,7 +54,11 @@ networks:
       subnet: 10.0.40.0/24
       gateway: 10.0.40.1
       gateway_owner: fedex
-      state: planned
+      dhcp:
+          start: 50
+          limit: 205
+          leasetime: 12h
+      state: active
 
     - name: edge
       vlan_id: 50

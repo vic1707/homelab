@@ -14,6 +14,13 @@
         community.openwrt.ping:
 
   tasks:
+      - name: Bacon | Validate tagged networks
+        ansible.builtin.assert:
+            that:
+                - bacon_tagged_networks | map(attribute='name') | difference(bacon_network_names) | length == 0
+                - bacon_network_names | difference(bacon_tagged_networks | map(attribute='name')) | length == 0
+            quiet: true
+
       - name: Bacon | Check root password
         community.openwrt.command:
             cmd: grep -q '^root:[^!*:]' /etc/shadow
@@ -30,7 +37,65 @@
         no_log: true
         when: bacon_root_password_configured.rc != 0 or bacon_update_root_password | default(false)
 
-      - name: Bacon | Configure LAN bridge
+      - name: Bacon | Configure tagged VLAN devices
+        community.openwrt.uci:
+            command: section
+            config: network
+            type: device
+            name: "{{ bacon_network.name }}_vlan"
+            value:
+                name: "{{ bacon_uplink_device }}.{{ bacon_network.vlan_id }}"
+                type: 8021q
+                ifname: "{{ bacon_uplink_device }}"
+                vid: "{{ bacon_network.vlan_id }}"
+            replace: true
+            autocommit: true
+        loop: "{{ bacon_tagged_networks }}"
+        loop_control:
+            label: "{{ bacon_network.name }}"
+            loop_var: bacon_network
+        notify: Bacon | Reload network
+
+      - name: Bacon | Configure client bridges
+        community.openwrt.uci:
+            command: section
+            config: network
+            type: device
+            name: "{{ bacon_network.name }}_bridge"
+            value:
+                name: "br-{{ bacon_network.name | replace('_', '-') }}"
+                type: bridge
+                ports:
+                    - "{{ bacon_uplink_device }}.{{ bacon_network.vlan_id }}"
+            replace: true
+            autocommit: true
+        loop: "{{ bacon_client_networks }}"
+        loop_control:
+            label: "{{ bacon_network.name }}"
+            loop_var: bacon_network
+        notify: Bacon | Reload network
+
+      - name: Bacon | Configure tagged logical networks
+        community.openwrt.uci:
+            command: section
+            config: network
+            type: interface
+            name: "{{ bacon_network.name }}"
+            value:
+                device: >-
+                    {{ bacon_uplink_device ~ '.' ~ bacon_network.vlan_id
+                       if bacon_network.name == 'mgmt'
+                       else 'br-' ~ (bacon_network.name | replace('_', '-')) }}
+                proto: "{{ 'dhcp' if bacon_network.name == 'mgmt' else 'none' }}"
+            replace: true
+            autocommit: true
+        loop: "{{ bacon_tagged_networks }}"
+        loop_control:
+            label: "{{ bacon_network.name }}"
+            loop_var: bacon_network
+        notify: Bacon | Reload network
+
+      - name: Bacon | Preserve legacy LAN bridge before cutover
         community.openwrt.uci:
             command: section
             config: network
@@ -45,8 +110,9 @@
             replace: true
             autocommit: true
         notify: Bacon | Reload network
+        when: not (bacon_cutover | bool)
 
-      - name: Bacon | Configure logical networks
+      - name: Bacon | Preserve legacy logical networks before cutover
         community.openwrt.uci:
             command: section
             config: network
@@ -57,11 +123,12 @@
                 proto: "{{ bacon_network.proto }}"
             replace: true
             autocommit: true
-        loop: "{{ bacon_networks }}"
+        loop: "{{ bacon_legacy_networks }}"
         loop_control:
             label: "{{ bacon_network.name }}"
             loop_var: bacon_network
         notify: Bacon | Reload network
+        when: not (bacon_cutover | bool)
 
       - name: Bacon | Configure radios
         community.openwrt.uci:
@@ -93,7 +160,10 @@
             name: "{{ bacon_wifi_pair[0].name }}_{{ bacon_wifi_pair[1].name }}"
             value:
                 device: "{{ bacon_wifi_pair[1].name }}"
-                network: "{{ bacon_wifi_pair[0].network }}"
+                network: >-
+                    {{ bacon_wifi_pair[0].network
+                       if (bacon_cutover | bool)
+                       else bacon_wifi_pair[0].legacy_network }}
                 mode: ap
                 ssid: "{{ bacon_wifi_pair[0].ssid }}"
                 encryption: "{{ bacon_wifi_pair[0].encryption }}"
@@ -102,6 +172,7 @@
                 bss_transition: "{{ '1' if bacon_wifi_pair[0].bss_transition | default(false) else '0' }}"
                 rrm_neighbor_report: "{{ '1' if bacon_wifi_pair[0].rrm_neighbor_report | default(false) else '0' }}"
                 rrm_beacon_report: "{{ '1' if bacon_wifi_pair[0].rrm_beacon_report | default(false) else '0' }}"
+                isolate: "{{ '1' if bacon_wifi_pair[0].isolate | default(false) else '0' }}"
                 disabled: "{{ '0' if bacon_wifi_pair[0].enabled else '1' }}"
             replace: true
             keep_keys: key
@@ -126,6 +197,39 @@
         no_log: true
         notify: Bacon | Reload wifi
 
+      - name: Bacon | Remove legacy logical networks after cutover
+        community.openwrt.uci:
+            command: absent
+            config: network
+            section: "{{ bacon_legacy_network.name }}"
+            autocommit: true
+        loop: "{{ bacon_legacy_networks }}"
+        loop_control:
+            label: "{{ bacon_legacy_network.name }}"
+            loop_var: bacon_legacy_network
+        notify: Bacon | Reload network
+        when: bacon_cutover | bool
+
+      - name: Bacon | Remove legacy LAN bridge after cutover
+        community.openwrt.uci:
+            command: absent
+            config: network
+            section: br_lan
+            autocommit: true
+        notify: Bacon | Reload network
+        when: bacon_cutover | bool
+
+      - name: Bacon | Restrict SSH to tagged management after cutover
+        community.openwrt.uci:
+            command: set
+            config: dropbear
+            section: "@dropbear[0]"
+            option: Interface
+            value: mgmt
+            autocommit: true
+        notify: Bacon | Restart dropbear
+        when: bacon_cutover | bool
+
   handlers:
       - name: Bacon | Reload network
         community.openwrt.service:
@@ -135,3 +239,8 @@
       - name: Bacon | Reload wifi
         community.openwrt.command:
             cmd: wifi reload
+
+      - name: Bacon | Restart dropbear
+        community.openwrt.service:
+            name: dropbear
+            state: restarted

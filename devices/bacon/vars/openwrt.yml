@@ -3,26 +3,28 @@ bridge:
     name: br-lan
     ports: [eth0]
 
+bacon_cutover: true
+bacon_uplink_device: eth0
+bacon_network_names:
+    - mgmt
+    - user
+    - iot_offline
+    - untrusted
+bacon_tagged_networks: "{{ active_networks | selectattr('name', 'in', bacon_network_names) | list }}"
+bacon_client_networks: "{{ bacon_tagged_networks | rejectattr('name', 'equalto', 'mgmt') | list }}"
+
 root_password: >-
     {{ lookup('community.sops.sops', '../../.secrets/devices/bacon.yml', extract='["accounts"]["root"]["password"]') | trim }}
 
-bacon_networks:
+bacon_legacy_networks:
     - name: lan
       device: "{{ bridge.name }}"
-      proto: dhcp # TODO: none if management vlan is added so bacon isn't reachable from pure LAN
-
-    # - name: management
-    #   device: "{{ bridge.name }}.<management-vlan>"
-    #   proto: dhcp
-
+      proto: dhcp
     - name: guest
       device: "{{ bridge.name }}"
-    #   device: "{{ bridge.name }}.<guest_vlan_id>"
       proto: none
-
     - name: iot
       device: "{{ bridge.name }}"
-    #   device: "{{ bridge.name }}.<iot_vlan_id>"
       proto: none
 
 radios:
@@ -42,7 +44,8 @@ radios:
 
 wifis:
     - name: main
-      network: lan
+      network: user
+      legacy_network: lan
       ssid: AuMien
       encryption: sae-mixed # WPA2-PSK/WPA3-SAE
       ieee80211w: true # PMF; protects management frames.
@@ -53,9 +56,11 @@ wifis:
       password: >-
           {{ lookup('community.sops.sops', '../../.secrets/devices/bacon.yml', extract='["wifi"]["main"]["password"]') }}
       enabled: true
+      isolate: false
 
     - name: guest
-      network: guest
+      network: untrusted
+      legacy_network: guest
       ssid: Victim
       encryption: sae-mixed # WPA2-PSK/WPA3-SAE
       ieee80211w: true # PMF; protects management frames.
@@ -66,9 +71,11 @@ wifis:
       password: >-
           {{ lookup('community.sops.sops', '../../.secrets/devices/bacon.yml', extract='["wifi"]["guest"]["password"]') }}
       enabled: true
+      isolate: true
 
     - name: iot
-      network: iot
+      network: iot_offline
+      legacy_network: iot
       ssid: idIoT
       encryption: psk2 # WPA2-PSK
       ieee80211w: false # PMF; protects management frames.
@@ -79,3 +86,4 @@ wifis:
       password: >-
           {{ lookup('community.sops.sops', '../../.secrets/devices/bacon.yml', extract='["wifi"]["iot"]["password"]') }}
       enabled: true
+      isolate: true

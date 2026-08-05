@@ -70,6 +70,24 @@
   notify: Fedex | Reload firewall
   when: firewall_zone.allow_nut | default(false)
 
+- name: policies | client | Allow NTP
+  community.openwrt.uci:
+      command: section
+      config: firewall
+      type: rule
+      name: "allow_{{ firewall_zone.name }}_ntp"
+      value:
+          name: "Allow-{{ firewall_zone.name | upper }}-NTP"
+          src: "{{ firewall_zone.name }}"
+          proto: udp
+          dest_ip: "{{ firewall_zone.gateway }}"
+          dest_port: "123"
+          target: ACCEPT
+      replace: true
+      autocommit: true
+  notify: Fedex | Reload firewall
+  when: firewall_zone.allow_ntp | default(false)
+
 - name: policies | client | Allow ping
   community.openwrt.uci:
       command: section
@@ -125,6 +143,7 @@
       replace: true
       autocommit: true
   notify: Fedex | Reload firewall
+  when: firewall_zone.allow_wan | default(false)
 
 - name: policies | client | Allow WAN access
   community.openwrt.uci:
@@ -138,3 +157,4 @@
       replace: true
       autocommit: true
   notify: Fedex | Reload firewall
+  when: firewall_zone.allow_wan | default(false)

@@ -46,7 +46,7 @@ cabinet_links:
         mycelium: copper3
         peer: temporary USER client
     bacon:
-        state: planned
+        state: active
         mycelium: copper38
         peer: Bacon AP
 
@@ -140,8 +140,18 @@ mycelium_interfaces:
       name: 1/1/36
     - <<: *parking
       name: 1/1/37
-    - <<: *parking
-      name: 1/1/38 # copper38, planned Bacon AP
+    - name: 1/1/38 # copper38, Bacon AP
+      description: bacon
+      mode: trunk
+      allowed_vlans: >-
+          {{ active_networks 
+              | rejectattr('name', 'equalto', 'parking')
+              | map(attribute='vlan_id')
+              | list
+          }}
+      admin_state: up
+      poe:
+          enabled: true
     - <<: *parking
       name: 1/1/39
     - <<: *parking
@@ -173,5 +183,6 @@ mycelium_interfaces:
       name: 1/2/3 # X3
     - <<: *parking
       name: 1/2/4 # X4
+
 
 # Physical management 1 remains disconnected and is reserved for the later OOB phase.
