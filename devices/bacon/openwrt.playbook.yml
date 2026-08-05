@@ -177,21 +177,15 @@
         no_log: true
         notify: Bacon | Reload wifi
 
-      - name: Bacon | Remove legacy logical networks
+      - name: Bacon | Remove factory LAN interface
         community.openwrt.uci:
             command: absent
             config: network
-            section: "{{ bacon_legacy_network }}"
+            section: lan
             autocommit: true
-        loop:
-            - lan
-            - guest
-            - iot
-        loop_control:
-            loop_var: bacon_legacy_network
         notify: Bacon | Reload network
 
-      - name: Bacon | Remove legacy LAN bridge
+      - name: Bacon | Remove factory LAN bridge
         community.openwrt.uci:
             command: absent
             config: network

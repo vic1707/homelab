@@ -30,7 +30,6 @@ firewall_zones:
       members:
           - lan
       gateway: "{{ temp_lan.ipaddr }}"
-      allow_nut: true
       allow_wan: true
     - name: mgmt
       policy: policies/mgmt.yml
