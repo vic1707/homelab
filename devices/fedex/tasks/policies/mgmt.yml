@@ -1,5 +1,5 @@
 ---
-- name: policies | mgmt | Configure firewall zone
+- name: policies | mgmt | Configure firewall zone | {{ firewall_zone.name | upper }}
   community.openwrt.uci:
       command: section
       config: firewall
@@ -15,7 +15,7 @@
       autocommit: true
   notify: Fedex | Reload firewall
 
-- name: policies | mgmt | Allow DHCP
+- name: policies | mgmt | Allow DHCP | {{ firewall_zone.name | upper }}
   community.openwrt.uci:
       command: section
       config: firewall
@@ -33,7 +33,7 @@
       autocommit: true
   notify: Fedex | Reload firewall
 
-- name: policies | mgmt | Allow DNS
+- name: policies | mgmt | Allow DNS | {{ firewall_zone.name | upper }}
   community.openwrt.uci:
       command: section
       config: firewall
@@ -52,7 +52,7 @@
       autocommit: true
   notify: Fedex | Reload firewall
 
-- name: policies | mgmt | Allow router management
+- name: policies | mgmt | Allow router management | {{ firewall_zone.name | upper }}
   community.openwrt.uci:
       command: section
       config: firewall
@@ -69,7 +69,7 @@
       autocommit: true
   notify: Fedex | Reload firewall
 
-- name: policies | mgmt | Allow ping
+- name: policies | mgmt | Allow ping | {{ firewall_zone.name | upper }}
   community.openwrt.uci:
       command: section
       config: firewall

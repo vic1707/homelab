@@ -1,5 +1,17 @@
 ---
 static_hosts:
+    - name: homeassistant
+      mac: "DC:A6:32:32:5F:E8"
+      ip: 10.0.30.10
+
+    - name: slzb_06u
+      mac: "8C:FD:49:B5:66:00"
+      ip: 10.0.30.11
+
+    - name: slzb_mrw10u
+      mac: "80:B5:4E:96:96:90"
+      ip: 10.0.30.12
+
     - name: x1c
       mac: "50:41:1C:E0:4B:1C"
 

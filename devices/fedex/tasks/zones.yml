@@ -5,3 +5,60 @@
   loop_control:
       label: "{{ firewall_zone.name }}"
       loop_var: firewall_zone
+
+- name: zones | Allow USER access to Home Assistant UI
+  community.openwrt.uci:
+      command: section
+      config: firewall
+      type: rule
+      name: allow_user_home_assistant
+      value:
+          name: Allow-USER-Home-Assistant
+          src: user
+          dest: automation
+          dest_ip: "{{ home_assistant_host.ip }}"
+          proto: tcp
+          dest_port: "8123"
+          target: ACCEPT
+      replace: true
+      autocommit: true
+  notify: Fedex | Reload firewall
+
+- name: zones | Allow Home Assistant WAN access
+  community.openwrt.uci:
+      command: section
+      config: firewall
+      type: rule
+      name: allow_home_assistant_wan
+      value:
+          name: Allow-Home-Assistant-WAN
+          src: automation
+          src_ip: "{{ home_assistant_host.ip }}"
+          dest: wan
+          proto: all
+          target: ACCEPT
+      replace: true
+      autocommit: true
+  notify: Fedex | Reload firewall
+
+- name: zones | Allow USER access to SLZB web interfaces
+  community.openwrt.uci:
+      command: section
+      config: firewall
+      type: rule
+      name: "allow_user_{{ slzb_host.name }}_webui"
+      value:
+          name: "Allow-USER-{{ slzb_host.name | upper }}-WebUI"
+          src: user
+          dest: automation
+          dest_ip: "{{ slzb_host.ip }}"
+          proto: tcp
+          dest_port: "80"
+          target: ACCEPT
+      replace: true
+      autocommit: true
+  loop: "{{ slzb_hosts }}"
+  loop_control:
+      label: "{{ slzb_host.name }}"
+      loop_var: slzb_host
+  notify: Fedex | Reload firewall

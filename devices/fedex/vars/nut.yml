@@ -11,6 +11,8 @@ nut:
           address: 127.0.0.1
         - name: lan
           address: "{{ temp_lan.ipaddr }}"
+        - name: automation
+          address: "{{ (fedex_networks | selectattr('name', 'equalto', 'automation') | first).gateway }}"
     listen_port: "3493"
     monitor:
         username: local-monitor

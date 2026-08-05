@@ -20,6 +20,8 @@ temp_lan:
 
 fedex_networks: "{{ active_networks | selectattr('gateway_owner', 'equalto', 'fedex') | rejectattr('subnet', 'none') | list }}"
 mgmt_network: "{{ fedex_networks | selectattr('name', 'equalto', 'mgmt') | first }}"
+home_assistant_host: "{{ static_hosts | selectattr('name', 'equalto', 'homeassistant') | first }}"
+slzb_hosts: "{{ static_hosts | selectattr('name', 'in', ['slzb_06u', 'slzb_mrw10u']) | list }}"
 mycelium_trunk_device: "{{ cabinet_ports.fedex[cabinet_links.fedex_mycelium.fedex] }}"
 
 firewall_zones:
@@ -40,6 +42,14 @@ firewall_zones:
           - user
       gateway: "{{ (fedex_networks | selectattr('name', 'equalto', 'user') | first).gateway }}"
       allow_wan: true
+    - name: automation
+      policy: policies/client.yml
+      members:
+          - automation
+      gateway: "{{ (fedex_networks | selectattr('name', 'equalto', 'automation') | first).gateway }}"
+      allow_ntp: true
+      allow_nut: true
+      nut_source_ip: "{{ home_assistant_host.ip }}"
     - name: iot_offline
       policy: policies/client.yml
       members:

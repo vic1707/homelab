@@ -29,7 +29,11 @@ networks:
       subnet: 10.0.30.0/24
       gateway: 10.0.30.1
       gateway_owner: fedex
-      state: planned
+      dhcp:
+          start: 50
+          limit: 205
+          leasetime: 12h
+      state: active
 
     - name: iot_offline
       vlan_id: 31

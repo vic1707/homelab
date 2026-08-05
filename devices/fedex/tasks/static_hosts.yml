@@ -8,6 +8,7 @@
       value:
           name: "{{ static_host.name }}"
           mac: "{{ static_host.mac }}"
+          ip: "{{ static_host.ip | default(omit) }}"
           dns: "1"
       replace: true
       autocommit: true
