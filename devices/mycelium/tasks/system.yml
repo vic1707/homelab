@@ -1,5 +1,0 @@
----
-- name: system | Configure hostname
-  bofzilla.icx.system:
-      hostname: "{{ mycelium_hostname }}"
-      save_when: "{{ mycelium_save_when }}"

@@ -5,20 +5,17 @@
 
   module_defaults:
       group/bofzilla.icx.all:
-          enable_password: "{{ ansible_password }}"
+          enable_password: "{{ icx_enable_password }}"
 
   vars_files:
       - ../../.config/networks.yml
-      - vars/main.yml
       - vars/ports.yml
-
-  pre_tasks:
-      - name: ICX | Validate Mycelium intent
-        ansible.builtin.import_tasks: tasks/ports.yml
 
   tasks:
       - name: ICX | Configure system
-        ansible.builtin.import_tasks: tasks/system.yml
+        bofzilla.icx.system:
+            hostname: mycelium
+            save_when: changed
 
       - name: ICX | Configure management
         ansible.builtin.import_tasks: tasks/management.yml

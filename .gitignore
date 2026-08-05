@@ -12,8 +12,6 @@
 !.config/tasks.mise.toml
 !.config/filter_plugins/
 !.config/filter_plugins/*.py
-!.config/tasks/
-!.config/tasks/**
 
 !.custom-containers/
 !.custom-containers/import-libs.sh

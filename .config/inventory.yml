@@ -28,9 +28,8 @@ icx:
     hosts:
         mycelium_uart:
             ansible_host: mycelium_uart
-            ansible_user: admin
-            ansible_password: >-
-                {{ lookup('env', 'MYCELIUM_PASSWORD') | default(lookup('community.sops.sops', inventory_dir + '/../.secrets/devices/mycelium.yml', extract='["accounts"]["admin"]["password"]'), true) }}
+            icx_enable_password: >-
+                {{ lookup('community.sops.sops', '../../.secrets/devices/mycelium.yml', extract='["enable"]["super_user_password"]') }}
             ansible_connection: bofzilla.icx.serial
             ansible_network_os: bofzilla.icx.icx
             ansible_serial_port: /dev/cu.usbserial-A9A2C0QQ
@@ -41,7 +40,7 @@ icx:
         #     ansible_host: mycelium.lan
         #     ansible_user: admin
         #     ansible_password: >-
-        #         {{ lookup('community.sops.sops', inventory_dir + '/../.secrets/devices/mycelium.yml', extract='["accounts"]["admin"]["password"]') }}
+        #         {{ lookup('community.sops.sops', '../../.secrets/devices/mycelium.yml', extract='["accounts"]["admin"]["password"]') }}
         #     ansible_connection: ansible.netcommon.network_cli
         #     ansible_network_os: bofzilla.icx.icx
         #     ansible_network_cli_ssh_type: paramiko

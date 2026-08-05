@@ -1,53 +1,121 @@
 ---
-mycelium_port_defaults:
-    role: parking
-    enabled: false
-
-# Omitted ports are generated from mycelium_port_names using the defaults above.
-mycelium_ports:
-    1/1/2:
-        role: mgmt
-        description: admin-mgmt
-        enabled: true
-    1/1/4:
-        role: mgmt
-        description: mgmt
-        enabled: true
-    1/1/6:
-        role: mgmt
-        description: mgmt
-        enabled: true
-    1/1/8:
-        role: mgmt
-        description: mgmt
-        enabled: true
-    1/1/10:
-        role: mgmt
-        description: mgmt
-        enabled: true
-    1/1/12:
-        role: mgmt
-        description: mgmt
-        enabled: true
-    1/2/1:
-        role: parking
-        description: fedex-reserved
-        enabled: false
-
-mycelium_port_names: >-
-    {{
-        query('ansible.builtin.sequence', 'start=1 end=48 format=1/1/%d')
-        + query('ansible.builtin.sequence', 'start=1 end=4 format=1/2/%d')
-    }}
-mycelium_interface_intent: >-
-    {{
-        mycelium_port_names
-        | mycelium_interfaces(
-            mycelium_ports,
-            mycelium_port_defaults,
-            mycelium_mgmt_network.vlan_id,
-            mycelium_parking_network.vlan_id
-        )
-    }}
+mycelium_interfaces:
+    - <<: &parking
+          mode: access
+          access_vlan: 999
+          admin_state: down
+      name: 1/1/1
+    - <<: &mgmt
+          mode: access
+          access_vlan: 10
+          admin_state: up
+      name: 1/1/2
+      description: admin-mgmt
+    - <<: *parking
+      name: 1/1/3
+    - <<: *mgmt
+      name: 1/1/4
+      description: mgmt
+    - <<: *parking
+      name: 1/1/5
+    - <<: *mgmt
+      name: 1/1/6
+      description: mgmt
+    - <<: *parking
+      name: 1/1/7
+    - <<: *mgmt
+      name: 1/1/8
+      description: mgmt
+    - <<: *parking
+      name: 1/1/9
+    - <<: *mgmt
+      name: 1/1/10
+      description: mgmt
+    - <<: *parking
+      name: 1/1/11
+    - <<: *mgmt
+      name: 1/1/12
+      description: mgmt
+    - <<: *parking
+      name: 1/1/13
+    - <<: *parking
+      name: 1/1/14
+    - <<: *parking
+      name: 1/1/15
+    - <<: *parking
+      name: 1/1/16
+    - <<: *parking
+      name: 1/1/17
+    - <<: *parking
+      name: 1/1/18
+    - <<: *parking
+      name: 1/1/19
+    - <<: *parking
+      name: 1/1/20
+    - <<: *parking
+      name: 1/1/21
+    - <<: *parking
+      name: 1/1/22
+    - <<: *parking
+      name: 1/1/23
+    - <<: *parking
+      name: 1/1/24
+    - <<: *parking
+      name: 1/1/25
+    - <<: *parking
+      name: 1/1/26
+    - <<: *parking
+      name: 1/1/27
+    - <<: *parking
+      name: 1/1/28
+    - <<: *parking
+      name: 1/1/29
+    - <<: *parking
+      name: 1/1/30
+    - <<: *parking
+      name: 1/1/31
+    - <<: *parking
+      name: 1/1/32
+    - <<: *parking
+      name: 1/1/33
+    - <<: *parking
+      name: 1/1/34
+    - <<: *parking
+      name: 1/1/35
+    - <<: *parking
+      name: 1/1/36
+    - <<: *parking
+      name: 1/1/37
+    - <<: *parking
+      name: 1/1/38
+    - <<: *parking
+      name: 1/1/39
+    - <<: *parking
+      name: 1/1/40
+    - <<: *parking
+      name: 1/1/41
+    - <<: *parking
+      name: 1/1/42
+    - <<: *parking
+      name: 1/1/43
+    - <<: *parking
+      name: 1/1/44
+    - <<: *parking
+      name: 1/1/45
+    - <<: *parking
+      name: 1/1/46
+    - <<: *parking
+      name: 1/1/47
+    - <<: *parking
+      name: 1/1/48
+    - <<: *parking
+      name: 1/2/1
+      description: fedex-reserved
+    - <<: *parking
+      name: 1/2/2
+    - <<: *parking
+      name: 1/2/3
+    - <<: *parking
+      name: 1/2/4
 
 # Physical management 1 remains disconnected and is reserved for the later OOB phase.

@@ -7,6 +7,17 @@
   vars_files:
       - networks.yml
 
+  vars:
+      network_names: "{{ networks | map(attribute='name') | list }}"
+      network_subnets: >-
+          {{ networks | map(attribute='subnet') | reject('none') | list + network_forbidden_subnets.values() | list }}
+      network_vlan_ids: "{{ networks | map(attribute='vlan_id') | list }}"
+
   tasks:
-      - name: Validate shared networks
-        ansible.builtin.import_tasks: tasks/validate-networks.yml
+      - name: Validate network conflicts
+        ansible.builtin.assert:
+            that:
+                - network_names | unique | length == network_names | length
+                - network_vlan_ids | unique | length == network_vlan_ids | length
+                - network_vlan_ids | intersect(network_forbidden_vlan_ids) | length == 0
+                - network_subnets | overlapping_networks | length == 0
