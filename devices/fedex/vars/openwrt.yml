@@ -10,14 +10,6 @@ bbox_wan:
 root_password: >-
     {{ lookup('community.sops.sops', '../../.secrets/devices/fedex.yml', extract='["accounts"]["root"]["password"]') | trim }}
 
-temp_lan:
-    device: "{{ cabinet_ports.fedex[cabinet_links.temp_lan.fedex] }}"
-    ipaddr: 192.168.1.1
-    netmask: 255.255.255.0
-    dhcp_start: 100
-    dhcp_limit: 150
-    dhcp_leasetime: 12h
-
 fedex_networks: "{{ active_networks | selectattr('gateway_owner', 'equalto', 'fedex') | rejectattr('subnet', 'none') | list }}"
 mgmt_network: "{{ fedex_networks | selectattr('name', 'equalto', 'mgmt') | first }}"
 home_assistant_host: "{{ static_hosts | selectattr('name', 'equalto', 'homeassistant') | first }}"
@@ -25,12 +17,6 @@ slzb_hosts: "{{ static_hosts | selectattr('name', 'in', ['slzb_06u', 'slzb_mrw10
 mycelium_trunk_device: "{{ cabinet_ports.fedex[cabinet_links.fedex_mycelium.fedex] }}"
 
 firewall_zones:
-    - name: lan
-      policy: policies/client.yml
-      members:
-          - lan
-      gateway: "{{ temp_lan.ipaddr }}"
-      allow_wan: true
     - name: mgmt
       policy: policies/mgmt.yml
       members:

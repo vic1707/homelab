@@ -15,6 +15,19 @@
       autocommit: true
   notify: Fedex | Reload firewall
 
+- name: policies | mgmt | Allow rescue forwarding | {{ firewall_zone.name | upper }}
+  community.openwrt.uci:
+      command: section
+      config: firewall
+      type: forwarding
+      name: rescue_mgmt
+      value:
+          src: rescue
+          dest: mgmt
+      replace: true
+      autocommit: true
+  notify: Fedex | Reload firewall
+
 - name: policies | mgmt | Allow DHCP | {{ firewall_zone.name | upper }}
   community.openwrt.uci:
       command: section

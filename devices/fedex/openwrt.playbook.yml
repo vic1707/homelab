@@ -23,9 +23,6 @@
       - name: Fedex | Configure Bbox WAN
         ansible.builtin.import_tasks: tasks/wan.yml
 
-      - name: Fedex | Configure temporary LAN
-        ansible.builtin.import_tasks: tasks/temp_lan.yml
-
       - name: Fedex | Configure active routed networks
         ansible.builtin.import_tasks: tasks/networks.yml
 

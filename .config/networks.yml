@@ -119,7 +119,6 @@ network_forbidden_vlan_ids:
 
 network_forbidden_subnets:
     rescue: 192.168.255.0/24
-    temp_lan: 192.168.1.0/24
     oob: 10.0.12.0/24
 
 active_networks: "{{ networks | selectattr('state', 'equalto', 'active') | list }}"

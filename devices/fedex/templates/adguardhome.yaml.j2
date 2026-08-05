@@ -23,7 +23,6 @@ theme: auto
 dns:
     bind_hosts:
         - 127.0.0.1
-        - "{{ temp_lan.ipaddr }}"
         - 192.168.255.1
 {% for network in fedex_networks %}
         - "{{ network.gateway }}"
@@ -47,7 +46,6 @@ dns:
     fastest_timeout: 1s
     allowed_clients:
         - 127.0.0.0/8
-        - "{{ temp_lan.ipaddr }}/24"
         - 192.168.255.0/24
 {% for network in fedex_networks %}
         - "{{ network.subnet }}"
@@ -79,7 +77,6 @@ dns:
     upstream_timeout: 10s
     private_networks:
         - 127.0.0.0/8
-        - "{{ temp_lan.ipaddr }}/24"
         - 192.168.255.0/24
 {% for network in fedex_networks %}
         - "{{ network.subnet }}"
@@ -130,7 +127,6 @@ filters:
       id: 1
 whitelist_filters: []
 user_rules:
-    - "||fedex.lan^$client=192.168.1.0/24,dnsrewrite=NOERROR;A;192.168.1.1"
     - "||fedex.lan^$client=192.168.255.0/24,dnsrewrite=NOERROR;A;192.168.255.1"
 {% for network in fedex_networks %}
     - "||fedex.lan^$client={{ network.subnet }},dnsrewrite=NOERROR;A;{{ network.gateway }}"

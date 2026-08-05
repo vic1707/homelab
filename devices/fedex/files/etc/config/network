@@ -5,7 +5,7 @@ config interface 'loopback'
 	option netmask '255.0.0.0'
 
 config interface 'rescue'
-	option device 'eth1'
+	option device 'eth4'
 	option proto 'static'
 	option ipaddr '192.168.255.1'
 	option netmask '255.255.255.0'

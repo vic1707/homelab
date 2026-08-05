@@ -30,20 +30,12 @@ cabinet_links:
         peer: Bouygues ONT
     fedex_rescue:
         state: on_demand
-        fedex: rj45_2
-        peer: administration laptop
-    temp_lan:
-        state: active
-        fedex: sfp7
-        peer: legacy LAN
+        fedex: rj45_5
+        peer: management client
     fedex_mycelium:
         state: active
         fedex: sfp8
         mycelium: x1
-    admin_laptop:
-        state: on_demand
-        mycelium: copper2
-        peer: administration laptop
     user_test:
         state: active
         mycelium: copper3
@@ -70,96 +62,100 @@ cabinet_links:
         mycelium: copper48
         peer: SLZB hub 2
 
+mycelium_interface_profiles:
+    parking: &parking
+        mode: access
+        access_vlan: 999
+        admin_state: down
+    mgmt: &mgmt
+        mode: access
+        access_vlan: 10
+        admin_state: up
+
 mycelium_interfaces:
-    - <<: &parking
-          mode: access
-          access_vlan: 999
-          admin_state: down
-      name: 1/1/1
-    - <<: &mgmt
-          mode: access
-          access_vlan: 10
-          admin_state: up
-      name: 1/1/2 # copper2, administration laptop
-      description: admin-mgmt
+    - name: 1/1/1
+      <<: *parking
+    - name: 1/1/2 # copper2, MGMT access/recovery
+      <<: *mgmt
+      description: mgmt
     - name: 1/1/3 # copper3, temporary USER test port
       description: user-test
       mode: access
       access_vlan: "{{ active_networks | selectattr('name', 'equalto', 'user') | map(attribute='vlan_id') | first }}"
       admin_state: up
-    - <<: *mgmt
-      name: 1/1/4
+    - name: 1/1/4
+      <<: *mgmt
       description: mgmt
-    - <<: *parking
-      name: 1/1/5
-    - <<: *mgmt
-      name: 1/1/6
+    - name: 1/1/5
+      <<: *parking
+    - name: 1/1/6
+      <<: *mgmt
       description: mgmt
-    - <<: *parking
-      name: 1/1/7
-    - <<: *mgmt
-      name: 1/1/8
+    - name: 1/1/7
+      <<: *parking
+    - name: 1/1/8
+      <<: *mgmt
       description: mgmt
-    - <<: *parking
-      name: 1/1/9
-    - <<: *mgmt
-      name: 1/1/10
+    - name: 1/1/9
+      <<: *parking
+    - name: 1/1/10
+      <<: *mgmt
       description: mgmt
-    - <<: *parking
-      name: 1/1/11
-    - <<: *mgmt
-      name: 1/1/12
+    - name: 1/1/11
+      <<: *parking
+    - name: 1/1/12
+      <<: *mgmt
       description: mgmt
-    - <<: *parking
-      name: 1/1/13
-    - <<: *parking
-      name: 1/1/14
-    - <<: *parking
-      name: 1/1/15
-    - <<: *parking
-      name: 1/1/16
-    - <<: *parking
-      name: 1/1/17
-    - <<: *parking
-      name: 1/1/18
-    - <<: *parking
-      name: 1/1/19
-    - <<: *parking
-      name: 1/1/20
-    - <<: *parking
-      name: 1/1/21
-    - <<: *parking
-      name: 1/1/22
-    - <<: *parking
-      name: 1/1/23
-    - <<: *parking
-      name: 1/1/24
-    - <<: *parking
-      name: 1/1/25
-    - <<: *parking
-      name: 1/1/26
-    - <<: *parking
-      name: 1/1/27
-    - <<: *parking
-      name: 1/1/28
-    - <<: *parking
-      name: 1/1/29
-    - <<: *parking
-      name: 1/1/30
-    - <<: *parking
-      name: 1/1/31
-    - <<: *parking
-      name: 1/1/32
-    - <<: *parking
-      name: 1/1/33
-    - <<: *parking
-      name: 1/1/34
-    - <<: *parking
-      name: 1/1/35
-    - <<: *parking
-      name: 1/1/36
-    - <<: *parking
-      name: 1/1/37
+    - name: 1/1/13
+      <<: *parking
+    - name: 1/1/14
+      <<: *parking
+    - name: 1/1/15
+      <<: *parking
+    - name: 1/1/16
+      <<: *parking
+    - name: 1/1/17
+      <<: *parking
+    - name: 1/1/18
+      <<: *parking
+    - name: 1/1/19
+      <<: *parking
+    - name: 1/1/20
+      <<: *parking
+    - name: 1/1/21
+      <<: *parking
+    - name: 1/1/22
+      <<: *parking
+    - name: 1/1/23
+      <<: *parking
+    - name: 1/1/24
+      <<: *parking
+    - name: 1/1/25
+      <<: *parking
+    - name: 1/1/26
+      <<: *parking
+    - name: 1/1/27
+      <<: *parking
+    - name: 1/1/28
+      <<: *parking
+    - name: 1/1/29
+      <<: *parking
+    - name: 1/1/30
+      <<: *parking
+    - name: 1/1/31
+      <<: *parking
+    - name: 1/1/32
+      <<: *parking
+    - name: 1/1/33
+      <<: *parking
+    - name: 1/1/34
+      <<: *parking
+    - name: 1/1/35
+      <<: *parking
+    - name: 1/1/36
+      <<: *parking
+    - name: 1/1/37
+      <<: *parking
     - name: 1/1/38 # copper38, Bacon AP
       description: bacon
       mode: trunk
@@ -172,23 +168,23 @@ mycelium_interfaces:
       admin_state: up
       poe:
           enabled: true
-    - <<: *parking
-      name: 1/1/39
-    - <<: *parking
-      name: 1/1/40
-    - <<: *parking
-      name: 1/1/41
-    - <<: *parking
-      name: 1/1/42
-    - <<: *parking
-      name: 1/1/43
+    - name: 1/1/39
+      <<: *parking
+    - name: 1/1/40
+      <<: *parking
+    - name: 1/1/41
+      <<: *parking
+    - name: 1/1/42
+      <<: *parking
+    - name: 1/1/43
+      <<: *parking
     - name: 1/1/44 # copper44, Home Assistant
       description: home-assistant
       mode: access
       access_vlan: "{{ active_networks | selectattr('name', 'equalto', 'automation') | map(attribute='vlan_id') | first }}"
       admin_state: up
-    - <<: *parking
-      name: 1/1/45
+    - name: 1/1/45
+      <<: *parking
     - name: 1/1/46 # copper46, SLZB hub 1
       description: slzb-1
       mode: access
@@ -196,8 +192,8 @@ mycelium_interfaces:
       admin_state: up
       poe:
           enabled: true
-    - <<: *parking
-      name: 1/1/47
+    - name: 1/1/47
+      <<: *parking
     - name: 1/1/48 # copper48, SLZB hub 2
       description: slzb-2
       mode: access
@@ -210,12 +206,12 @@ mycelium_interfaces:
       mode: trunk
       allowed_vlans: "{{ active_networks | rejectattr('name', 'equalto', 'parking') | map(attribute='vlan_id') | list }}"
       admin_state: up
-    - <<: *parking
-      name: 1/2/2 # X2
-    - <<: *parking
-      name: 1/2/3 # X3
-    - <<: *parking
-      name: 1/2/4 # X4
+    - name: 1/2/2 # X2
+      <<: *parking
+    - name: 1/2/3 # X3
+      <<: *parking
+    - name: 1/2/4 # X4
+      <<: *parking
 
 
 # Physical management 1 remains disconnected and is reserved for the later OOB phase.
