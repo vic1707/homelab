@@ -1,5 +1,5 @@
 ---
-- name: policies | lan | Configure firewall zone
+- name: policies | client | Configure firewall zone
   community.openwrt.uci:
       command: section
       config: firewall
@@ -15,7 +15,7 @@
       autocommit: true
   notify: Fedex | Reload firewall
 
-- name: policies | lan | Allow DHCP
+- name: policies | client | Allow DHCP
   community.openwrt.uci:
       command: section
       config: firewall
@@ -33,7 +33,7 @@
       autocommit: true
   notify: Fedex | Reload firewall
 
-- name: policies | lan | Allow DNS
+- name: policies | client | Allow DNS
   community.openwrt.uci:
       command: section
       config: firewall
@@ -45,13 +45,14 @@
           proto:
               - tcp
               - udp
+          dest_ip: "{{ firewall_zone.gateway }}"
           dest_port: "53"
           target: ACCEPT
       replace: true
       autocommit: true
   notify: Fedex | Reload firewall
 
-- name: policies | lan | Allow NUT status
+- name: policies | client | Allow NUT status
   community.openwrt.uci:
       command: section
       config: firewall
@@ -61,13 +62,15 @@
           name: "Allow-{{ firewall_zone.name | upper }}-NUT"
           src: "{{ firewall_zone.name }}"
           proto: tcp
+          dest_ip: "{{ firewall_zone.gateway }}"
           dest_port: "3493"
           target: ACCEPT
       replace: true
       autocommit: true
   notify: Fedex | Reload firewall
+  when: firewall_zone.allow_nut | default(false)
 
-- name: policies | lan | Allow ping
+- name: policies | client | Allow ping
   community.openwrt.uci:
       command: section
       config: firewall
@@ -77,6 +80,7 @@
           name: "Allow-{{ firewall_zone.name | upper }}-Ping"
           src: "{{ firewall_zone.name }}"
           proto: icmp
+          dest_ip: "{{ firewall_zone.gateway }}"
           icmp_type: echo-request
           target: ACCEPT
           family: ipv4
@@ -84,7 +88,7 @@
       autocommit: true
   notify: Fedex | Reload firewall
 
-- name: policies | lan | Redirect DNS to AdGuard Home
+- name: policies | client | Redirect DNS to AdGuard Home
   community.openwrt.uci:
       command: section
       config: firewall
@@ -103,7 +107,7 @@
       autocommit: true
   notify: Fedex | Reload firewall
 
-- name: policies | lan | Block encrypted DNS bypass
+- name: policies | client | Block encrypted DNS bypass
   community.openwrt.uci:
       command: section
       config: firewall
@@ -122,7 +126,7 @@
       autocommit: true
   notify: Fedex | Reload firewall
 
-- name: policies | lan | Allow WAN access
+- name: policies | client | Allow WAN access
   community.openwrt.uci:
       command: section
       config: firewall

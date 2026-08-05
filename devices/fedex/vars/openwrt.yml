@@ -18,15 +18,23 @@ temp_lan:
     dhcp_limit: 150
     dhcp_leasetime: 12h
 
-mgmt_network: "{{ active_networks | selectattr('name', 'equalto', 'mgmt') | first }}"
+fedex_networks: "{{ active_networks | selectattr('gateway_owner', 'equalto', 'fedex') | rejectattr('subnet', 'none') | list }}"
+mgmt_network: "{{ fedex_networks | selectattr('name', 'equalto', 'mgmt') | first }}"
 mycelium_trunk_device: "{{ cabinet_ports.fedex[cabinet_links.fedex_mycelium.fedex] }}"
 
 firewall_zones:
     - name: lan
-      policy: policies/lan.yml
+      policy: policies/client.yml
       members:
           - lan
+      gateway: "{{ temp_lan.ipaddr }}"
+      allow_nut: true
     - name: mgmt
       policy: policies/mgmt.yml
       members:
           - mgmt
+    - name: user
+      policy: policies/client.yml
+      members:
+          - user
+      gateway: "{{ (fedex_networks | selectattr('name', 'equalto', 'user') | first).gateway }}"
