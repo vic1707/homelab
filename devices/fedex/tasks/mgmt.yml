@@ -28,7 +28,10 @@
           delegate: "0"
       replace: true
       autocommit: true
-  notify: Fedex | Reload network
+  notify:
+      - Fedex | Reload network
+      - Fedex | Restart dropbear
+      - Fedex | Restart uhttpd
 
 - name: mgmt | Configure DHCP
   community.openwrt.uci:
@@ -46,26 +49,3 @@
       replace: true
       autocommit: true
   notify: Fedex | Restart dnsmasq
-
-- name: mgmt | Apply network and management service changes
-  ansible.builtin.meta: flush_handlers
-
-- name: mgmt | Check management listeners
-  community.openwrt.command:
-      cmd: netstat -lnt
-  register: mgmt_listeners
-  changed_when: false
-
-- name: mgmt | Activate missing management listeners
-  community.openwrt.service:
-      name: "{{ listener.name }}"
-      state: restarted
-  loop:
-      - name: dropbear
-        address: "{{ mgmt_network.gateway }}:22"
-      - name: uhttpd
-        address: "{{ mgmt_network.gateway }}:80"
-  loop_control:
-      label: "{{ listener.name }}"
-      loop_var: listener
-  when: listener.address not in mgmt_listeners.stdout

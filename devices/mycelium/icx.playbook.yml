@@ -9,7 +9,7 @@
 
   vars_files:
       - ../../.config/networks.yml
-      - vars/ports.yml
+      - ../../.config/cabinet.yml
 
   tasks:
       - name: ICX | Configure system

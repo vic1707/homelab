@@ -5,6 +5,7 @@
 !.config/.shellcheckrc
 !.config/.sops.yml
 !.config/.typos.toml
+!.config/cabinet.yml
 !.config/inventory.yml
 !.config/networks.yml
 !.config/networks.validate.playbook.yml

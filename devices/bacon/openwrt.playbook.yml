@@ -2,9 +2,11 @@
 - name: Manage bacon OpenWrt
   hosts: bacon
   gather_facts: false
+  force_handlers: true
 
   vars_files:
       - ../../.config/networks.yml
+      - ../../.config/cabinet.yml
       - vars/openwrt.yml
 
   pre_tasks:
@@ -12,12 +14,21 @@
         community.openwrt.ping:
 
   tasks:
-      - name: Bacon | Set root password
+      - name: Bacon | Check root password
+        community.openwrt.command:
+            cmd: grep -q '^root:[^!*:]' /etc/shadow
+            uses_shell: true
+        register: bacon_root_password_configured
+        changed_when: false
+        failed_when: false
+
+      - name: Bacon | Update root password
         community.openwrt.command:
             cmd: >-
                 printf '%s\n%s\n' {{ root_password | quote }} {{ root_password | quote }} | passwd root
             uses_shell: true
         no_log: true
+        when: bacon_root_password_configured.rc != 0 or bacon_update_root_password | default(false)
 
       - name: Bacon | Configure LAN bridge
         community.openwrt.uci:
@@ -46,7 +57,7 @@
                 proto: "{{ bacon_network.proto }}"
             replace: true
             autocommit: true
-        loop: "{{ networks }}"
+        loop: "{{ bacon_networks }}"
         loop_control:
             label: "{{ bacon_network.name }}"
             loop_var: bacon_network

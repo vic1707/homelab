@@ -10,18 +10,17 @@ def subnet_netmask(subnet: str) -> str:
 	return str(ip_network(subnet).netmask)
 
 
-def icx_ve_interfaces(networks: list[dict]) -> list[dict]:
-	return [
-		{"id": network["vlan_id"], "ip_address": f"{network['addresses']['mycelium']}/{ip_network(network['subnet']).prefixlen}"}
-		for network in networks
-		if network.get("addresses", {}).get("mycelium")
-	]
-
-
 def icx_vlans(networks: list[dict]) -> list[dict]:
 	return [
 		{"id": network["vlan_id"], "name": network["name"]}
-		| ({"router_interface": network["vlan_id"]} if network.get("addresses", {}).get("mycelium") else {})
+		| (
+			{
+				"router_interface": network["vlan_id"],
+				"ip_address": f"{network['addresses']['mycelium']}/{ip_network(network['subnet']).prefixlen}",
+			}
+			if network.get("addresses", {}).get("mycelium")
+			else {}
+		)
 		for network in networks
 	]
 
@@ -29,7 +28,6 @@ def icx_vlans(networks: list[dict]) -> list[dict]:
 class FilterModule:
 	def filters(self) -> dict[str, object]:
 		return {
-			"icx_ve_interfaces": icx_ve_interfaces,
 			"icx_vlans": icx_vlans,
 			"overlapping_networks": overlapping_networks,
 			"subnet_netmask": subnet_netmask,

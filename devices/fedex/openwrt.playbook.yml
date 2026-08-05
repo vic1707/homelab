@@ -2,9 +2,11 @@
 - name: Manage fedex OpenWrt
   hosts: fedex
   gather_facts: false
+  force_handlers: true
 
   vars_files:
       - ../../.config/networks.yml
+      - ../../.config/cabinet.yml
       - vars/openwrt.yml
       - vars/static_hosts.yml
       - vars/nut.yml

@@ -6,7 +6,7 @@ bridge:
 root_password: >-
     {{ lookup('community.sops.sops', '../../.secrets/devices/bacon.yml', extract='["accounts"]["root"]["password"]') | trim }}
 
-networks:
+bacon_networks:
     - name: lan
       device: "{{ bridge.name }}"
       proto: dhcp # TODO: none if management vlan is added so bacon isn't reachable from pure LAN
