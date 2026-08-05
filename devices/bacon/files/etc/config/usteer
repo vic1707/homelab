@@ -1,5 +1,5 @@
 config usteer
-	option network 'lan'
+	option network 'loopback'
 	option local_mode '1'
 	option aggressiveness '2'
 	option band_steering_interval '30000'
