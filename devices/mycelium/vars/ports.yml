@@ -108,14 +108,16 @@ mycelium_interfaces:
       name: 1/1/47
     - <<: *parking
       name: 1/1/48
-    - <<: *parking
-      name: 1/2/1
-      description: fedex-reserved
-    - <<: *parking
+    - name: 1/2/1 # X1
+      description: fedex-mgmt
+      mode: trunk
+      allowed_vlans: [10]
+      admin_state: up
+    - <<: *parking # X2
       name: 1/2/2
-    - <<: *parking
+    - <<: *parking # X3
       name: 1/2/3
-    - <<: *parking
+    - <<: *parking # X4
       name: 1/2/4
 
 # Physical management 1 remains disconnected and is reserved for the later OOB phase.

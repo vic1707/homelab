@@ -4,3 +4,8 @@
       vlans: "{{ active_networks | icx_vlans }}"
       purge: false
       save_when: changed
+
+- name: vlans | Configure in-band management address
+  bofzilla.icx.ve_interfaces:
+      interfaces: "{{ active_networks | icx_ve_interfaces }}"
+      save_when: changed

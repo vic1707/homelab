@@ -29,8 +29,15 @@ temp_lan:
     dhcp_limit: 150
     dhcp_leasetime: 12h
 
+mgmt_network: "{{ networks | selectattr('name', 'equalto', 'mgmt') | first }}"
+mycelium_trunk_device: "{{ ports.sfp_8 }}"
+
 firewall_zones:
     - name: lan
       policy: policies/lan.yml
       members:
           - lan
+    - name: mgmt
+      policy: policies/mgmt.yml
+      members:
+          - mgmt

@@ -5,6 +5,12 @@ networks:
       subnet: 10.0.10.0/24
       gateway: 10.0.10.1
       gateway_owner: fedex
+      addresses:
+          mycelium: 10.0.10.2
+      dhcp:
+          start: 200
+          limit: 21
+          leasetime: 12h
       state: active
 
     - name: user

@@ -24,6 +24,7 @@ dns:
     bind_hosts:
         - 127.0.0.1
         - "{{ temp_lan.ipaddr }}"
+        - "{{ mgmt_network.gateway }}"
         - 192.168.255.1
     port: 53
     anonymize_client_ip: false
@@ -45,6 +46,7 @@ dns:
     allowed_clients:
         - 127.0.0.0/8
         - "{{ temp_lan.ipaddr }}/24"
+        - "{{ mgmt_network.subnet }}"
         - 192.168.255.0/24
     disallowed_clients: []
     blocked_hosts: []
@@ -74,6 +76,7 @@ dns:
     private_networks:
         - 127.0.0.0/8
         - "{{ temp_lan.ipaddr }}/24"
+        - "{{ mgmt_network.subnet }}"
         - 192.168.255.0/24
     use_private_ptr_resolvers: true
     local_ptr_upstreams:
@@ -122,6 +125,7 @@ filters:
 whitelist_filters: []
 user_rules:
     - "||fedex.lan^$client=192.168.1.0/24,dnsrewrite=NOERROR;A;192.168.1.1"
+    - "||fedex.lan^$client={{ mgmt_network.subnet }},dnsrewrite=NOERROR;A;{{ mgmt_network.gateway }}"
     - "||fedex.lan^$client=192.168.255.0/24,dnsrewrite=NOERROR;A;192.168.255.1"
 filtering:
     protection_enabled: true

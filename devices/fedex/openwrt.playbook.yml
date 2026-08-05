@@ -24,6 +24,9 @@
       - name: Fedex | Configure temporary LAN
         ansible.builtin.import_tasks: tasks/temp_lan.yml
 
+      - name: Fedex | Configure management network
+        ansible.builtin.import_tasks: tasks/mgmt.yml
+
       - name: Fedex | Configure static DHCP hosts
         ansible.builtin.import_tasks: tasks/static_hosts.yml
 
