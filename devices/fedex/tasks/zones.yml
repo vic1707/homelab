@@ -62,3 +62,26 @@
       label: "{{ slzb_host.name }}"
       loop_var: slzb_host
   notify: Fedex | Reload firewall
+
+- name: zones | Allow Home Assistant access to Yeelight
+  community.openwrt.uci:
+      command: section
+      config: firewall
+      type: rule
+      name: "allow_home_assistant_{{ yeelight_host.name }}"
+      value:
+          name: "Allow-Home-Assistant-{{ yeelight_host.name | upper }}"
+          src: automation
+          src_ip: "{{ home_assistant_host.ip }}"
+          dest: iot_offline
+          dest_ip: "{{ yeelight_host.ip }}"
+          proto: tcp
+          dest_port: "55443"
+          target: ACCEPT
+      replace: true
+      autocommit: true
+  loop: "{{ yeelight_hosts }}"
+  loop_control:
+      label: "{{ yeelight_host.name }}"
+      loop_var: yeelight_host
+  notify: Fedex | Reload firewall

@@ -20,15 +20,19 @@ static_hosts:
 
     - name: yeelight_billard
       mac: "5C:E5:0C:84:A1:BE"
+      ip: 10.0.31.10
 
     - name: yeelight_office
       mac: "5C:E5:0C:84:CA:F9"
+      ip: 10.0.31.11
 
     - name: yeelight_bedroom
       mac: "5C:E5:0C:86:09:22"
+      ip: 10.0.31.12
 
     - name: yeelight_tv
       mac: "5C:E5:0C:86:09:2C"
+      ip: 10.0.31.13
 
     - name: ecovacs
       mac: "50:31:23:79:3D:B9"
