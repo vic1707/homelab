@@ -64,3 +64,17 @@ wifis:
           {{ lookup('community.sops.sops', '../../.secrets/devices/bacon.yml', extract='["wifi"]["iot"]["password"]') }}
       enabled: true
       isolate: true
+
+    - name: iot_cloud
+      network: media_cloud
+      ssid: idIoT_cloud
+      encryption: psk2 # WPA2-PSK
+      ieee80211w: false # PMF; protects management frames.
+      ieee80211k: false # Neighbor reports; helps clients discover nearby AP/radios.
+      bss_transition: false # 802.11v; lets AP suggest a better AP/radio.
+      rrm_neighbor_report: false # Include neighbor list in 802.11k reports.
+      rrm_beacon_report: false # Let clients report beacon measurements.
+      password: >-
+          {{ lookup('community.sops.sops', '../../.secrets/devices/bacon.yml', extract='["wifi"]["iot_cloud"]["password"]') }}
+      enabled: true
+      isolate: true

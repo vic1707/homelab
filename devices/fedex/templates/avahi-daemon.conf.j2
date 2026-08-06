@@ -1,0 +1,22 @@
+[server]
+allow-interfaces={% for zone in firewall_zones if 'mdns' in zone.features %}{{ mycelium_trunk_device }}.{{ (fedex_networks | selectattr('name', 'equalto', zone.name) | first).vlan_id }}{{ ',' if not loop.last else '' }}{% endfor %}
+
+use-ipv4=yes
+use-ipv6=no
+check-response-ttl=no
+use-iff-running=no
+
+[publish]
+disable-publishing=yes
+
+[reflector]
+enable-reflector=yes
+reflect-ipv=no
+
+[rlimits]
+rlimit-core=0
+rlimit-data=4194304
+rlimit-fsize=0
+rlimit-nofile=30
+rlimit-stack=4194304
+rlimit-nproc=3

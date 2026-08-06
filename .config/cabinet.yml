@@ -48,7 +48,12 @@ cabinet_links:
             - mgmt
             - user
             - iot_offline
+            - media_cloud
             - untrusted
+    tv:
+        state: active
+        mycelium: copper1
+        peer: TV
     home_assistant:
         state: active
         mycelium: copper44
@@ -73,8 +78,11 @@ mycelium_interface_profiles:
         admin_state: up
 
 mycelium_interfaces:
-    - name: 1/1/1
-      <<: *parking
+    - name: 1/1/1 # copper1, TV
+      description: tv
+      mode: access
+      access_vlan: "{{ active_networks | selectattr('name', 'equalto', 'media_cloud') | map(attribute='vlan_id') | first }}"
+      admin_state: up
     - name: 1/1/2 # copper2, MGMT access/recovery
       <<: *mgmt
       description: mgmt

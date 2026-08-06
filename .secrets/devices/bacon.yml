@@ -12,7 +12,8 @@ wifi:
         password: ENC[AES256_GCM,data:Bxl2qmnbatkPoXzqUtz9KYhCO/3Zw/UJfbSh/JbZk6IO1jhAQWcvc2Z1djI7vjqyrkY=,iv:OerW4RaZ0ys/aUgg+RQz1nCh1/WbAtHvNgcp1SoPdys=,tag:NzZa6zN00XsniVNDS8/BAw==,type:str]
     iot:
         password: ENC[AES256_GCM,data:dzNeK16LFAFjbFvnms1WgME6jrQnLn3CDKrqBVLrqhJqjHM2oZjcLsrVxsszsx4ZA/A=,iv:xUk6ERQBENP4kVRF7lekvDfi3QqcGqnnC5oEvO1qYfA=,tag:UxioQT9q+IXR+wkEax9Xkg==,type:str]
-
+    iot_cloud:
+        password: ENC[AES256_GCM,data:n6s3vLGWeHCbRqFbwbIBYClrt4JsLFxGGY85hX2ty+DCr8QbH5tKTeGQccv/Bw/lSJg=,iv:nEENG68ZovaCbAxoUle2kUa4x2mnHesEYBaH8vikHpI=,tag:r8ShgiJJwqxddVNxUrDAJA==,type:str]
 sops:
     age:
         - enc: |
@@ -25,6 +26,6 @@ sops:
               -----END AGE ENCRYPTED FILE-----
           recipient: age1q9gm9fgduf5scr3dadl7yarh4wxzlr6psl4zp02k2r9edjngasssd266k4
     encrypted_regex: (?i)(secret|token|password|key)$
-    lastmodified: "2026-07-11T23:12:34Z"
-    mac: ENC[AES256_GCM,data:9+cfCRiOU6nCLlKb6YVnwlYix0J/IB9sN2k6V7/Jhf2B5o+bK2/Ax/uaMWcPOnPtQs80zvvHmprLYzDjbj3wYutEtgP/awfoxl5tKmmDipKJcOfFz0qLa/T5e3HHF0+LMsjJDX+UXLI24/Sg2Q0my9Qdg6Ia/MpzlzGwVSwC4fo=,iv:UeVQfqSY1PuuFB4p/UXKc4gTB7ZK1YzZrcIQARlF1X8=,tag:EfOyAyPeDv8b3z2GYngq+w==,type:str]
-    version: 3.13.2
+    lastmodified: "2026-08-06T16:25:22Z"
+    mac: ENC[AES256_GCM,data:DZIAQn/9RphIkA7eSUb5Sl/0ET9GzcN8mzCxafOVzsaWU4HXcJusjK9dRhaNok5YkzOlUZKv25p6G4Q+ZDDmMEXmin47o9YBmyvWG+Ycv5psmvQQAwpsCDnk5ICxoS2hHB21Ub5cvEUraoaAZEuhP4D1+4cHoU+sJU6AVk8A4Yo=,iv:zj5dMlwCxhT9CApOy0U7KWUnGkCxdV6TYUJc++NhVZQ=,tag:k6tUVToxlxK+97EJe7kDVA==,type:str]
+    version: 3.13.3

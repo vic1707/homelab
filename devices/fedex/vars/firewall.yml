@@ -4,7 +4,7 @@ firewall_zones:
       features: [dhcp, dns, ping, router_management, rescue_access]
 
     - name: user
-      features: [dhcp, dns, ping, force_dns, block_dot_doq, internet]
+      features: [dhcp, dns, ping, force_dns, block_dot_doq, internet, mdns]
       exceptions:
           allow_user_home_assistant:
               origin: user
@@ -16,6 +16,10 @@ firewall_zones:
               destinations: [slzb_06u, slzb_mrw10u]
               ports: [80]
               protocols: [tcp]
+          # AirPlay and Google Cast negotiate model-dependent ports.
+          allow_user_tv_casting:
+              origin: user
+              destinations: [TV]
 
     - name: automation
       features: [dhcp, dns, ping, force_dns, ntp, nut]
@@ -31,6 +35,9 @@ firewall_zones:
 
     - name: iot_offline
       features: [dhcp, dns, ping, force_dns, ntp]
+
+    - name: media_cloud
+      features: [dhcp, dns, ping, force_dns, block_dot_doq, internet, mdns, ntp]
 
     - name: untrusted
       features: [dhcp, dns, ping, force_dns, block_dot_doq, internet]

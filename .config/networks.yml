@@ -51,7 +51,11 @@ networks:
       subnet: 10.0.32.0/24
       gateway: 10.0.32.1
       gateway_owner: fedex
-      state: planned
+      dhcp:
+          start: 50
+          limit: 205
+          leasetime: 12h
+      state: active
 
     - name: untrusted
       vlan_id: 40

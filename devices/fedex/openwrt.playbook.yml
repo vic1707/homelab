@@ -33,6 +33,9 @@
       - name: Fedex | Configure firewall zones
         ansible.builtin.import_tasks: tasks/zones.yml
 
+      - name: Fedex | Configure mDNS reflection
+        ansible.builtin.import_tasks: tasks/mdns.yml
+
       - name: Fedex | Configure AdGuard Home
         ansible.builtin.import_tasks: tasks/adguardhome.yml
 
@@ -95,4 +98,9 @@
       - name: Fedex | Restart NUT monitor
         community.openwrt.service:
             name: nut-monitor
+            state: restarted
+
+      - name: Fedex | Restart Avahi
+        community.openwrt.service:
+            name: avahi-daemon
             state: restarted

@@ -7,6 +7,7 @@ FIREWALL_FEATURE_SECTIONS = {
 	"dns": "allow_{zone}_dns",
 	"force_dns": "redirect_{zone}_dns",
 	"internet": "{zone}_wan",
+	"mdns": "allow_{zone}_mdns",
 	"ntp": "allow_{zone}_ntp",
 	"nut": "allow_{zone}_nut",
 	"ping": "allow_{zone}_ping",
