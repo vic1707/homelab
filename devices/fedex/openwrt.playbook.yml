@@ -9,6 +9,7 @@
       - ../../.config/cabinet.yml
       - vars/openwrt.yml
       - vars/static_hosts.yml
+      - vars/firewall.yml
       - vars/nut.yml
       - vars/adguardhome.yml
 

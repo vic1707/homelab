@@ -1,0 +1,16 @@
+---
+- name: features | dns | Configure rule | {{ firewall_zone.name | upper }}
+  community.openwrt.uci:
+      command: section
+      config: firewall
+      type: rule
+      name: "allow_{{ firewall_zone.name }}_dns"
+      value:
+          src: "{{ firewall_zone.name }}"
+          proto: [tcp, udp]
+          dest_ip: "{{ firewall_gateway }}"
+          dest_port: "53"
+          target: ACCEPT
+      replace: true
+      autocommit: true
+  notify: Fedex | Reload firewall

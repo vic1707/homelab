@@ -1,0 +1,17 @@
+---
+- name: features | ping | Configure rule | {{ firewall_zone.name | upper }}
+  community.openwrt.uci:
+      command: section
+      config: firewall
+      type: rule
+      name: "allow_{{ firewall_zone.name }}_ping"
+      value:
+          src: "{{ firewall_zone.name }}"
+          proto: icmp
+          dest_ip: "{{ firewall_gateway }}"
+          icmp_type: echo-request
+          target: ACCEPT
+          family: ipv4
+      replace: true
+      autocommit: true
+  notify: Fedex | Reload firewall

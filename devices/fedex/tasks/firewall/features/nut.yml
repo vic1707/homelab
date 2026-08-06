@@ -1,0 +1,22 @@
+---
+- name: features | nut | Configure rule | {{ firewall_zone.name | upper }}
+  community.openwrt.uci:
+      command: section
+      config: firewall
+      type: rule
+      name: "allow_{{ firewall_zone.name }}_nut"
+      value:
+          src: "{{ firewall_zone.name }}"
+          src_ip: >-
+              {{ static_hosts
+                  | selectattr('name', 'in', firewall_nut_clients)
+                  | map(attribute='ip')
+                  | list
+              }}
+          proto: tcp
+          dest_ip: "{{ firewall_gateway }}"
+          dest_port: "{{ nut.listen_port }}"
+          target: ACCEPT
+      replace: true
+      autocommit: true
+  notify: Fedex | Reload firewall

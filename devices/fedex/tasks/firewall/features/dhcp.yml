@@ -1,0 +1,17 @@
+---
+- name: features | dhcp | Configure rule | {{ firewall_zone.name | upper }}
+  community.openwrt.uci:
+      command: section
+      config: firewall
+      type: rule
+      name: "allow_{{ firewall_zone.name }}_dhcp"
+      value:
+          src: "{{ firewall_zone.name }}"
+          proto: udp
+          src_port: "68"
+          dest_port: "67"
+          target: ACCEPT
+          family: ipv4
+      replace: true
+      autocommit: true
+  notify: Fedex | Reload firewall

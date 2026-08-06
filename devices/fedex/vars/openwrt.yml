@@ -12,43 +12,4 @@ root_password: >-
 
 fedex_networks: "{{ active_networks | selectattr('gateway_owner', 'equalto', 'fedex') | rejectattr('subnet', 'none') | list }}"
 mgmt_network: "{{ fedex_networks | selectattr('name', 'equalto', 'mgmt') | first }}"
-home_assistant_host: "{{ static_hosts | selectattr('name', 'equalto', 'homeassistant') | first }}"
-slzb_hosts: "{{ static_hosts | selectattr('name', 'in', ['slzb_06u', 'slzb_mrw10u']) | list }}"
-yeelight_hosts: >-
-    {{ static_hosts
-        | selectattr('name', 'in', ['yeelight_billard', 'yeelight_office', 'yeelight_bedroom', 'yeelight_tv'])
-        | list
-    }}
 mycelium_trunk_device: "{{ cabinet_ports.fedex[cabinet_links.fedex_mycelium.fedex] }}"
-
-firewall_zones:
-    - name: mgmt
-      policy: policies/mgmt.yml
-      members:
-          - mgmt
-    - name: user
-      policy: policies/client.yml
-      members:
-          - user
-      gateway: "{{ (fedex_networks | selectattr('name', 'equalto', 'user') | first).gateway }}"
-      allow_wan: true
-    - name: automation
-      policy: policies/client.yml
-      members:
-          - automation
-      gateway: "{{ (fedex_networks | selectattr('name', 'equalto', 'automation') | first).gateway }}"
-      allow_ntp: true
-      allow_nut: true
-      nut_source_ip: "{{ home_assistant_host.ip }}"
-    - name: iot_offline
-      policy: policies/client.yml
-      members:
-          - iot_offline
-      gateway: "{{ (fedex_networks | selectattr('name', 'equalto', 'iot_offline') | first).gateway }}"
-      allow_ntp: true
-    - name: untrusted
-      policy: policies/client.yml
-      members:
-          - untrusted
-      gateway: "{{ (fedex_networks | selectattr('name', 'equalto', 'untrusted') | first).gateway }}"
-      allow_wan: true

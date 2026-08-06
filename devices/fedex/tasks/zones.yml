@@ -1,87 +1,86 @@
 ---
-- name: zones | Apply firewall policies
-  ansible.builtin.include_tasks: "{{ firewall_zone.policy }}"
+- name: zones | Validate firewall intent
+  ansible.builtin.assert:
+      that: firewall_errors | length == 0
+      fail_msg: "{{ firewall_errors | join('; ') }}"
+  vars:
+      firewall_errors: >-
+          {{ firewall_zones
+              | firewall_config_errors(static_hosts, networks, firewall_nut_clients)
+          }}
+
+- name: zones | Ensure managed section manifest exists
+  community.openwrt.command:
+      cmd: touch /etc/config/ansible
+      creates: /etc/config/ansible
+
+- name: zones | Read managed section manifest
+  community.openwrt.command:
+      cmd: uci -q get ansible.firewall.sections
+  register: firewall_manifest
+  changed_when: false
+  failed_when: false
+
+- name: zones | Configure deny-by-default zones
+  community.openwrt.uci:
+      command: section
+      config: firewall
+      type: zone
+      name: "{{ firewall_zone.name }}"
+      value:
+          name: "{{ firewall_zone.name }}"
+          network: ["{{ firewall_zone.name }}"]
+          input: REJECT
+          output: ACCEPT
+          forward: REJECT
+      replace: true
+      autocommit: true
+  loop: "{{ firewall_zones }}"
+  loop_control:
+      label: "{{ firewall_zone.name }}"
+      loop_var: firewall_zone
+  notify: Fedex | Reload firewall
+
+- name: zones | Apply features
+  ansible.builtin.include_tasks: "firewall/features/{{ firewall_pair.1 }}.yml"
+  loop: "{{ firewall_zones | subelements('features') }}"
+  loop_control:
+      label: "{{ firewall_pair.0.name }} | {{ firewall_pair.1 }}"
+      loop_var: firewall_pair
+  vars:
+      firewall_zone: "{{ firewall_pair.0 }}"
+      firewall_gateway: >-
+          {{ (fedex_networks | selectattr('name', 'equalto', firewall_pair.0.name) | first).gateway }}
+
+- name: zones | Apply exceptions
+  ansible.builtin.include_tasks: firewall/exceptions.yml
   loop: "{{ firewall_zones }}"
   loop_control:
       label: "{{ firewall_zone.name }}"
       loop_var: firewall_zone
 
-- name: zones | Allow USER access to Home Assistant UI
+- name: zones | Remove stale managed sections
   community.openwrt.uci:
-      command: section
+      command: absent
       config: firewall
-      type: rule
-      name: allow_user_home_assistant
-      value:
-          name: Allow-USER-Home-Assistant
-          src: user
-          dest: automation
-          dest_ip: "{{ home_assistant_host.ip }}"
-          proto: tcp
-          dest_port: "8123"
-          target: ACCEPT
-      replace: true
+      section: "{{ firewall_section }}"
       autocommit: true
-  notify: Fedex | Reload firewall
-
-- name: zones | Allow Home Assistant WAN access
-  community.openwrt.uci:
-      command: section
-      config: firewall
-      type: rule
-      name: allow_home_assistant_wan
-      value:
-          name: Allow-Home-Assistant-WAN
-          src: automation
-          src_ip: "{{ home_assistant_host.ip }}"
-          dest: wan
-          proto: all
-          target: ACCEPT
-      replace: true
-      autocommit: true
-  notify: Fedex | Reload firewall
-
-- name: zones | Allow USER access to SLZB web interfaces
-  community.openwrt.uci:
-      command: section
-      config: firewall
-      type: rule
-      name: "allow_user_{{ slzb_host.name }}_webui"
-      value:
-          name: "Allow-USER-{{ slzb_host.name | upper }}-WebUI"
-          src: user
-          dest: automation
-          dest_ip: "{{ slzb_host.ip }}"
-          proto: tcp
-          dest_port: "80"
-          target: ACCEPT
-      replace: true
-      autocommit: true
-  loop: "{{ slzb_hosts }}"
+  loop: >-
+      {{ (firewall_manifest.stdout.split() if firewall_manifest.rc == 0 else [])
+          | difference(firewall_managed_sections)
+      }}
   loop_control:
-      label: "{{ slzb_host.name }}"
-      loop_var: slzb_host
+      label: "{{ firewall_section }}"
+      loop_var: firewall_section
   notify: Fedex | Reload firewall
 
-- name: zones | Allow Home Assistant access to Yeelight
+- name: zones | Save managed section manifest
   community.openwrt.uci:
       command: section
-      config: firewall
-      type: rule
-      name: "allow_home_assistant_{{ yeelight_host.name }}"
+      config: ansible
+      type: manifest
+      name: firewall
       value:
-          name: "Allow-Home-Assistant-{{ yeelight_host.name | upper }}"
-          src: automation
-          src_ip: "{{ home_assistant_host.ip }}"
-          dest: iot_offline
-          dest_ip: "{{ yeelight_host.ip }}"
-          proto: tcp
-          dest_port: "55443"
-          target: ACCEPT
+          sections: "{{ firewall_managed_sections | unique | sort }}"
       replace: true
       autocommit: true
-  loop: "{{ yeelight_hosts }}"
-  loop_control:
-      label: "{{ yeelight_host.name }}"
-      loop_var: yeelight_host
-  notify: Fedex | Reload firewall

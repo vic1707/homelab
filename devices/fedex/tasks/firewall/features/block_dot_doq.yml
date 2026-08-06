@@ -1,0 +1,16 @@
+---
+- name: features | block_dot_doq | Configure rule | {{ firewall_zone.name | upper }}
+  community.openwrt.uci:
+      command: section
+      config: firewall
+      type: rule
+      name: "block_{{ firewall_zone.name }}_dot"
+      value:
+          src: "{{ firewall_zone.name }}"
+          dest: wan
+          proto: [tcp, udp]
+          dest_port: "853"
+          target: REJECT
+      replace: true
+      autocommit: true
+  notify: Fedex | Reload firewall

@@ -1,0 +1,39 @@
+---
+firewall_zones:
+    - name: mgmt
+      features: [dhcp, dns, ping, router_management, rescue_access]
+
+    - name: user
+      features: [dhcp, dns, ping, force_dns, block_dot_doq, internet]
+      exceptions:
+          allow_user_home_assistant:
+              origin: user
+              destinations: [homeassistant]
+              ports: [8123]
+              protocols: [tcp]
+          allow_user_slzb_webui:
+              origin: user
+              destinations: [slzb_06u, slzb_mrw10u]
+              ports: [80]
+              protocols: [tcp]
+
+    - name: automation
+      features: [dhcp, dns, ping, force_dns, ntp, nut]
+      exceptions:
+          allow_home_assistant_wan:
+              origin: homeassistant
+              destinations: [wan]
+          allow_home_assistant_yeelights:
+              origin: homeassistant
+              destinations: [yeelight_billard, yeelight_office, yeelight_bedroom, yeelight_tv]
+              ports: [55443]
+              protocols: [tcp]
+
+    - name: iot_offline
+      features: [dhcp, dns, ping, force_dns, ntp]
+
+    - name: untrusted
+      features: [dhcp, dns, ping, force_dns, block_dot_doq, internet]
+
+firewall_nut_clients: [homeassistant]
+firewall_managed_sections: "{{ firewall_zones | firewall_section_ids }}"

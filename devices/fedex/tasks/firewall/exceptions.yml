@@ -1,0 +1,22 @@
+---
+- name: firewall | exceptions | Configure rules | {{ firewall_zone.name | upper }}
+  community.openwrt.uci:
+      command: section
+      config: firewall
+      type: rule
+      name: "{{ firewall_exception.key }}"
+      value: >-
+          {{ firewall_exception.value
+              | firewall_exception_options(
+                  static_hosts,
+                  firewall_zones | map(attribute='name') | list,
+                  networks
+              )
+          }}
+      replace: true
+      autocommit: true
+  loop: "{{ firewall_zone.exceptions | default({}) | dict2items }}"
+  loop_control:
+      label: "{{ firewall_exception.key }}"
+      loop_var: firewall_exception
+  notify: Fedex | Reload firewall
