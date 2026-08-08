@@ -1,6 +1,6 @@
 FROM ghcr.io/jguer/yay-builder:latest AS sum
 
-	ARG VERSION=2.15.0
+	ARG VERSION=2.13.0
 	USER nobody:nobody
 	
 	WORKDIR /sum
