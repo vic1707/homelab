@@ -113,7 +113,8 @@ jobs:
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             tags="pr-${{ github.event.pull_request.number }}"
           else
-            tags="latest"
+            version="$(sed -n 's/^[[:space:]]*ARG VERSION=//p' "$CONTAINER_FILE" | tail -1)"
+            tags="${version:-latest}"
           fi
 
           echo "image=$(basename "$CONTAINER_FILE" .containerfile)" >> "$GITHUB_OUTPUT"

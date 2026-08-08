@@ -12,7 +12,7 @@
       netboot_xyz_url: "https://boot.netboot.xyz/ipxe/{{ netboot_xyz_image }}"
       netboot_xyz_checksum_url: https://boot.netboot.xyz/ipxe/netboot.xyz-sha256-checksums.txt
       netboot_xyz_path: "/private/tmp/{{ netboot_xyz_image }}"
-      sum_container_image: localhost/util-sum:latest
+      sum_container_image: ghcr.io/vic1707/homelab/sum:2.15.0
 
   pre_tasks:
       - name: Hydra netboot | Validate credentials
@@ -50,17 +50,6 @@
             mode: "0644"
         tags: [never, reload]
 
-      - name: Hydra netboot | Build SUM image
-        containers.podman.podman_image:
-            name: localhost/util-sum
-            tag: latest
-            state: build
-            pull: false
-            path: "{{ playbook_dir }}/../../.custom-containers"
-            build:
-                file: "{{ playbook_dir }}/sum.containerfile"
-        tags: [never, reload]
-
       - name: Hydra netboot | Unmount existing floppy
         containers.podman.podman_container:
             name: hydra-sum
@@ -68,7 +57,6 @@
             state: started
             detach: false
             rm: true
-            pull: never
             network: [host]
             command: >-
                 -i {{ ansible_host }} -u {{ ipmi_username }} -p {{ ipmi_password }}
@@ -84,7 +72,6 @@
             state: started
             detach: false
             rm: true
-            pull: never
             network: [host]
             volume:
                 - "{{ netboot_xyz_path }}:/media/netboot.img:ro"

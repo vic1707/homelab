@@ -58,7 +58,6 @@
 !devices/*/vars/**
 !devices/*/files/
 !devices/*/files/**
-!devices/hydra/sum.containerfile
 
 !domains/
 !domains/bofzilla.dev
