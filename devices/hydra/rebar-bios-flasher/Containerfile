@@ -1,0 +1,77 @@
+ARG SUM_IMAGE=ghcr.io/vic1707/homelab/sum:2.15.0
+ARG UEFITOOL_REF=0.28.0
+ARG REBAR_VERSION=0.3
+
+# sum
+	FROM ${SUM_IMAGE} AS sum
+
+# uefitool
+	FROM debian:bookworm-slim AS rebarinsert
+
+	ARG UEFITOOL_REF
+
+	RUN apt-get update \
+		&& apt-get install -y --no-install-recommends build-essential ca-certificates git qt5-qmake qtbase5-dev
+
+	WORKDIR /src
+
+	RUN git clone --depth 1 --branch "${UEFITOOL_REF}" https://github.com/LongSoft/UEFITool.git UEFITool
+
+	COPY assets/UEFIInsert/rebarinsert_main.cpp UEFITool/ReBarInsert/rebarinsert_main.cpp
+	COPY assets/UEFIInsert/rebarinsert.pro UEFITool/ReBarInsert/rebarinsert.pro
+
+	WORKDIR /src/UEFITool/ReBarInsert
+
+	RUN qmake rebarinsert.pro \
+		&& make -j"$(nproc)" \
+		&& install -Dm0755 ReBarInsert /out/ReBarInsert
+
+# rebaruefi
+	FROM alpine:3.22 AS rebaruefi
+
+	ARG REBAR_VERSION
+
+	RUN apk add --no-cache ca-certificates curl
+
+	RUN curl -fsSL \
+		"https://github.com/xCuri0/ReBarUEFI/releases/download/${REBAR_VERSION}/ReBarDxe.ffs" \
+		-o /ReBarDxe.ffs
+
+# signing key
+	FROM alpine:3.22 AS secureflash-key
+
+	RUN apk add --no-cache openssl
+
+	RUN mkdir -p /out \
+		&& openssl genpkey \
+			-algorithm RSA \
+			-pkeyopt rsa_keygen_bits:2048 \
+			-out /out/secureflash.key.pem
+
+# final
+	FROM debian:bookworm-slim AS final
+
+	RUN apt-get update \
+		&& apt-get install -y --no-install-recommends coreutils grep libgcc-s1 libqt5core5a libstdc++6 python3 python3-asn1crypto python3-cryptography zlib1g 
+
+	COPY --from=rebarinsert /out/ReBarInsert /usr/local/bin/ReBarInsert
+	COPY --from=rebaruefi /ReBarDxe.ffs /opt/rebar/ReBarDxe.ffs
+	COPY --from=sum --chmod=0755 /bin/sum /usr/local/bin/sum
+	COPY --from=secureflash-key --chown=65534:65534 --chmod=0400 /out/secureflash.key.pem /opt/secureflash/secureflash.key.pem
+	COPY --chmod=0755 assets/secureflash_sign.py /usr/local/bin/secureflash-sign
+	COPY --chmod=0755 assets/build.sh /usr/local/bin/rebar-secureflash-build
+
+	RUN set -eux; \
+		test -x /usr/local/bin/ReBarInsert; \
+		test -x /usr/local/bin/sum; \
+		test -x /usr/local/bin/secureflash-sign; \
+		test -x /usr/local/bin/rebar-secureflash-build; \
+		test -s /opt/rebar/ReBarDxe.ffs; \
+		test -s /opt/secureflash/secureflash.key.pem; \
+		/usr/local/bin/sum --version
+
+	WORKDIR /work
+	USER 65534:65534
+
+	ENTRYPOINT ["/usr/local/bin/rebar-secureflash-build"]
+	CMD ["--help"]
