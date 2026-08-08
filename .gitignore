@@ -59,6 +59,10 @@
 !devices/*/files/
 !devices/*/files/**
 
+!devices/hydra/rebar-bios-flasher/
+!devices/hydra/rebar-bios-flasher/**
+devices/hydra/rebar-bios-flasher/**/*.bin
+
 !domains/
 !domains/bofzilla.dev
 !domains/bofzilla.dev/vars/
