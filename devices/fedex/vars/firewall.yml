@@ -20,6 +20,7 @@ firewall_zones:
           allow_user_tv_casting:
               origin: user
               destinations: [TV]
+              protocols: [tcp, udp]
 
     - name: automation
       features: [dhcp, dns, ping, force_dns, ntp, nut]

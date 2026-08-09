@@ -8,8 +8,8 @@
       value:
           src: "{{ firewall_zone.name }}"
           proto: tcp
-          dest_ip: "{{ firewall_gateway }}"
-          dest_port: [22, 80, 443]
+          dest_ip: "{{ mgmt_network.gateway }}"
+          dest_port: [22, 80, 443, 3000]
           target: ACCEPT
       replace: true
       autocommit: true

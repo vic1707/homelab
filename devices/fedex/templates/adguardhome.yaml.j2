@@ -3,7 +3,7 @@ http:
     pprof:
         port: 6060
         enabled: false
-    address: 192.168.255.1:3000
+    address: "{{ mgmt_network.gateway }}:3000"
     session_ttl: 720h
     doh:
         routes:
@@ -127,7 +127,7 @@ filters:
       id: 1
 whitelist_filters: []
 user_rules:
-    - "||fedex.lan^$client=192.168.255.0/24,dnsrewrite=NOERROR;A;192.168.255.1"
+    - "||fedex.lan^$client=192.168.255.0/24,dnsrewrite=NOERROR;A;{{ mgmt_network.gateway }}"
 {% for network in fedex_networks %}
     - "||fedex.lan^$client={{ network.subnet }},dnsrewrite=NOERROR;A;{{ mgmt_network.gateway }}"
 {% endfor %}

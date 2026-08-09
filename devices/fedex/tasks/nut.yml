@@ -16,6 +16,14 @@
       - Fedex | Replay NUT USB hotplug
       - Fedex | Restart NUT server
 
+- name: nut | Remove wildcard listener
+  community.openwrt.uci:
+      command: absent
+      config: nut_server
+      section: all
+      autocommit: true
+  notify: Fedex | Restart NUT server
+
 - name: nut | Listen on internal interfaces
   community.openwrt.uci:
       command: section
