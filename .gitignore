@@ -5,15 +5,14 @@
 !.config/.shellcheckrc
 !.config/.sops.yml
 !.config/.typos.toml
-!.config/cabinet.yml
 !.config/inventory.yml
-!.config/networks.yml
-!.config/networks.validate.playbook.yml
-!.config/networks.validate.tasks.yml
 !.config/requirements.yml
 !.config/tasks.mise.toml
 !.config/filter_plugins/
 !.config/filter_plugins/*.py
+
+!network/
+!network/*.yml
 
 !.custom-containers/
 !.custom-containers/import-libs.sh

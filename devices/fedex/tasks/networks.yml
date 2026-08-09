@@ -6,9 +6,9 @@
       type: device
       name: "{{ fedex_network.name }}_vlan"
       value:
-          name: "{{ mycelium_trunk_device }}.{{ fedex_network.vlan_id }}"
+          name: "{{ fedex_interfaces.mycelium_trunk }}.{{ fedex_network.vlan_id }}"
           type: 8021q
-          ifname: "{{ mycelium_trunk_device }}"
+          ifname: "{{ fedex_interfaces.mycelium_trunk }}"
           vid: "{{ fedex_network.vlan_id }}"
       replace: true
       autocommit: true
@@ -25,7 +25,7 @@
       type: interface
       name: "{{ fedex_network.name }}"
       value:
-          device: "{{ mycelium_trunk_device }}.{{ fedex_network.vlan_id }}"
+          device: "{{ fedex_interfaces.mycelium_trunk }}.{{ fedex_network.vlan_id }}"
           proto: static
           ipaddr: "{{ fedex_network.gateway }}"
           netmask: "{{ fedex_network.subnet | subnet_netmask }}"
@@ -52,8 +52,9 @@
           start: "{{ fedex_network.dhcp.start }}"
           limit: "{{ fedex_network.dhcp.limit }}"
           leasetime: "{{ fedex_network.dhcp.leasetime }}"
-          dhcp_option:
-              - "6,{{ fedex_network.gateway }}"
+          dhcp_option: >-
+              {{ ['6,' ~ fedex_network.gateway]
+                  + (['3'] if not (fedex_network.dhcp.default_route | default(true)) else []) }}
       replace: true
       autocommit: true
   loop: "{{ fedex_networks | selectattr('dhcp', 'defined') | list }}"

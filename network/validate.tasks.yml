@@ -1,8 +1,7 @@
 ---
 # Shared network-registry preflight. Included as a pre_task by every device
-# playbook and by networks.validate.playbook.yml. Requires networks.yml and
-# cabinet.yml vars.
-- name: .config | networks.validate.tasks | Validate network registry
+# playbook and by validate.playbook.yml. Requires networks.yml and cabinet.yml.
+- name: network | validate.tasks | Validate network registry
   ansible.builtin.assert:
       that:
           - network_names | unique | length == network_names | length
@@ -18,7 +17,7 @@
       network_subnets: >-
           {{ networks | map(attribute='subnet') | reject('none') | list + network_forbidden_subnets.values() | list }}
 
-- name: .config | networks.validate.tasks | Validate cabinet network references
+- name: network | validate.tasks | Validate cabinet network references
   ansible.builtin.assert:
       that: mycelium_interfaces | length == 52
       fail_msg: cabinet must define all 48 copper and 4 SFP switch interfaces

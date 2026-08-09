@@ -4,7 +4,7 @@ ansible-lint = "rg --files --hidden -0 | xargs -0 -r -t ansible-lint -c .config/
 "ansible-lint:fix" = "ansible-lint -c .config/.ansible-lint.yml --fix"
 
 ansible-syntax-check = "rg --files -g '*.playbook.yml' | xargs -r -t ansible-playbook --syntax-check"
-network-conflicts = "ANSIBLE_DISPLAY_OK_HOSTS=false ansible-playbook -i localhost, .config/networks.validate.playbook.yml"
+network-conflicts = "ANSIBLE_DISPLAY_OK_HOSTS=false ansible-playbook -i localhost, network/validate.playbook.yml"
 
 shellcheck = "rg --ignore --hidden -l '^#!.*\\b(sh|bash|dash|ksh|ash)(\\s|$)' . | xargs -r -t shellcheck -a -Calways"
 

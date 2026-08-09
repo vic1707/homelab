@@ -73,17 +73,33 @@ def firewall_config_errors(
 	feature_sections: dict[str, str],
 ) -> list[str]:
 	errors: list[str] = []
+	host_names = [host["name"] for host in hosts]
+	host_ips = [host["ip"] for host in hosts if host.get("ip")]
+	host_macs = [host["mac"].lower() for host in hosts if host.get("mac")]
 	host_map = {host["name"]: host for host in hosts}
 	network_map = {network["name"]: network for network in networks}
 	zone_names = [zone["name"] for zone in zones]
 	zone_set = set(zone_names)
+	routed_networks = {network["name"] for network in networks if network.get("gateway")}
 	exception_names = [name for zone in zones for name in zone.get("exceptions", {})]
 	feature_names = set(feature_sections)
 
+	if len(host_names) != len(set(host_names)):
+		errors.append("static host names must be unique")
+	if len(host_ips) != len(set(host_ips)):
+		errors.append("static host IPs must be unique")
+	if len(host_macs) != len(set(host_macs)):
+		errors.append("static host MACs must be unique")
+	endpoint_collisions = sorted(set(host_names) & (zone_set | {"rescue", "wan"}))
+	if endpoint_collisions:
+		errors.append(f"static host names collide with firewall endpoints: {', '.join(endpoint_collisions)}")
 	if len(zone_names) != len(zone_set):
 		errors.append("firewall zone names must be unique")
 	if len(exception_names) != len(set(exception_names)):
 		errors.append("firewall exception names must be unique")
+	missing_zones = sorted(routed_networks - zone_set)
+	if missing_zones:
+		errors.append(f"routed networks have no firewall zone: {', '.join(missing_zones)}")
 
 	for host in hosts:
 		if host.get("ip") and not _network_for_ip(host["ip"], networks):

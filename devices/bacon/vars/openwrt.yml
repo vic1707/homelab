@@ -1,6 +1,6 @@
 ---
 bacon_uplink_device: eth0
-bacon_tagged_networks: "{{ networks | selectattr('vlan_id', 'in', mycelium_interfaces['1/1/38'].allowed_vlans) | list }}"
+bacon_tagged_networks: "{{ networks | selectattr('name', 'in', bacon_trunk_networks) | list }}"
 bacon_client_networks: "{{ bacon_tagged_networks | rejectattr('name', 'equalto', 'mgmt') | list }}"
 
 root_password: >-

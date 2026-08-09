@@ -1,7 +1,4 @@
 ---
-## networks: every entry here is active. Planned/reserved networks stay
-## commented out until they get activated.
-
 networks:
     - name: mgmt
       vlan_id: 10
@@ -13,6 +10,7 @@ networks:
           start: 200
           limit: 21
           leasetime: 12h
+          default_route: false # Keep another interface as the controller's internet route.
 
     - name: user
       vlan_id: 20

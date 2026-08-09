@@ -1,5 +1,5 @@
 [server]
-allow-interfaces={% for zone in firewall_zones if 'mdns' in zone.features %}{{ mycelium_trunk_device }}.{{ (fedex_networks | selectattr('name', 'equalto', zone.name) | first).vlan_id }}{{ ',' if not loop.last else '' }}{% endfor %}
+allow-interfaces={% for zone in firewall_zones if 'mdns' in zone.features %}{{ fedex_interfaces.mycelium_trunk }}.{{ (fedex_networks | selectattr('name', 'equalto', zone.name) | first).vlan_id }}{{ ',' if not loop.last else '' }}{% endfor %}
 
 use-ipv4=yes
 use-ipv6=no

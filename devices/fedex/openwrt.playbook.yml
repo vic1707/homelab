@@ -5,8 +5,8 @@
   force_handlers: true
 
   vars_files:
-      - ../../.config/networks.yml
-      - ../../.config/cabinet.yml
+      - ../../network/networks.yml
+      - ../../network/cabinet.yml
       - vars/openwrt.yml
       - vars/static_hosts.yml
       - vars/firewall.yml
@@ -15,7 +15,10 @@
 
   pre_tasks:
       - name: Fedex | Validate network registry
-        ansible.builtin.import_tasks: ../../.config/networks.validate.tasks.yml
+        ansible.builtin.import_tasks: ../../network/validate.tasks.yml
+
+      - name: Fedex | Validate firewall intent
+        ansible.builtin.import_tasks: ../../network/validate.firewall.tasks.yml
 
       - name: Fedex | Check OpenWrt access
         community.openwrt.ping:

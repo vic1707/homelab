@@ -5,13 +5,13 @@
   force_handlers: true
 
   vars_files:
-      - ../../.config/networks.yml
-      - ../../.config/cabinet.yml
+      - ../../network/networks.yml
+      - ../../network/cabinet.yml
       - vars/openwrt.yml
 
   pre_tasks:
       - name: Bacon | Validate network registry
-        ansible.builtin.import_tasks: ../../.config/networks.validate.tasks.yml
+        ansible.builtin.import_tasks: ../../network/validate.tasks.yml
 
       - name: Bacon | Validate Wi-Fi interface names
         ansible.builtin.assert:

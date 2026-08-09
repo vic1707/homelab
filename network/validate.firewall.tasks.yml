@@ -1,0 +1,15 @@
+---
+- name: network | validate.firewall.tasks | Validate firewall intent
+  ansible.builtin.assert:
+      that: firewall_errors | length == 0
+      fail_msg: "{{ firewall_errors | join('; ') }}"
+  vars:
+      firewall_errors: >-
+          {{ firewall_zones
+              | firewall_config_errors(
+                  static_hosts,
+                  networks,
+                  firewall_nut_clients,
+                  firewall_feature_sections
+              )
+          }}
