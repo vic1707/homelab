@@ -8,13 +8,20 @@
       - vars/ipmi.yml
 
   vars:
-      netboot_xyz_image: netboot.xyz-snp.efi.dsk
-      netboot_xyz_url: "https://boot.netboot.xyz/ipxe/{{ netboot_xyz_image }}"
-      netboot_xyz_checksum_url: https://boot.netboot.xyz/ipxe/netboot.xyz-sha256-checksums.txt
-      netboot_xyz_path: "/private/tmp/{{ netboot_xyz_image }}"
+      netboot_xyz_version: 3.0.0
+      netboot_xyz_image: netboot.xyz.efi.dsk
+      netboot_xyz_url: >-
+          https://github.com/netbootxyz/netboot.xyz/releases/download/{{ netboot_xyz_version }}/{{ netboot_xyz_image }}
+      netboot_xyz_checksum_url: >-
+          https://github.com/netbootxyz/netboot.xyz/releases/download/{{ netboot_xyz_version }}/netboot.xyz-sha256-checksums.txt
       sum_container_image: ghcr.io/vic1707/homelab/sum:2.15.0
 
   pre_tasks:
+      - name: Hydra netboot | Generate temporary image path
+        ansible.builtin.set_fact:
+            netboot_xyz_path: >-
+                /private/tmp/{{ lookup('community.general.random_string', length=6, upper=false, special=false) }}-{{ netboot_xyz_image }}
+        tags: always
       - name: Hydra netboot | Validate credentials
         ansible.builtin.assert:
             that:
@@ -34,13 +41,13 @@
             category: [Systems]
             command: [GetSystemInventory]
         register: ipmi_system
-        tags: [never, reload]
+        tags: always
 
       - name: Hydra netboot | Require powered-off host
         ansible.builtin.assert:
             that: ipmi_system.redfish_facts.system.entries[0][1].PowerState == "Off"
             fail_msg: Shut down Hydra before requesting a netboot.
-        tags: [never, reload]
+        tags: always
 
       - name: Hydra netboot | Download floppy
         ansible.builtin.get_url:

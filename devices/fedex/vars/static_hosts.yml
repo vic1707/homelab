@@ -43,8 +43,14 @@ static_hosts:
     - name: hydra_ipmi
       mac: "AC:1F:6B:E6:76:D2"
 
-    # - name: hydra_1G_top
-    #   mac: "AC:1F:6B:E6:79:D4"
+    - name: hydra_LAN1 # top
+      mac: "AC:1F:6B:E6:79:D4"
 
-    # - name: hydra_1G_btm
-    #   mac: "AC:1F:6B:E6:79:D5"
+    - name: hydra_LAN2 # btm
+      mac: "AC:1F:6B:E6:79:D5"
+
+    - name: hydra_10G_1 # left (when facing)
+      mac: "00:0f:53:39:08:C1"
+
+    - name: hydra_10G_2 # right (when facing)
+      mac: "00:0f:53:39:08:C0"

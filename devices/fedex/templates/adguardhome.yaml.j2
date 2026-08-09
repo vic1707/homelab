@@ -129,7 +129,7 @@ whitelist_filters: []
 user_rules:
     - "||fedex.lan^$client=192.168.255.0/24,dnsrewrite=NOERROR;A;192.168.255.1"
 {% for network in fedex_networks %}
-    - "||fedex.lan^$client={{ network.subnet }},dnsrewrite=NOERROR;A;{{ network.gateway }}"
+    - "||fedex.lan^$client={{ network.subnet }},dnsrewrite=NOERROR;A;{{ mgmt_network.gateway }}"
 {% endfor %}
 filtering:
     protection_enabled: true
