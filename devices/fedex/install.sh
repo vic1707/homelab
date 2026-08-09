@@ -58,4 +58,4 @@ gzip -t "$tmp"
 gzip -dc "$tmp" | dd of="$disk" bs=16M conv=fsync
 sync
 
-printf 'Installed %s to %s. Boot it, allow rootfs resize reboots, then SSH to root@192.168.255.1 on RJ45-2.\n' "$IMAGE" "$disk"
+printf 'Installed %s to %s. Boot it, allow rootfs resize reboots, then SSH to root@192.168.255.1 on RJ45-5.\n' "$IMAGE" "$disk"

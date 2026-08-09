@@ -6,7 +6,12 @@
   vars:
       firewall_errors: >-
           {{ firewall_zones
-              | firewall_config_errors(static_hosts, networks, firewall_nut_clients)
+              | firewall_config_errors(
+                  static_hosts,
+                  networks,
+                  firewall_nut_clients,
+                  firewall_feature_sections
+              )
           }}
 
 - name: zones | Ensure managed section manifest exists
@@ -49,6 +54,7 @@
       loop_var: firewall_pair
   vars:
       firewall_zone: "{{ firewall_pair.0 }}"
+      firewall_feature_name: "{{ firewall_pair.1 }}"
       firewall_gateway: >-
           {{ (fedex_networks | selectattr('name', 'equalto', firewall_pair.0.name) | first).gateway }}
 

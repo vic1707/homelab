@@ -6,26 +6,26 @@
 
   vars_files:
       - networks.yml
+      - cabinet.yml
       - ../devices/fedex/vars/static_hosts.yml
       - ../devices/fedex/vars/firewall.yml
 
   vars:
-      network_names: "{{ networks | map(attribute='name') | list }}"
-      network_subnets: >-
-          {{ networks | map(attribute='subnet') | reject('none') | list + network_forbidden_subnets.values() | list }}
-      network_vlan_ids: "{{ networks | map(attribute='vlan_id') | list }}"
       firewall_errors: >-
           {{ firewall_zones
-              | firewall_config_errors(static_hosts, networks, firewall_nut_clients)
+              | firewall_config_errors(
+                  static_hosts,
+                  networks,
+                  firewall_nut_clients,
+                  firewall_feature_sections
+              )
           }}
 
   tasks:
-      - name: Validate network conflicts
+      - name: Validate network registry
+        ansible.builtin.import_tasks: networks.validate.tasks.yml
+
+      - name: Validate Fedex firewall intent
         ansible.builtin.assert:
-            that:
-                - network_names | unique | length == network_names | length
-                - network_vlan_ids | unique | length == network_vlan_ids | length
-                - network_vlan_ids | intersect(network_forbidden_vlan_ids) | length == 0
-                - network_subnets | overlapping_networks | length == 0
-                - firewall_errors | length == 0
+            that: firewall_errors | length == 0
             fail_msg: "{{ firewall_errors | join('; ') }}"

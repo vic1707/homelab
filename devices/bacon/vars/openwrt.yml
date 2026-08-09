@@ -1,7 +1,6 @@
 ---
 bacon_uplink_device: eth0
-bacon_network_names: "{{ cabinet_links.bacon.networks }}"
-bacon_tagged_networks: "{{ active_networks | selectattr('name', 'in', bacon_network_names) | list }}"
+bacon_tagged_networks: "{{ networks | selectattr('vlan_id', 'in', mycelium_interfaces['1/1/38'].allowed_vlans) | list }}"
 bacon_client_networks: "{{ bacon_tagged_networks | rejectattr('name', 'equalto', 'mgmt') | list }}"
 
 root_password: >-
@@ -66,6 +65,7 @@ wifis:
       isolate: true
 
     - name: iot_cloud
+      ifname: cloud
       network: media_cloud
       ssid: idIoT_cloud
       encryption: psk2 # WPA2-PSK

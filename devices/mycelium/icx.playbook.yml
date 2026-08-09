@@ -7,6 +7,10 @@
       group/bofzilla.icx.all:
           enable_password: "{{ icx_enable_password }}"
 
+  pre_tasks:
+      - name: ICX | Validate network registry
+        ansible.builtin.import_tasks: ../../.config/networks.validate.tasks.yml
+
   vars_files:
       - ../../.config/networks.yml
       - ../../.config/cabinet.yml

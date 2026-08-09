@@ -4,7 +4,7 @@
       command: section
       config: firewall
       type: rule
-      name: "allow_{{ firewall_zone.name }}_ping"
+      name: "{{ firewall_feature_sections[firewall_feature_name] | format(firewall_zone.name) }}"
       value:
           src: "{{ firewall_zone.name }}"
           proto: icmp

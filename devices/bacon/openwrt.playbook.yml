@@ -10,17 +10,24 @@
       - vars/openwrt.yml
 
   pre_tasks:
+      - name: Bacon | Validate network registry
+        ansible.builtin.import_tasks: ../../.config/networks.validate.tasks.yml
+
+      - name: Bacon | Validate Wi-Fi interface names
+        ansible.builtin.assert:
+            that: >-
+                {{ (bacon_wifi_pair.1.name ~ '-'
+                    ~ (bacon_wifi_pair.0.ifname | default(bacon_wifi_pair.0.name))) | length <= 15 }}
+            fail_msg: Wi-Fi interface names cannot exceed 15 characters
+        loop: "{{ wifis | product(radios) | list }}"
+        loop_control:
+            label: "{{ bacon_wifi_pair.0.name }} on {{ bacon_wifi_pair.1.name }}"
+            loop_var: bacon_wifi_pair
+
       - name: Bacon | Check OpenWrt access
         community.openwrt.ping:
 
   tasks:
-      - name: Bacon | Validate tagged networks
-        ansible.builtin.assert:
-            that:
-                - bacon_tagged_networks | map(attribute='name') | difference(bacon_network_names) | length == 0
-                - bacon_network_names | difference(bacon_tagged_networks | map(attribute='name')) | length == 0
-            quiet: true
-
       - name: Bacon | Check root password
         community.openwrt.command:
             cmd: grep -q '^root:[^!*:]' /etc/shadow
@@ -82,7 +89,8 @@
             type: device
             name: "{{ bacon_wifi_pair[0].name }}_{{ bacon_wifi_pair[1].name }}_device"
             value:
-                name: "{{ bacon_wifi_pair[1].name }}-{{ bacon_wifi_pair[0].name }}"
+                name: >-
+                    {{ bacon_wifi_pair[1].name }}-{{ bacon_wifi_pair[0].ifname | default(bacon_wifi_pair[0].name) }}
                 isolate: "{{ '1' if bacon_wifi_pair[0].isolate | default(false) else '0' }}"
             replace: true
             autocommit: true
@@ -142,7 +150,8 @@
             name: "{{ bacon_wifi_pair[0].name }}_{{ bacon_wifi_pair[1].name }}"
             value:
                 device: "{{ bacon_wifi_pair[1].name }}"
-                ifname: "{{ bacon_wifi_pair[1].name }}-{{ bacon_wifi_pair[0].name }}"
+                ifname: >-
+                    {{ bacon_wifi_pair[1].name }}-{{ bacon_wifi_pair[0].ifname | default(bacon_wifi_pair[0].name) }}
                 network: "{{ bacon_wifi_pair[0].network }}"
                 mode: ap
                 ssid: "{{ bacon_wifi_pair[0].ssid }}"

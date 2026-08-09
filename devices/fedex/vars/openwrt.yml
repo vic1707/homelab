@@ -1,8 +1,12 @@
 ---
+fedex_interfaces:
+    bbox_wan: eth5
+    mycelium_trunk: eth7
+
 bbox_wan:
-    ifname: "{{ cabinet_ports.fedex[cabinet_links.bbox_wan.fedex] }}"
+    ifname: "{{ fedex_interfaces.bbox_wan }}"
     vlan: 100
-    device: "{{ cabinet_ports.fedex[cabinet_links.bbox_wan.fedex] }}.100"
+    device: "{{ fedex_interfaces.bbox_wan }}.100"
     vendorid: BYGTELIAD
     macaddr: >-
         {{ lookup('community.sops.sops', '../../.secrets/devices/fedex.yml', extract='["bbox"]["mac"]') | trim }}
@@ -10,6 +14,6 @@ bbox_wan:
 root_password: >-
     {{ lookup('community.sops.sops', '../../.secrets/devices/fedex.yml', extract='["accounts"]["root"]["password"]') | trim }}
 
-fedex_networks: "{{ active_networks | selectattr('gateway_owner', 'equalto', 'fedex') | rejectattr('subnet', 'none') | list }}"
+fedex_networks: "{{ networks | selectattr('vlan_id', 'in', mycelium_interfaces['1/2/1'].allowed_vlans) | list }}"
 mgmt_network: "{{ fedex_networks | selectattr('name', 'equalto', 'mgmt') | first }}"
-mycelium_trunk_device: "{{ cabinet_ports.fedex[cabinet_links.fedex_mycelium.fedex] }}"
+mycelium_trunk_device: "{{ fedex_interfaces.mycelium_trunk }}"

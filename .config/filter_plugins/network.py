@@ -1,21 +1,6 @@
 from ipaddress import ip_address, ip_network
 from itertools import combinations
 
-FIREWALL_FEATURE_SECTIONS = {
-	"block_dot_doq": "block_{zone}_dot",
-	"dhcp": "allow_{zone}_dhcp",
-	"dns": "allow_{zone}_dns",
-	"force_dns": "redirect_{zone}_dns",
-	"internet": "{zone}_wan",
-	"mdns": "allow_{zone}_mdns",
-	"ntp": "allow_{zone}_ntp",
-	"nut": "allow_{zone}_nut",
-	"ping": "allow_{zone}_ping",
-	"rescue_access": "rescue_{zone}",
-	"router_management": "allow_{zone}_router",
-}
-FIREWALL_FEATURES = set(FIREWALL_FEATURE_SECTIONS)
-
 
 def overlapping_networks(networks: list[str]) -> list[tuple[str, str]]:
 	return [(left, right) for left, right in combinations(networks, 2) if ip_network(left).overlaps(ip_network(right))]
@@ -23,6 +8,14 @@ def overlapping_networks(networks: list[str]) -> list[tuple[str, str]]:
 
 def subnet_netmask(subnet: str) -> str:
 	return str(ip_network(subnet).netmask)
+
+
+def vlan_ids(names: list[str], networks: list[dict]) -> list[int]:
+	by_name = {network["name"]: network["vlan_id"] for network in networks}
+	unknown = sorted(set(names) - by_name.keys())
+	if unknown:
+		raise ValueError(f"unknown network names: {', '.join(unknown)}")
+	return [by_name[name] for name in names]
 
 
 def icx_vlans(networks: list[dict]) -> list[dict]:
@@ -64,20 +57,20 @@ def _firewall_endpoint(
 	return "", None
 
 
-def firewall_section_ids(zones: list[dict]) -> list[str]:
+def firewall_section_ids(zones: list[dict], feature_sections: dict[str, str]) -> list[str]:
 	return [
 		*[zone["name"] for zone in zones],
-		*(
-			FIREWALL_FEATURE_SECTIONS[feature].format(zone=zone["name"])
-			for zone in zones
-			for feature in zone.get("features", [])
-		),
+		*(feature_sections[feature] % zone["name"] for zone in zones for feature in zone.get("features", [])),
 		*(name for zone in zones for name in zone.get("exceptions", {})),
 	]
 
 
 def firewall_config_errors(
-	zones: list[dict], hosts: list[dict], networks: list[dict], nut_clients: list[str]
+	zones: list[dict],
+	hosts: list[dict],
+	networks: list[dict],
+	nut_clients: list[str],
+	feature_sections: dict[str, str],
 ) -> list[str]:
 	errors: list[str] = []
 	host_map = {host["name"]: host for host in hosts}
@@ -85,6 +78,7 @@ def firewall_config_errors(
 	zone_names = [zone["name"] for zone in zones]
 	zone_set = set(zone_names)
 	exception_names = [name for zone in zones for name in zone.get("exceptions", {})]
+	feature_names = set(feature_sections)
 
 	if len(zone_names) != len(zone_set):
 		errors.append("firewall zone names must be unique")
@@ -99,11 +93,11 @@ def firewall_config_errors(
 		zone_name = zone["name"]
 		if zone_name not in network_map:
 			errors.append(f"firewall zone {zone_name} has no matching network")
-		elif network_map[zone_name].get("state") != "active" or network_map[zone_name].get("gateway_owner") != "fedex":
-			errors.append(f"firewall zone {zone_name} is not an active Fedex-routed network")
+		elif network_map[zone_name].get("subnet") is None:
+			errors.append(f"firewall zone {zone_name} has no routable network")
 
 		features = zone.get("features", [])
-		unknown_features = sorted(set(features) - FIREWALL_FEATURES)
+		unknown_features = sorted(set(features) - feature_names)
 		if unknown_features:
 			errors.append(f"firewall zone {zone_name} has unknown features: {', '.join(unknown_features)}")
 		if len(features) != len(set(features)):
@@ -189,6 +183,10 @@ def firewall_exception_options(
 	return options
 
 
+def interface_list(ifaces: dict[str, dict]) -> list[dict]:
+	return [{"name": name, **options} for name, options in ifaces.items()]
+
+
 class FilterModule:
 	def filters(self) -> dict[str, object]:
 		return {
@@ -196,6 +194,8 @@ class FilterModule:
 			"firewall_exception_options": firewall_exception_options,
 			"firewall_section_ids": firewall_section_ids,
 			"icx_vlans": icx_vlans,
+			"interface_list": interface_list,
 			"overlapping_networks": overlapping_networks,
 			"subnet_netmask": subnet_netmask,
+			"vlan_ids": vlan_ids,
 		}
