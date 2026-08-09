@@ -9,7 +9,7 @@
 # mycelium:
 #     X1            → fedex sfp8 trunk
 #     1             → TV
-#     3             → LAN port
+#     X2,3          → LAN port
 #     2             → mgmt + poe
 #     4,6,8,10,12   → mgmt
 #     38            → bacon AP trunk (mgmt / user / iot_offline / media_cloud / untrusted)
@@ -69,6 +69,8 @@ mycelium_interface_overrides:
         allowed_vlans: >-
             {{ networks | rejectattr('gateway', 'none') | map(attribute='vlan_id') | list }}
         enabled: true
+
+    1/2/2: *user
 
     1/1/1: *media_cloud
 
