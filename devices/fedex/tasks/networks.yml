@@ -54,7 +54,9 @@
           leasetime: "{{ fedex_network.dhcp.leasetime }}"
           dhcp_option: >-
               {{ ['6,' ~ fedex_network.gateway]
-                  + (['3'] if not (fedex_network.dhcp.default_route | default(true)) else []) }}
+                  + (['3'] if not (fedex_network.dhcp.default_route | default(true)) else [])
+                  + (['121,' ~ (fedex_network.dhcp.routes | join(','))]
+                     if fedex_network.dhcp.routes | default([]) else []) }}
       replace: true
       autocommit: true
   loop: "{{ fedex_networks | selectattr('dhcp', 'defined') | list }}"

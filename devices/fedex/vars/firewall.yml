@@ -2,6 +2,12 @@
 firewall_zones:
     - name: mgmt
       features: [dhcp, dns, ping, router_management, rescue_access]
+      exceptions:
+          allow_mgmt_tv_adb:
+              origin: mgmt
+              destinations: [TV]
+              ports: [5555]
+              protocols: [tcp]
 
     - name: user
       features: [dhcp, dns, ping, force_dns, block_dot_doq, internet, mdns]
@@ -16,11 +22,16 @@ firewall_zones:
               destinations: [slzb_06u, slzb_mrw10u]
               ports: [80]
               protocols: [tcp]
-          # AirPlay and Google Cast negotiate model-dependent ports.
-          allow_user_tv_casting:
+          allow_user_tv_airplay_tcp:
               origin: user
               destinations: [TV]
-              protocols: [tcp, udp]
+              ports: [554, 3689, 5000, 6000, 7000, 7001, 7100, 8612, 32768-65535]
+              protocols: [tcp]
+          allow_user_tv_airplay_udp:
+              origin: user
+              destinations: [TV]
+              ports: [554, 6000-7000, 32768-65535]
+              protocols: [udp]
 
     - name: automation
       features: [dhcp, dns, ping, force_dns, ntp, nut]
@@ -44,6 +55,13 @@ firewall_zones:
 
     - name: media_cloud
       features: [dhcp, dns, ping, force_dns, block_dot_doq, internet, mdns, ntp]
+      exceptions:
+          # AirPlay receivers negotiate reverse media streams to sender ephemeral ports.
+          allow_tv_airplay_return:
+              origin: TV
+              destinations: [user]
+              ports: [49152-65535]
+              protocols: [tcp, udp]
 
     - name: untrusted
       features: [dhcp, dns, ping, force_dns, block_dot_doq, internet]
