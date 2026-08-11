@@ -1,3 +1,7 @@
+# To get latest ISO releases:
+# Utilities -> endpoints -> production rolling
+# if installer gets stuck black screen:
+#    Utilities -> Kernel CMDLine Params -> `modprobe.blacklist=i915,xe,nouveau i915.modeset=0 nouveau.modeset=0`
 ---
 - name: Boot Hydra into netboot.xyz
   hosts: hydra_ipmi
