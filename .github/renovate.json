@@ -7,10 +7,23 @@
 			"customType": "regex",
 			"managerFilePatterns": ["/^devices/[^/]+/(openwrt\\.env|install\\.sh)$/"],
 			"matchStrings": [
-				"# renovate: datasource=(?<datasource>[\\w-]+) depName=(?<depName>[^\\s]+) extractVersion=(?<extractVersion>[^\\n]+)\\n(?:OPENWRT_VERSION|VERSION)=(?<currentValue>[^\\s]+)"
+				"# renovate: datasource=(?<datasource>[\\w.-]+) depName=(?<depName>[^\\s]+)(?: versioning=(?<versioning>[^\\s]+))? extractVersion=(?<extractVersion>[^\\n]+)\\n(?:OPENWRT_VERSION|VERSION)=(?<currentValue>[^\\s]+)"
+			]
+		},
+		{
+			"customType": "regex",
+			"managerFilePatterns": ["/^devices/tv/settings\\.yml$/"],
+			"matchStrings": [
+				"# renovate: datasource=(?<datasource>[\\w.-]+) depName=(?<depName>[^\\s]+)(?: packageName=(?<packageName>[^\\s]+))?(?: versioning=(?<versioning>[^\\s]+))? extractVersion=(?<extractVersion>[^\\n]+)\\n\\s+version: \\\"(?<currentValue>[^\\\"]+)\\\""
 			]
 		}
 	],
+	"customDatasources": {
+		"apkmirror": {
+			"defaultRegistryUrlTemplate": "https://www.apkmirror.com/apk/{{packageName}}/",
+			"format": "html"
+		}
+	},
 	"packageRules": [
 		{
 			"matchManagers": ["docker-compose", "dockerfile"],

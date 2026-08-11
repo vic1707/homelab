@@ -47,6 +47,8 @@
 !devices/*/
 !devices/*/install.sh
 !devices/*/openwrt.env
+!devices/*/settings.yml
+!devices/*/README.md
 !devices/*/*.playbook.yml
 !devices/*/tasks/
 !devices/*/tasks/**
@@ -58,6 +60,7 @@
 !devices/*/vars/**
 !devices/*/files/
 !devices/*/files/**
+!devices/tv/install.py
 
 !domains/
 !domains/bofzilla.dev

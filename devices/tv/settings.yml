@@ -1,0 +1,76 @@
+---
+name: LivingRoomTV
+tv_input_custom_labels:
+    - com.tcl.tvinput%2F.TvPassThroughService%2FHW17,Game%20console
+    - com.tcl.tvinput%2F.TvPassThroughService%2FHW18,RetroTink
+    - com.tcl.tvinput%2F.TvPassThroughService%2FHW16,PC
+settings:
+    system:
+        sound_effects_enabled: "0"
+        lockscreen_sounds_enabled: "0"
+        tcl_app_cec_auto_switch: "1"
+        tcl_app_settings_eARC_mode: "true"
+    secure:
+        charging_sounds_enabled: "0"
+        location_mode: "0"
+    global:
+        dock_sounds_enabled: "0"
+        power_sounds_enabled: "0"
+        hdmi_control_enabled: "1"
+        hdmi_control_auto_device_off_enabled: "1"
+        hdmi_control_auto_wakeup_enabled: "1"
+        hdmi_control_volume_control_enabled: "1"
+        hdmi_system_audio_control_enabled: "1"
+        hdmi_earc_control_enabled: "2"
+        tcl_device_out_type: "1"
+        GAME_MODE_HDMI_2: "1"
+        tcl_diagnostic_status: "0"
+        tcl_uxp_status: "0"
+        network_recommendations_enabled: "0"
+
+packages:
+    github:
+        smarttube:
+            repository: yuliskov/SmartTube
+            # renovate: datasource=github-releases depName=yuliskov/SmartTube extractVersion=^(?<version>\d+\.\d+)s$
+            version: "32.10"
+            release_tag: "{version}s"
+            asset: "SmartTube_stable_{version}_armeabi-v7a.apk"
+            package: org.smarttube.stable
+
+        arclauncher:
+            repository: meddouribadis/arclauncher
+            # renovate: datasource=github-releases depName=meddouribadis/arclauncher extractVersion=^(?<version>\d+\.\d+\.\d+)$
+            version: "1.0.6"
+            asset: "arclauncher-{version}-armeabi-v7a.apk"
+            package: com.omeda.arc
+
+        keymapper:
+            repository: keymapperorg/KeyMapper
+            # renovate: datasource=github-releases depName=keymapperorg/KeyMapper extractVersion=^v(?<version>\d+\.\d+\.\d+)$
+            version: "4.3.0"
+            release_tag: "v{version}"
+            asset: "keymapper-{version}-foss.apk"
+            package: io.github.sds100.keymapper
+
+    apkeep:
+        anexplorer:
+            # renovate: datasource=custom.apkmirror depName=anexplorer packageName=dworks/anexplorer-tv-file-manager-android-tv versioning=loose extractVersion=^/apk/dworks/anexplorer-tv-file-manager-android-tv/anexplorer-tv-file-manager-android-tv-(?<version>\d+-\d+-\d+)-release/?$
+            version: "6-0-6"
+            package: dev.dworks.apps.anexplorer
+        twitch:
+            # renovate: datasource=custom.apkmirror depName=twitch packageName=twitch-interactive-inc/twitch versioning=loose extractVersion=^/apk/twitch-interactive-inc/twitch/twitch-live-streaming-(?<version>\d+-\d+-\d+)-release/?$
+            version: "13.0.0.2"
+            abi: armeabi-v7a
+            package: tv.twitch.android.app
+
+    disabled:
+        - com.google.android.apps.tv.launcherx
+        - com.google.android.tungsten.setupwraith
+
+    removed:
+        - com.google.android.apps.tv.dreamx
+        - com.google.android.feedback
+        - com.google.android.onetimeinitializer
+        - com.google.android.tv.remote.service
+        - com.google.android.youtube.tv

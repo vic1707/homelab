@@ -1,0 +1,288 @@
+{
+	"keymap_db_version": 22,
+	"app_version": 257,
+	"keymap_list": [
+		{
+			"actionList": [
+				{
+					"data": "org.smarttube.stable",
+					"extras": [],
+					"flags": 0,
+					"type": "APP",
+					"uid": "52cd767f-5cfd-4b9c-8563-9536b34f72cf"
+				}
+			],
+			"constraintList": [],
+			"constraintMode": 1,
+			"flags": 0,
+			"id": 1,
+			"isEnabled": true,
+			"trigger": {
+				"extras": [],
+				"flags": 0,
+				"keys": [
+					{
+						"clickType": 0,
+						"deviceId": "io.github.sds100.keymapper.ANY_DEVICE",
+						"flags": 0,
+						"keyCode": 4065,
+						"scanCode": 569,
+						"uid": "1ac9fcd4-7bc6-482c-babb-68885667cb69"
+					}
+				],
+				"mode": 2
+			},
+			"uid": "fc0982e6-6c6b-404e-afc6-ecc723dcd3b0"
+		},
+		{
+			"actionList": [
+				{
+					"data": "com.omeda.arc",
+					"extras": [],
+					"flags": 0,
+					"type": "APP",
+					"uid": "035a4238-a899-4928-9e41-80586c70bea0"
+				}
+			],
+			"constraintList": [],
+			"constraintMode": 1,
+			"flags": 0,
+			"id": 2,
+			"isEnabled": false,
+			"trigger": {
+				"extras": [],
+				"flags": 0,
+				"keys": [
+					{
+						"clickType": 0,
+						"deviceId": "io.github.sds100.keymapper.ANY_DEVICE",
+						"flags": 0,
+						"keyCode": 3,
+						"scanCode": 102,
+						"uid": "8a57502c-d9cf-4913-a1bf-bb9a6f334500"
+					}
+				],
+				"mode": 2
+			},
+			"uid": "641d014d-854f-493c-ab61-b35b1c6676a7"
+		},
+		{
+			"actionList": [
+				{
+					"data": "com.netflix.ninja",
+					"extras": [],
+					"flags": 0,
+					"type": "APP",
+					"uid": "4fc095e1-3dcf-4be5-9a4a-aef45c5001c8"
+				}
+			],
+			"constraintList": [],
+			"constraintMode": 1,
+			"flags": 0,
+			"id": 3,
+			"isEnabled": true,
+			"trigger": {
+				"extras": [],
+				"flags": 0,
+				"keys": [
+					{
+						"clickType": 0,
+						"deviceId": "io.github.sds100.keymapper.ANY_DEVICE",
+						"flags": 0,
+						"keyCode": 4062,
+						"scanCode": 566,
+						"uid": "dfdad4ad-eade-4451-8716-399f1cf3de88"
+					}
+				],
+				"mode": 2
+			},
+			"uid": "3ceebd56-bd6f-44e3-a343-fc7ec0754c29"
+		},
+		{
+			"actionList": [
+				{
+					"data": "com.tcl.ui_mediaCenter",
+					"extras": [],
+					"flags": 0,
+					"type": "APP",
+					"uid": "e7123a9c-03d4-4bd9-a80c-d00ce6085da7"
+				}
+			],
+			"constraintList": [],
+			"constraintMode": 1,
+			"flags": 0,
+			"id": 4,
+			"isEnabled": true,
+			"trigger": {
+				"extras": [],
+				"flags": 0,
+				"keys": [
+					{
+						"clickType": 0,
+						"deviceId": "io.github.sds100.keymapper.ANY_DEVICE",
+						"flags": 0,
+						"keyCode": 4090,
+						"scanCode": 395,
+						"uid": "77ef53aa-e31f-4810-a139-6b440fe33199"
+					}
+				],
+				"mode": 2
+			},
+			"uid": "18565773-dd00-431f-b568-b466b521ff30"
+		},
+		{
+			"actionList": [
+				{
+					"data": "open_settings",
+					"extras": [],
+					"flags": 0,
+					"type": "SYSTEM_ACTION",
+					"uid": "59d8553e-a793-448c-8619-49bf2b0fea62"
+				}
+			],
+			"constraintList": [],
+			"constraintMode": 1,
+			"flags": 0,
+			"id": 5,
+			"isEnabled": true,
+			"trigger": {
+				"extras": [],
+				"flags": 0,
+				"keys": [
+					{
+						"clickType": 0,
+						"deviceId": "io.github.sds100.keymapper.ANY_DEVICE",
+						"flags": 0,
+						"keyCode": 83,
+						"scanCode": 561,
+						"uid": "16ca43f2-8655-45e9-8924-d87cdba54d52"
+					}
+				],
+				"mode": 2
+			},
+			"uid": "e053194e-90ca-47ae-a9ab-305d76580a5b"
+		},
+		{
+			"actionList": [
+				{
+					"data": "tv.twitch.android.app",
+					"extras": [],
+					"flags": 0,
+					"type": "APP",
+					"uid": "d68b04ce-b74e-425b-994d-9eca1e7bf672"
+				}
+			],
+			"constraintList": [],
+			"constraintMode": 1,
+			"flags": 0,
+			"id": 6,
+			"isEnabled": true,
+			"trigger": {
+				"extras": [],
+				"flags": 0,
+				"keys": [
+					{
+						"clickType": 0,
+						"deviceId": "io.github.sds100.keymapper.ANY_DEVICE",
+						"flags": 0,
+						"keyCode": 4020,
+						"scanCode": 456,
+						"uid": "aba4e2f2-ab60-4ca0-8ce3-8bb09c0b7ca9"
+					}
+				],
+				"mode": 2
+			},
+			"uid": "cda8bb25-e512-4332-a052-72b23fef6fc8"
+		},
+		{
+			"actionList": [
+				{
+					"data": "#Intent;action=android.intent.action.MAIN;category=android.intent.category.LEANBACK_LAUNCHER;package=com.amazon.amazonvideo.livingroom;component=com.amazon.amazonvideo.livingroom/com.amazon.ignition.IgnitionActivity;end",
+					"extras": [
+						{
+							"data": "prime video",
+							"id": "extra_intent_description"
+						},
+						{
+							"data": "ACTIVITY",
+							"id": "extra_intent_target"
+						},
+						{
+							"data": "[]",
+							"id": "extra_intent_extras"
+						}
+					],
+					"flags": 0,
+					"type": "INTENT",
+					"uid": "dc913ef6-635d-4bc1-95b1-2022d15d38b4"
+				}
+			],
+			"constraintList": [],
+			"constraintMode": 1,
+			"flags": 0,
+			"id": 7,
+			"isEnabled": true,
+			"trigger": {
+				"extras": [],
+				"flags": 0,
+				"keys": [
+					{
+						"clickType": 0,
+						"deviceId": "io.github.sds100.keymapper.ANY_DEVICE",
+						"flags": 0,
+						"keyCode": 4099,
+						"scanCode": 752,
+						"uid": "2f7c2457-ce9f-40fd-8466-05bb0a1b6515"
+					}
+				],
+				"mode": 2
+			},
+			"uid": "52b01348-39e4-4181-b880-f1cd12323774"
+		},
+		{
+			"actionList": [
+				{
+					"data": "content://android.media.tv/passthrough/com.tcl.tvinput%2F.TvPassThroughService%2FHW16#Intent;package=com.tcl.tv;component=com.tcl.tv/com.tcl.player.TVActivity;end",
+					"extras": [
+						{
+							"data": "select input 2",
+							"id": "extra_intent_description"
+						},
+						{
+							"data": "ACTIVITY",
+							"id": "extra_intent_target"
+						},
+						{
+							"data": "[]",
+							"id": "extra_intent_extras"
+						}
+					],
+					"flags": 0,
+					"type": "INTENT",
+					"uid": "a83649aa-6481-46b2-8781-e8cd39fd9510"
+				}
+			],
+			"constraintList": [],
+			"constraintMode": 1,
+			"flags": 0,
+			"id": 8,
+			"isEnabled": true,
+			"trigger": {
+				"extras": [],
+				"flags": 0,
+				"keys": [
+					{
+						"clickType": 0,
+						"deviceId": "io.github.sds100.keymapper.ANY_DEVICE",
+						"flags": 0,
+						"keyCode": 4001,
+						"scanCode": 365,
+						"uid": "1a81c601-c6b5-4946-b0c7-6085970c7e5a"
+					}
+				],
+				"mode": 2
+			},
+			"uid": "3e61e05d-03e5-4b5c-b6bb-52f5f92bd5d0"
+		}
+	]
+}
