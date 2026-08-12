@@ -48,7 +48,7 @@ packages:
         keymapper:
             repository: keymapperorg/KeyMapper
             # renovate: datasource=github-releases depName=keymapperorg/KeyMapper extractVersion=^v(?<version>\d+\.\d+\.\d+)$
-            version: "4.3.0"
+            version: "4.3.1"
             release_tag: "v{version}"
             asset: "keymapper-{version}-foss.apk"
             package: io.github.sds100.keymapper
