@@ -11,14 +11,14 @@ radios:
       path: platform/soc/18000000.wifi
       band: 2g
       country: FR
-      channel: auto # or <1-14>
+      channel: 1
       htmode: HE20 # HE20/HE40/HE80
 
     - name: radio1
       path: platform/soc/18000000.wifi+1
       band: 5g
       country: FR
-      channel: auto # 36/40/44/48
+      channel: 36
       htmode: HE80 # HE20/HE40/HE80/HE160
 
 wifis:
