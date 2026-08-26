@@ -3,8 +3,8 @@ Needs `adb`.
 From factory reset, enable adb, connect manually and run install.
 
 The script installs and configures the apps, restores Key Mapper mappings,
-sets Arc as the home launcher, and leaves the TV ready without rebooting. A
-manual reboot is safe after it finishes.
+sets Arc as the home launcher, disables location and camera/microphone access,
+turns off developer options and ADB, and reboots the TV.
 
 ## Mappings
 

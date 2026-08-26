@@ -172,7 +172,21 @@ def finish(data: dict) -> None:
     )
     if home.splitlines()[-1] != f"{launcher}/.MainActivity":
         raise SystemExit(f"failed to set home launcher: {home}")
-    subprocess.run(["adb", "-s", TV, "reboot"], check=False)
+    shell("cmd", "location", "set-location-enabled", "false", "--user", "0")
+    shell("cmd", "sensor_privacy", "enable", "0", "microphone")
+    shell("cmd", "sensor_privacy", "enable", "0", "camera")
+    subprocess.run(
+        [
+            "adb",
+            "-s",
+            TV,
+            "shell",
+            "sh",
+            "-c",
+            "settings put global development_settings_enabled 0 && settings put global adb_enabled 0 && reboot",
+        ],
+        check=False,
+    )
 
 
 def restore() -> None:
@@ -341,7 +355,7 @@ def install() -> None:
         if MAPPINGS.exists():
             log("restore Key Mapper mappings")
             restore()
-    log("apply TV settings and reboot")
+    log("apply TV settings, disable ADB, and reboot")
     finish(data)
 
 

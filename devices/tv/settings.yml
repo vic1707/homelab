@@ -10,10 +10,15 @@ settings:
         lockscreen_sounds_enabled: "0"
         tcl_app_cec_auto_switch: "1"
         tcl_app_settings_eARC_mode: "true"
+        tcl_sys_audio_sound_mode: "1" # Movie
+        tcl_sys_audio_spdif_outmode: "4" # Pass through
     secure:
+        backup_enabled: "0" # Disable Android cloud backup
         charging_sounds_enabled: "0"
-        location_mode: "0"
+        install_non_market_apps: "0" # Disable unknown-source installs
+        location_mode: "0" # Also enforced through the location service
     global:
+        ble_scan_always_enabled: "0"
         dock_sounds_enabled: "0"
         power_sounds_enabled: "0"
         hdmi_control_enabled: "1"
@@ -22,11 +27,13 @@ settings:
         hdmi_control_volume_control_enabled: "1"
         hdmi_system_audio_control_enabled: "1"
         hdmi_earc_control_enabled: "2"
-        tcl_device_out_type: "1"
+        tcl_device_out_type: "16" # ARC
+        bluetooth_on: "0" # Disabled
         GAME_MODE_HDMI_2: "1"
         tcl_diagnostic_status: "0"
         tcl_uxp_status: "0"
         network_recommendations_enabled: "0"
+        wifi_scan_always_enabled: "0"
 
 packages:
     github:
@@ -67,6 +74,9 @@ packages:
     disabled:
         - com.google.android.apps.tv.launcherx
         - com.google.android.tungsten.setupwraith
+        - com.tcl.eva # TCL camera gesture service
+        - com.tcl.initsetup # Completed setup and Samba ACR consent
+        - com.tcl.ttvs # TCL telemetry, casting, cloud, and updater services
 
     removed:
         - com.google.android.apps.tv.dreamx
