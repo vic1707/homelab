@@ -40,6 +40,11 @@
 		{
 			"matchDepNames": ["openwrt/openwrt"],
 			"groupName": "OpenWrt firmware"
+		},
+		{
+			"matchFileNames": ["devices/tv/settings.yml"],
+			"groupName": "TV APKs",
+			"separateMajorMinor": false
 		}
 	]
 }
