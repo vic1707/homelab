@@ -127,10 +127,8 @@ filters:
       id: 1
 whitelist_filters: []
 user_rules:
-    - "||fedex.lan^$client=192.168.255.0/24,dnsrewrite=NOERROR;A;{{ mgmt_network.gateway }}"
-{% for network in fedex_networks %}
-    - "||fedex.lan^$client={{ network.subnet }},dnsrewrite=NOERROR;A;{{ network.gateway if network.name == 'automation' else mgmt_network.gateway }}"
-{% endfor %}
+    - "{{ mgmt_network.gateway }} fedex.lan"
+    - "{{ (fedex_networks | selectattr('name', 'equalto', 'automation') | first).gateway }} nut.fedex.lan"
 filtering:
     protection_enabled: true
     filtering_enabled: true
