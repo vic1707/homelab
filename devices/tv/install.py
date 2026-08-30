@@ -293,23 +293,19 @@ def download_apkeep(app: dict, destination: Path) -> list[Path]:
     return sorted(destination.rglob("*.apk"))
 
 
-def install() -> None:
-    data = config()
+def install_apps(data: dict) -> None:
     packages = data["packages"]
     github_apps = packages["github"]
     apkeep_apps = packages["apkeep"]
-    keymapper = github_apps["keymapper"]["package"]
-    keymapper_was_installed = (
-        f"package:{keymapper}"
-        in shell("pm", "list", "packages", capture=True).splitlines()
-    )
 
     temporary = ROOT / ".download"
     temporary.mkdir(exist_ok=True)
     apkeep_apks = {}
     for name, app in apkeep_apps.items():
         log(f"prepare {name}")
-        apkeep_apks[name] = download_apkeep(app, temporary / name)
+        apkeep_apks[name] = download_apkeep(
+            app, temporary / name / app["version"]
+        )
     for name, apks in apkeep_apks.items():
         if not apks:
             raise SystemExit(f"no {name} APKs downloaded")
@@ -343,6 +339,17 @@ def install() -> None:
                 "com.android.vending",
                 *(str(apk) for apk in app_apks),
             )
+
+
+def install() -> None:
+    data = config()
+    packages = data["packages"]
+    keymapper = packages["github"]["keymapper"]["package"]
+    keymapper_was_installed = (
+        f"package:{keymapper}"
+        in shell("pm", "list", "packages", capture=True).splitlines()
+    )
+    install_apps(data)
     for package in packages["removed"]:
         log(f"remove {package}")
         subprocess.run(
@@ -378,13 +385,18 @@ def save_mappings() -> None:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "command", nargs="?", default="install", choices=("install", "save-mappings")
+        "command",
+        nargs="?",
+        default="install",
+        choices=("install", "update-apps", "save-mappings"),
     )
     args = parser.parse_args()
     subprocess.run(["adb", "connect", TV], check=True, stdout=subprocess.DEVNULL)
     run("wait-for-device")
     if args.command == "install":
         install()
+    elif args.command == "update-apps":
+        install_apps(config())
     else:
         save_mappings()
 

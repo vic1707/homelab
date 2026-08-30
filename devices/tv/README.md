@@ -6,6 +6,15 @@ The script installs and configures the apps, restores Key Mapper mappings,
 sets Arc as the home launcher, disables location and camera/microphone access,
 turns off developer options and ADB, and reboots the TV.
 
+## App updates
+
+Install the APK versions pinned in `settings.yml` without reconfiguring or
+rebooting the TV:
+
+```sh
+./devices/tv/install.py update-apps
+```
+
 ## Mappings
 
 Save the readable repository copy:
