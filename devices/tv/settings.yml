@@ -66,7 +66,7 @@ packages:
             version: "6-0-6"
             package: dev.dworks.apps.anexplorer
         twitch:
-            # renovate: datasource=custom.apkmirror depName=twitch packageName=twitch-interactive-inc/twitch versioning=loose extractVersion=^/apk/twitch-interactive-inc/twitch/twitch-live-streaming-(?<version>\d+-\d+-\d+)-release/?$
+            # renovate: datasource=custom.apkmirror depName=twitch-android-tv packageName=twitch-interactive-inc/twitch-android-tv versioning=loose extractVersion=^/apk/twitch-interactive-inc/twitch-android-tv/twitch-live-streaming-android-tv-(?<version>\d+-\d+-\d+-\d+)-release/?$
             version: "13.0.0.2"
             abi: armeabi-v7a
             package: tv.twitch.android.app
