@@ -25,6 +25,15 @@
           return_content: true
 
   pre_tasks:
+      - name: Hydra IPMI | Check BMC reachability
+        ansible.builtin.wait_for:
+            host: "{{ ansible_host }}"
+            port: 443
+            connect_timeout: 3
+            timeout: 10
+            msg: Hydra BMC is not reachable at {{ ansible_host }}:443.
+        tags: always
+
       - name: Hydra IPMI | Validate credentials
         ansible.builtin.assert:
             that:

@@ -21,6 +21,15 @@
       sum_container_image: ghcr.io/vic1707/homelab/sum:2.15.0
 
   pre_tasks:
+      - name: Hydra netboot | Check BMC reachability
+        ansible.builtin.wait_for:
+            host: "{{ ansible_host }}"
+            port: 443
+            connect_timeout: 3
+            timeout: 10
+            msg: Hydra BMC is not reachable at {{ ansible_host }}:443.
+        tags: always
+
       - name: Hydra netboot | Generate temporary image path
         ansible.builtin.set_fact:
             netboot_xyz_path: >-
