@@ -11,7 +11,7 @@ networks:
           limit: 21
           leasetime: 12h
           default_route: false # Keep another interface as the controller's internet route.
-          routes: ["10.0.32.10/32,10.0.10.1"]
+          routes: ["10.0.30.10/32,10.0.10.1", "10.0.32.10/32,10.0.10.1"]
 
     - name: user
       vlan_id: 20

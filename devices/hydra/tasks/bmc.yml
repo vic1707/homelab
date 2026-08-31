@@ -38,6 +38,48 @@
       - ipmi_factory_access.redfish_facts is defined
   no_log: true
 
+- name: bmc | Read local accounts
+  community.general.redfish_info:
+      category: [Accounts]
+      command: [ListUsers]
+  register: ipmi_existing_accounts
+  no_log: true
+
+- name: bmc | Create configured accounts
+  community.general.redfish_command:
+      category: Accounts
+      command: [AddUser]
+      new_username: "{{ ipmi_account.username }}"
+      new_password: "{{ ipmi_account.password }}"
+      roleid: "{{ ipmi_account.role }}"
+  when: >-
+      ipmi_account.username not in
+      (ipmi_existing_accounts.redfish_facts.user.entries | map('last') | map(attribute='UserName') | list)
+  loop: "{{ ipmi_accounts }}"
+  loop_control:
+      label: "{{ ipmi_account.username }}"
+      loop_var: ipmi_account
+  no_log: true
+
+- name: bmc | Enforce configured account roles
+  community.general.redfish_command:
+      category: Accounts
+      command: [UpdateUserRole]
+      new_username: "{{ ipmi_account.username }}"
+      roleid: "{{ ipmi_account.role }}"
+  when: >-
+      (ipmi_existing_accounts.redfish_facts.user.entries
+       | map('last')
+       | selectattr('UserName', 'equalto', ipmi_account.username)
+       | map(attribute='RoleId')
+       | first
+       | default(ipmi_account.role)) != ipmi_account.role
+  loop: "{{ ipmi_accounts }}"
+  loop_control:
+      label: "{{ ipmi_account.username }}"
+      loop_var: ipmi_account
+  no_log: true
+
 - name: bmc | Configure account lockout
   community.general.redfish_command:
       category: Accounts

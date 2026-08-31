@@ -39,6 +39,11 @@ firewall_zones:
           allow_home_assistant_wan:
               origin: homeassistant
               destinations: [wan]
+          allow_home_assistant_hydra_redfish:
+              origin: homeassistant
+              destinations: [hydra_ipmi]
+              ports: [443]
+              protocols: [tcp]
           allow_home_assistant_yeelights:
               origin: homeassistant
               destinations: [yeelight_billard, yeelight_office, yeelight_bedroom, yeelight_tv]

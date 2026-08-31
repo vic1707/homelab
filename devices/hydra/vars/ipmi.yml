@@ -1,9 +1,12 @@
 ---
 ipmi_factory_password: >-
-    {{ lookup('community.sops.sops', '../../.secrets/devices/hydra.yml', extract='["bmc"]["factory_password"]') | trim }}
+    {{ lookup('community.sops.sops', '../../.secrets/devices/hydra.yml', extract='["bmc"]["factory"]["password"]') | trim }}
+
+ipmi_accounts: >-
+    {{ lookup('community.sops.sops', '../../.secrets/devices/hydra.yml', extract='["bmc"]["accounts"]') }}
 
 ipmi_username: >-
-    {{ lookup('community.sops.sops', '../../.secrets/devices/hydra.yml', extract='["bmc"]["username"]') | trim }}
+    {{ lookup('community.sops.sops', '../../.secrets/devices/hydra.yml', extract='["bmc"]["administrator"]["username"]') | trim }}
 
 ipmi_password: >-
-    {{ lookup('community.sops.sops', '../../.secrets/devices/hydra.yml', extract='["bmc"]["password"]') | trim }}
+    {{ lookup('community.sops.sops', '../../.secrets/devices/hydra.yml', extract='["bmc"]["administrator"]["password"]') | trim }}

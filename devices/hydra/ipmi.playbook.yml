@@ -32,8 +32,16 @@
                 - ipmi_factory_password | length >= 8
                 - ipmi_password | length >= 12
                 - ipmi_password | length <= 20
+                - ipmi_account_usernames | unique | length == ipmi_account_usernames | length
+                - ipmi_account_passwords | unique | length == ipmi_account_passwords | length
+                - ipmi_account_password_lengths | min >= 12
+                - ipmi_account_password_lengths | max <= 20
             fail_msg: >-
-                BMC credentials must be present and the desired password must contain 12-20 characters.
+                BMC usernames and passwords must be unique and passwords must contain 12-20 characters.
+        vars:
+            ipmi_account_usernames: "{{ [ipmi_username] + (ipmi_accounts | map(attribute='username') | list) }}"
+            ipmi_account_passwords: "{{ [ipmi_password] + (ipmi_accounts | map(attribute='password') | list) }}"
+            ipmi_account_password_lengths: "{{ ipmi_account_passwords | map('length') | list }}"
         no_log: true
         tags: always
 

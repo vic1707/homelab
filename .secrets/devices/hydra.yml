@@ -1,7 +1,17 @@
 bmc:
-    username: ADMIN
-    factory_password: ENC[AES256_GCM,data:i9zq12QdZ6nJng==,iv:fXO/cGlBJbf4vTUjHAWhbhOH61q/UHbN8JSPXLKh6DE=,tag:zdi/2Dhq+2q0pVJWRj74RQ==,type:str]
-    password: ENC[AES256_GCM,data:NtWj+dJb8RergyXsVA68a8+9+cg=,iv:jj+8PtWn3/zpwYh9YmJNShA1/I0GaZobDCT/5KaMsAM=,tag:w+pFIDz1J8MYDsp0WzcTQA==,type:str]
+    factory:
+        password: ENC[AES256_GCM,data:YPpB7AtobK6axw==,iv:SHRUD1hKEYu3WuwUgsdtnFvLRPt9pGJ59tanfVcUS9c=,tag:ZYBs6f8j3sCUOQQiUfemMA==,type:str]
+    administrator:
+        username: ADMIN
+        password: ENC[AES256_GCM,data:aEOsVBBmtqdOfR1vLQiIR2jSUHU=,iv:jIItqg0RlCzPFxz6Pf5YE4SG37b4/juQ5rLwICKlBnU=,tag:SdZ/UMV5HZj9gvl26uRlsg==,type:str]
+    accounts:
+        # roles:
+        # - Administrator: full BMC, account, network, firmware, BIOS, and power control.
+        # - Operator: status access and power/component operations, but no user or BMC management.
+        # - ReadOnly: status, inventory, sensors, and logs; no power control or configuration.
+        - role: Operator
+          username: homeassistant
+          password: ENC[AES256_GCM,data:c73AEY8XUJa3sn+IotZSaqY/Mw==,iv:Uf71ZTqgg22f3K6F5+5qNLF+/Jzj9okQ786zXx57a3o=,tag:rZSE9am23W/KI4yUEo6dIg==,type:str]
 
 sops:
     age:
@@ -15,6 +25,6 @@ sops:
               -----END AGE ENCRYPTED FILE-----
           recipient: age1q9gm9fgduf5scr3dadl7yarh4wxzlr6psl4zp02k2r9edjngasssd266k4
     encrypted_regex: (?i)(secret|token|password|key|mac)$
-    lastmodified: "2026-08-01T13:30:18Z"
-    mac: ENC[AES256_GCM,data:AdF+7KTj4I/d3S21viReWvqeay4zhoMR4J9woeSrGIm8jKvenm407+vJMuZ8uznK+EqEEot119mYGjpeUTHTR3ZErslCr5tCNTtHnA4a8ws5dXE4F4mhdrPiNCz+Y9RdXWwkf4TKOsEwlczYycn+qHK9O0PaaVX6YAfyI6RXXsM=,iv:50d+4mc3LWx+mdVdEeZ9NAx75/6eum1Jer9UXvN23q0=,tag:i2gJJFjPKsMzfxkmUXLIGg==,type:str]
-    version: 3.13.2
+    lastmodified: "2026-08-31T20:11:36Z"
+    mac: ENC[AES256_GCM,data:yIsp/Y8wKgh1HftLJGX/dkn47LP/P0Phra96c1aQGWev/gwWxZhI9IkSEs20dzp0ph7b3rRb1EUy1R59/nT28oEfWHD8hWU/uIrNvuKjmje4/rV9cQPBXwvTnmOGeHFjDXI709zavLkSwX6uTUws3fkhFWF8AuHx1r2jec0rsOo=,iv:4issN+9jMFJbJlNJhvG1fArsmzMBY+dZkRyvugcCy3k=,tag:bWQ1NDqvnbwRE6FOLK5UUg==,type:str]
+    version: 3.13.3
