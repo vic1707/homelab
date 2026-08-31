@@ -66,7 +66,7 @@ wifis:
 
     - name: iot_cloud
       ifname: cloud
-      network: media_cloud
+      network: iot_cloud
       ssid: idIoT_cloud
       encryption: psk2 # WPA2-PSK
       ieee80211w: false # PMF; protects management frames.

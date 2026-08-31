@@ -40,7 +40,7 @@ networks:
           limit: 205
           leasetime: 12h
 
-    - name: media_cloud
+    - name: iot_cloud
       vlan_id: 32
       subnet: 10.0.32.0/24
       gateway: 10.0.32.1

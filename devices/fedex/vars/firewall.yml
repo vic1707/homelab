@@ -53,7 +53,7 @@ firewall_zones:
     - name: iot_offline
       features: [dhcp, dns, ping, force_dns, ntp]
 
-    - name: media_cloud
+    - name: iot_cloud
       features: [dhcp, dns, ping, force_dns, block_dot_doq, internet, mdns, ntp]
       exceptions:
           # AirPlay receivers negotiate reverse media streams to sender ephemeral ports.

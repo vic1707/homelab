@@ -8,11 +8,11 @@
 #
 # mycelium:
 #     X1            → fedex sfp8 trunk
+#     X2            → LAN port
 #     1             → TV
-#     X2,3          → LAN port
 #     2             → mgmt + poe
 #     4,6,8,10,12   → mgmt
-#     38            → bacon AP trunk (mgmt / user / iot_offline / media_cloud / untrusted)
+#     38            → bacon AP trunk (mgmt / user / iot_offline / iot_cloud / untrusted)
 #     44,46,48      → automation: Home Assistant + 2× SLZB hubs
 #     every others  → parking (disabled)
 #     physical mgmt 1 stays disconnected
@@ -21,7 +21,7 @@ fedex_interfaces:
     bbox_wan: eth5
     mycelium_trunk: eth7
 
-bacon_trunk_networks: [mgmt, user, iot_offline, media_cloud, untrusted]
+bacon_trunk_networks: [mgmt, user, iot_offline, iot_cloud, untrusted]
 
 mycelium_interface_profiles:
     parking: &parking
@@ -39,10 +39,10 @@ mycelium_interface_profiles:
         access_vlan: "{{ ['user'] | vlan_ids(networks) | first }}"
         enabled: true
         description: user
-    media_cloud: &media_cloud
-        description: media_cloud
+    iot_cloud: &iot_cloud
+        description: iot_cloud
         mode: access
-        access_vlan: "{{ ['media_cloud'] | vlan_ids(networks) | first }}"
+        access_vlan: "{{ ['iot_cloud'] | vlan_ids(networks) | first }}"
         enabled: true
     automation: &automation
         description: automation
@@ -72,7 +72,7 @@ mycelium_interface_overrides:
 
     1/2/2: *user
 
-    1/1/1: *media_cloud
+    1/1/1: *iot_cloud
 
     1/1/3: *user
 
