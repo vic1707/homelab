@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Build one device env preset into a sysupgrade image.
+# Build one device env preset into OpenWrt images.
 # Example: .openwrt-base/build.sh --out-dir dist/openwrt devices/bacon/openwrt.env
 
 ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -150,16 +150,20 @@ podman run --rm \
 	-v "$build_bin:/builder/bin" \
 	"$image" /bin/bash -lc '[ -d ./scripts ] || ./setup.sh; make image PROFILE="$PROFILE" PACKAGES="$PACKAGES" FILES="$FILES" BIN_DIR="$BIN_DIR" DISABLED_SERVICES="$DISABLED_SERVICES"'
 
-artifact_glob="${OPENWRT_ARTIFACT_GLOB:-*sysupgrade*.bin}"
-image_count=0
-artifact=""
+artifacts=()
 while IFS= read -r candidate; do
-	image_count=$((image_count + 1))
-	artifact="$candidate"
-done < <(find "$build_bin" -type f -name "$artifact_glob" | sort)
-[ "$image_count" -eq 1 ] || die "$device produced $image_count matching $artifact_glob"
+	artifacts+=("$candidate")
+done < <(find "$build_bin" -type f \( -name '*sysupgrade*.bin' -o -name '*combined-efi.img.gz' \) | sort)
+[ "${#artifacts[@]}" -gt 0 ] || die "$device produced no firmware images"
 
-final="$out/$device-openwrt-$OPENWRT_VERSION-${OPENWRT_ARTIFACT_NAME:-sysupgrade.${artifact##*.}}"
-cp "$artifact" "$final"
+for artifact in "${artifacts[@]}"; do
+	name="${artifact##*/}"
+	case "$name" in
+		*sysupgrade*.bin) suffix=sysupgrade.bin ;;
+		*combined-efi.img.gz) suffix=ext4-combined-efi.img.gz ;;
+		*) die "unsupported firmware image: $name" ;;
+	esac
+	cp "$artifact" "$out/$device-openwrt-$OPENWRT_VERSION-$suffix"
+done
 rm -rf "$work"
-printf 'Built %s\n' "$final"
+printf 'Built %d image(s)\n' "${#artifacts[@]}"
