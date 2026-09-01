@@ -1,9 +1,11 @@
 accounts:
     admin:
-        password: ENC[AES256_GCM,data:s4f9G8cZivhsxR3QqwllmBdJquDELGwrcHzcu6TEE9oSuGgYXa1El02nXf+Bn9g=,iv:ecxanQCdEOVowmOw1Zok4xjZ1cIUofF8/Dp5tCyTWUg=,tag:o9qZ4DV2IjAcDQ4+JVlW5Q==,type:str]
+        # max 48 chars
+        password: ENC[AES256_GCM,data:mwTvCPfCt/roB/0HzUO+YYgaW8ViGU3f1rbVN7+eNZAi3vpEPQNjy335XsBT+P3P,iv:wv3fh5gj9IStXxlgvVnYrPhSwUtIuQ8nEznJlFpRlMc=,tag:VI7v+mcFtQuPvtAK1CbV/A==,type:str]
 
 enable:
-    super_user_password: ENC[AES256_GCM,data:yhIyRgOY4S4zZ7RHblosH9bS/5P7kROVwtHiV3vqdjwt9pretare0Ghxr05I5XE=,iv:5TzkCPNC1jbfj1ojW26o6MueYjv9OW0pQGwearNiDsU=,tag:7ny4FsF0vwnrv2M8/j+mfg==,type:str]
+    # max 48 chars
+    super_user_password: ENC[AES256_GCM,data:KeyyZ6eygwjNhwyeTmbnH7Y0CEBiMvSd5b+p83uxXPeXOVbviwgqE38TcRbt2v6H,iv:V5TwBahKjJ82agGGyLjiP9yXUApZylVfCyikxb+AYAU=,tag:g/N3IKRCH1Ck+qw0n1gbhg==,type:str]
 
 sops:
     age:
@@ -17,6 +19,6 @@ sops:
               -----END AGE ENCRYPTED FILE-----
           recipient: age1q9gm9fgduf5scr3dadl7yarh4wxzlr6psl4zp02k2r9edjngasssd266k4
     encrypted_regex: (?i)(secret|token|password|key|mac)$
-    lastmodified: "2026-08-04T18:26:03Z"
-    mac: ENC[AES256_GCM,data:YOpX6To4Stl5GKXqbtBxGIlyAAOiSlfg5OPvI4i8UIQ5pYE9ilYLGYdIYzk082Ax8s+SfdETcddu5eTm36Bg9yWP97Wjl804LuZasG+XFtssc2yzah1AUSUMa5Fei98mnd04otNTwnJ9a7Pw3Apfbv9YZNUAOYBfUc/iTAUs/vk=,iv:hIkTmb5zdc2nlPNVyG5PsPoMQNW5dwJvDb462WRAED4=,tag:Mlw9NK08TcGChWhJz/sUFw==,type:str]
+    lastmodified: "2026-09-01T18:29:14Z"
+    mac: ENC[AES256_GCM,data:3ZJTfmDlc0w4PEzaYBXoLr9SljafH6I1OkFPVtawN4GqIBf28nRCqljnksONoEi6IqOqhQd1NUk72vBuQA9XU4niwT/eHg1PIDVeCS15Odi8qlJcKoL4nu6LFrZnGI/KFAGygsS+yfToI+/fsBtUQFvDWWIDvY9geTiVhuPOSZk=,iv:KdH7HB+Eh9KyE+LKVT2PkBXUdzii4657XXcTXRFnxks=,tag:YWWZLKs1iwxGtMYff38t3A==,type:str]
     version: 3.13.3

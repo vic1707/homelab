@@ -3,12 +3,12 @@ ssh-private-key: ENC[AES256_GCM,data:F9p+JKNbNQm/QefJpN1edYAfLptMghFEo8pp4y0HR3h
 
 accounts:
     root:
-        password: ENC[AES256_GCM,data:6c3eqxxH/kbACGbKO+stVlv8tAZHKjqsIIY92cvwp/2HSJ0LDKzMMB0fD1FFTJyZ3qM=,iv:HrFz81wQYMLa1ScJ+EWLp3U/BNBUrmNwTCv4C9fCcbs=,tag:MCtn1m5CBKztenzcfjTbBA==,type:str]
+        password: ENC[AES256_GCM,data:flEOoeuM8SiCFDfk/eyGJonuVwSyk9PNFCCsh3HF7WTOaJOHQ1uTxvrqOk8aF4yLJuU=,iv:tLjeD+b9fRV/wXDV5miFymlQPc1JHf+G1DLeasd2HnA=,tag:8Oa932MmD96Ae9ePwwTtAA==,type:str]
     nut:
         # no specials char
-        password: ENC[AES256_GCM,data:iSXsjNJQDgWT8GrYO9HdU/mqVcFsQguzcFHoSZqxO4lMdgK2WlhT+LKnWCvJhhXeVIg=,iv:nXMtFUOs2kM/0DIqN6LbxqkR72gcZGhEJGyFpXT8bOY=,tag:PE+Uiloa0p0++THGPB+2/Q==,type:str]
+        password: ENC[AES256_GCM,data:L9HOLZe7uqCM6evAfVchtk9VFK0wIB20b1XeprO5X5np6kwo1+8ceUvOW20trUjJ134=,iv:ED21QWPyxbUN/meCTMEsnt3aKu5+aUU5kxZejTRMOgo=,tag:OEyQ6ixXF0HjLfp1TlwkWg==,type:str]
     adguardhome:
-        password: ENC[AES256_GCM,data:XEqZwWEANrAQ+WVX0e9XHjm7GyZmJuJUOFun1crd6kXU9nb1cxn4+JPBs3WGWWgvaD8=,iv:tW542yrfsorNcW5srczu3+IFG03pMYZgkLU4ktLzNTQ=,tag:MQ7wkuj8aYEjoAnUsPakrQ==,type:str]
+        password: ENC[AES256_GCM,data:9fdkLtUNFxeqpRY0plwg+7BQ3cGmxRjFUAP5odzGU/L0xm9ka+QibSfAloH2FPX1r1Q=,iv:a+iTV1aNHG7M7vYAV4o+u9yF/Etg0c49WQpmHpkY8i4=,tag:Mxtywamx2cCmV3lW/C+5ZQ==,type:str]
 
 bbox:
     mac: ENC[AES256_GCM,data:GvSPdbeGboe5BFuGd4WsMvA=,iv:JMP1Ob1v/opBIwqSNWtgybn+m5j1KWXGt5a8S2npeYM=,tag:hPk6OBYyeB3dRvISSDvMDw==,type:str]
@@ -25,6 +25,6 @@ sops:
               -----END AGE ENCRYPTED FILE-----
           recipient: age1q9gm9fgduf5scr3dadl7yarh4wxzlr6psl4zp02k2r9edjngasssd266k4
     encrypted_regex: (?i)(secret|token|password|key|mac)$
-    lastmodified: "2026-07-21T12:34:13Z"
-    mac: ENC[AES256_GCM,data:w2RgFatPzxH8oHUf5RceXqLiHa1AZKJcLkV3FfS7XP/8ddiXPVtBIB87Td0CEwaZ9wnf1flWxVk0LqP10v2xJV2NawiXQRla74EmPGYVC28RUvEqkls/StLEmRz7ofburKkjPYqm/DkjZiaqXDNooziEYBmIR+O9igQVUgZpG20=,iv:j5X1jPwopSaJcCF9tJ8V8J81WtC6QONN3zljG5s2gC8=,tag:PUgcoKOZjNs7k99AQnRCqQ==,type:str]
-    version: 3.13.2
+    lastmodified: "2026-09-01T10:44:42Z"
+    mac: ENC[AES256_GCM,data:bldnlkhHj04UtElfZ7vmXaagATq7tGOvcxTHeZ2k6owSJn23Hcc25Or7ufw/3E2/1Z+LFBNPFeRA5ogYFSXjAdaPzLs6nIOBS5xWS0uwAY9saWnW4GqcQoiHEajvAsYCLBXsbAY/B1YID8zi7nz6reweNTTpgmaZ7lR27MG/Oqw=,iv:lIQ8WipmbhEKAJoeUAZqrC++4UGBf11adivpIrN8po8=,tag:ir2bitXMmtzzOQpiA1BeCg==,type:str]
+    version: 3.13.3
