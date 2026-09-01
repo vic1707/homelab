@@ -150,7 +150,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mapfile -t images < <(find dist/openwrt -type f | sort)
-          [ "${#images[@]}" -gt 0 ]
+          [ "${#images[@]}" -eq 1 ]
           image="${images[0]}"
           name="$(basename "$image")"
           [[ "$name" =~ ^(.+)-openwrt-([0-9]+\.[0-9]+\.[0-9]+)- ]] || exit 1
@@ -166,4 +166,4 @@ jobs:
             --title "$title" \
             --notes "Custom OpenWrt image for $device on $version."
 
-          gh release upload "$tag" "${images[@]}" --clobber
+          gh release upload "$tag" "$image" --clobber

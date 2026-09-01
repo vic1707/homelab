@@ -14,6 +14,7 @@ openwrt:
             ansible_connection: ssh
             ansible_ssh_transfer_method: scp
             ansible_scp_extra_args: "-O"
+            openwrt_sysupgrade_artifact: ext4-combined-efi.img.gz
 
 ipmi:
     hosts:
