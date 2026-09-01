@@ -25,15 +25,42 @@
           return_content: true
 
   pre_tasks:
+      - name: Hydra IPMI | Check BMC reachability
+        ansible.builtin.wait_for:
+            host: "{{ ansible_host }}"
+            port: 443
+            connect_timeout: 3
+            timeout: 10
+            msg: Hydra BMC is not reachable at {{ ansible_host }}:443.
+        tags: always
+
       - name: Hydra IPMI | Validate credentials
         ansible.builtin.assert:
             that:
                 - ipmi_username | length > 0
-                - ipmi_factory_password | length >= 8
-                - ipmi_password | length >= 12
-                - ipmi_password | length <= 20
+                - ipmi_username != ipmi_factory_username
+                - ipmi_account_ids | unique | length == ipmi_account_ids | length
+                - ipmi_usernames | unique | length == ipmi_usernames | length
+                - ipmi_passwords | unique | length == ipmi_passwords | length
+                - ipmi_password_lengths | min >= 12
+                - ipmi_password_lengths | max <= 20
+                - >-
+                    ipmi_passwords
+                    | select('match', '.*[A-Z].*')
+                    | length == ipmi_passwords | length
             fail_msg: >-
-                BMC credentials must be present and the desired password must contain 12-20 characters.
+                BMC account IDs, usernames, and passwords must be unique;
+                passwords must contain 12-20 characters including an uppercase letter.
+        vars:
+            ipmi_account_ids: >-
+                {{ [ipmi_administrator_id]
+                   + (ipmi_accounts | map(attribute='id') | map('string') | list) }}
+            ipmi_usernames: >-
+                {{ [ipmi_factory_username, ipmi_username]
+                   + (ipmi_accounts | map(attribute='username') | list) }}
+            ipmi_passwords: >-
+                {{ [ipmi_password] + (ipmi_accounts | map(attribute='password') | list) }}
+            ipmi_password_lengths: "{{ ipmi_passwords | map('length') | list }}"
         no_log: true
         tags: always
 

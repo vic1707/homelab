@@ -1,41 +1,37 @@
 ---
-- name: bmc | Check desired credentials
+- name: bmc | Check custom administrator credentials
   community.general.redfish_info:
       category: [Accounts]
       command: [ListUsers]
-  register: ipmi_desired_access
+  register: ipmi_administrator_access
   failed_when: false
   no_log: true
 
-- name: bmc | Check factory credentials
-  community.general.redfish_info:
-      password: "{{ ipmi_factory_password }}"
-      category: [Accounts]
-      command: [ListUsers]
-  register: ipmi_factory_access
-  when: ipmi_desired_access.redfish_facts is not defined
-  failed_when: false
-  no_log: true
-
-- name: bmc | Require valid credentials
-  ansible.builtin.assert:
-      that:
-          - >-
-              ipmi_desired_access.redfish_facts is defined or
-              ipmi_factory_access.redfish_facts is defined
-      fail_msg: Neither the desired nor factory BMC password is valid.
-  no_log: true
-
-- name: bmc | Set administrator password
+- name: bmc | Create custom administrator in its fixed slot
   community.general.redfish_command:
+      username: "{{ ipmi_factory_username }}"
       password: "{{ ipmi_factory_password }}"
       category: Accounts
-      command: [UpdateUserPassword]
+      command: [AddUser]
+      id: "{{ ipmi_administrator_id }}"
       new_username: "{{ ipmi_username }}"
       new_password: "{{ ipmi_password }}"
-  when:
-      - ipmi_desired_access.redfish_facts is not defined
-      - ipmi_factory_access.redfish_facts is defined
+      roleid: Administrator
+  when: ipmi_administrator_access.redfish_facts is not defined
+  no_log: true
+
+- name: bmc | Create operator accounts in fixed slots
+  community.general.redfish_command:
+      category: Accounts
+      command: [AddUser]
+      id: "{{ ipmi_account.id }}"
+      new_username: "{{ ipmi_account.username }}"
+      new_password: "{{ ipmi_account.password }}"
+      roleid: Operator
+  loop: "{{ ipmi_accounts }}"
+  loop_control:
+      label: "{{ ipmi_account.username }}"
+      loop_var: ipmi_account
   no_log: true
 
 - name: bmc | Configure account lockout
