@@ -55,6 +55,7 @@
 !devices/*/settings.yml
 !devices/*/README.md
 !devices/*/*.playbook.yml
+!devices/openwrt-sysupgrade.playbook.yml
 !devices/*/tasks/
 !devices/*/tasks/**
 !devices/*/templates/
