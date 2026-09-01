@@ -99,7 +99,7 @@ if [ -d "$preset_dir/files" ]; then
 	cp -a "$preset_dir/files"/. "$files"/
 fi
 if [ "${OPENWRT_EXPAND_ROOT:-0}" = "1" ]; then
-	expand_root_url="https://openwrt.org/_export/code/docs/guide-user/advanced/expand_root?codeblock=0"
+	expand_root_url="https://openwrt.org/_export/code/docs/guide-user/advanced/expand_root?codeblock=1"
 	expand_root_sha256="4ac1431a833c37e0a8f298f9d50eeeddf35ec0b8513a296892ec6ad6a9d93aba"
 	expand_root_source="$work/expand-root.sh"
 	curl -fsSL -A "" "$expand_root_url" > "$expand_root_source"
