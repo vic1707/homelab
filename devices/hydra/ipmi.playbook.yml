@@ -45,12 +45,18 @@
                 - ipmi_account_passwords | unique | length == ipmi_account_passwords | length
                 - ipmi_account_password_lengths | min >= 12
                 - ipmi_account_password_lengths | max <= 20
+                - >-
+                    ipmi_managed_account_passwords
+                    | select('match', '.*[A-Z].*')
+                    | length == ipmi_managed_account_passwords | length
             fail_msg: >-
-                BMC usernames and passwords must be unique and passwords must contain 12-20 characters.
+                BMC usernames and passwords must be unique; passwords must contain
+                12-20 characters and managed account passwords need an uppercase letter.
         vars:
             ipmi_account_usernames: "{{ [ipmi_username] + (ipmi_accounts | map(attribute='username') | list) }}"
             ipmi_account_passwords: "{{ [ipmi_password] + (ipmi_accounts | map(attribute='password') | list) }}"
             ipmi_account_password_lengths: "{{ ipmi_account_passwords | map('length') | list }}"
+            ipmi_managed_account_passwords: "{{ ipmi_accounts | map(attribute='password') | list }}"
         no_log: true
         tags: always
 

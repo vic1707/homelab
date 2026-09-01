@@ -11,7 +11,7 @@ bmc:
         # - ReadOnly: status, inventory, sensors, and logs; no power control or configuration.
         - role: Operator
           username: homeassistant
-          password: ENC[AES256_GCM,data:c73AEY8XUJa3sn+IotZSaqY/Mw==,iv:Uf71ZTqgg22f3K6F5+5qNLF+/Jzj9okQ786zXx57a3o=,tag:rZSE9am23W/KI4yUEo6dIg==,type:str]
+          password: ENC[AES256_GCM,data:zCPI4xfeXmuZ6HzPnhdOSaJ12zI=,iv:Gha19P8FV37E8NbLJx+SbuMFp+zIoUnT3JO+H6eukpw=,tag:0jEpXjHocdQ81lC2CxKJnA==,type:str]
 
 sops:
     age:
@@ -25,6 +25,6 @@ sops:
               -----END AGE ENCRYPTED FILE-----
           recipient: age1q9gm9fgduf5scr3dadl7yarh4wxzlr6psl4zp02k2r9edjngasssd266k4
     encrypted_regex: (?i)(secret|token|password|key|mac)$
-    lastmodified: "2026-08-31T20:11:36Z"
-    mac: ENC[AES256_GCM,data:yIsp/Y8wKgh1HftLJGX/dkn47LP/P0Phra96c1aQGWev/gwWxZhI9IkSEs20dzp0ph7b3rRb1EUy1R59/nT28oEfWHD8hWU/uIrNvuKjmje4/rV9cQPBXwvTnmOGeHFjDXI709zavLkSwX6uTUws3fkhFWF8AuHx1r2jec0rsOo=,iv:4issN+9jMFJbJlNJhvG1fArsmzMBY+dZkRyvugcCy3k=,tag:bWQ1NDqvnbwRE6FOLK5UUg==,type:str]
+    lastmodified: "2026-08-31T22:06:26Z"
+    mac: ENC[AES256_GCM,data:19N1EszVLuIH0xxduiv0jmD0uxJUmVMCeg84+R5GiFHoIyH57SHC7G5mJNKBCU9lbT188itAoIT2el/nseLv0S3df0DVhcN/2NXSWGMUVB/GCPIEU03XIGhtbY8fZZzW6XoBQBG8Q71B8oT8HV6STpU5V13ZKwtRt9+xsX9sj7g=,iv:Ltws72+G4FsPLedkydo5e6p9xfgYfuPoN85P0dcFOkE=,tag:uh3RwYzIpR6vy+gKhCIkCw==,type:str]
     version: 3.13.3

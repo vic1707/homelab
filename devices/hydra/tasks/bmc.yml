@@ -54,11 +54,12 @@
       roleid: "{{ ipmi_account.role }}"
   when: >-
       ipmi_account.username not in
-      (ipmi_existing_accounts.redfish_facts.user.entries | map('last') | map(attribute='UserName') | list)
+      (ipmi_existing_accounts.redfish_facts.user.entries | map(attribute='UserName') | list)
   loop: "{{ ipmi_accounts }}"
   loop_control:
       label: "{{ ipmi_account.username }}"
       loop_var: ipmi_account
+  register: ipmi_account_creation
   no_log: true
 
 - name: bmc | Enforce configured account roles
@@ -69,7 +70,6 @@
       roleid: "{{ ipmi_account.role }}"
   when: >-
       (ipmi_existing_accounts.redfish_facts.user.entries
-       | map('last')
        | selectattr('UserName', 'equalto', ipmi_account.username)
        | map(attribute='RoleId')
        | first
@@ -78,7 +78,13 @@
   loop_control:
       label: "{{ ipmi_account.username }}"
       loop_var: ipmi_account
+  register: ipmi_account_roles
   no_log: true
+
+- name: bmc | Let account service settle after changes
+  ansible.builtin.pause:
+      seconds: 10
+  when: ipmi_account_creation is changed or ipmi_account_roles is changed
 
 - name: bmc | Configure account lockout
   community.general.redfish_command:
