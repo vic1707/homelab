@@ -39,6 +39,7 @@
         ansible.builtin.assert:
             that:
                 - ipmi_username | length > 0
+                - ipmi_username != ipmi_factory_username
                 - ipmi_password | length >= 12
                 - ipmi_password | length <= 20
         no_log: true
