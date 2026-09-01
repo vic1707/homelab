@@ -1,0 +1,13 @@
+---
+- name: features | rescue_access | Configure forwarding | {{ firewall_zone.name | upper }}
+  community.openwrt.uci:
+      command: section
+      config: firewall
+      type: forwarding
+      name: "{{ firewall_feature_sections[firewall_feature_name] | format(firewall_zone.name) }}"
+      value:
+          src: rescue
+          dest: "{{ firewall_zone.name }}"
+      replace: true
+      autocommit: true
+  notify: Fedex | Reload firewall

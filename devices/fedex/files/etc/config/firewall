@@ -10,7 +10,3 @@ config zone
 	option input 'ACCEPT'
 	option output 'ACCEPT'
 	option forward 'REJECT'
-
-config forwarding 'rescue_wan'
-	option src 'rescue'
-	option dest 'wan'

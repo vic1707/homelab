@@ -1,0 +1,17 @@
+---
+- name: features | mdns | Configure rule | {{ firewall_zone.name | upper }}
+  community.openwrt.uci:
+      command: section
+      config: firewall
+      type: rule
+      name: "{{ firewall_feature_sections[firewall_feature_name] | format(firewall_zone.name) }}"
+      value:
+          src: "{{ firewall_zone.name }}"
+          proto: udp
+          dest_ip: 224.0.0.251
+          dest_port: "5353"
+          family: ipv4
+          target: ACCEPT
+      replace: true
+      autocommit: true
+  notify: Fedex | Reload firewall

@@ -1,0 +1,5 @@
+---
+- name: interfaces | Configure access and parking ports
+  bofzilla.icx.interfaces:
+      interfaces: "{{ mycelium_interfaces | interface_list }}"
+      save_when: changed

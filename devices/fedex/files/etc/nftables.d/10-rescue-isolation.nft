@@ -1,4 +1,0 @@
-chain rescue_isolation_input {
-	type filter hook input priority -1; policy accept;
-	iifname != "eth1" ip daddr 192.168.255.0/24 drop
-}

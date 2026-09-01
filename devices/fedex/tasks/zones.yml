@@ -1,7 +1,77 @@
 ---
-- name: zones | Apply firewall policies
-  ansible.builtin.include_tasks: "{{ firewall_zone.policy }}"
+- name: zones | Ensure managed section manifest exists
+  community.openwrt.command:
+      cmd: touch /etc/config/ansible
+      creates: /etc/config/ansible
+
+- name: zones | Read managed section manifest
+  community.openwrt.command:
+      cmd: uci -q get ansible.firewall.sections
+  register: firewall_manifest
+  changed_when: false
+  failed_when: false
+
+- name: zones | Configure deny-by-default zones
+  community.openwrt.uci:
+      command: section
+      config: firewall
+      type: zone
+      name: "{{ firewall_zone.name }}"
+      value:
+          name: "{{ firewall_zone.name }}"
+          network: ["{{ firewall_zone.name }}"]
+          input: REJECT
+          output: ACCEPT
+          forward: REJECT
+      replace: true
+      autocommit: true
   loop: "{{ firewall_zones }}"
   loop_control:
       label: "{{ firewall_zone.name }}"
       loop_var: firewall_zone
+  notify: Fedex | Reload firewall
+
+- name: zones | Apply features
+  ansible.builtin.include_tasks: "firewall/features/{{ firewall_pair.1 }}.yml"
+  loop: "{{ firewall_zones | subelements('features') }}"
+  loop_control:
+      label: "{{ firewall_pair.0.name }} | {{ firewall_pair.1 }}"
+      loop_var: firewall_pair
+  vars:
+      firewall_zone: "{{ firewall_pair.0 }}"
+      firewall_feature_name: "{{ firewall_pair.1 }}"
+      firewall_gateway: >-
+          {{ (fedex_networks | selectattr('name', 'equalto', firewall_pair.0.name) | first).gateway }}
+
+- name: zones | Apply exceptions
+  ansible.builtin.include_tasks: firewall/exceptions.yml
+  loop: "{{ firewall_zones }}"
+  loop_control:
+      label: "{{ firewall_zone.name }}"
+      loop_var: firewall_zone
+
+- name: zones | Remove stale managed sections
+  community.openwrt.uci:
+      command: absent
+      config: firewall
+      section: "{{ firewall_section }}"
+      autocommit: true
+  loop: >-
+      {{ (firewall_manifest.stdout.split() if firewall_manifest.rc == 0 else [])
+          | difference(firewall_managed_sections)
+      }}
+  loop_control:
+      label: "{{ firewall_section }}"
+      loop_var: firewall_section
+  notify: Fedex | Reload firewall
+
+- name: zones | Save managed section manifest
+  community.openwrt.uci:
+      command: section
+      config: ansible
+      type: manifest
+      name: firewall
+      value:
+          sections: "{{ firewall_managed_sections | unique | sort }}"
+      replace: true
+      autocommit: true

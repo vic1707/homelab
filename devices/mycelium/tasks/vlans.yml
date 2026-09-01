@@ -1,0 +1,6 @@
+---
+- name: vlans | Configure active Mycelium VLANs
+  bofzilla.icx.vlans:
+      vlans: "{{ networks | icx_vlans }}"
+      purge: false
+      save_when: changed

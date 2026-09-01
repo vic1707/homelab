@@ -1,48 +1,29 @@
 ---
-bridge:
-    name: br-lan
-    ports: [eth0]
+bacon_uplink_device: eth0
+bacon_tagged_networks: "{{ networks | selectattr('name', 'in', bacon_trunk_networks) | list }}"
+bacon_client_networks: "{{ bacon_tagged_networks | rejectattr('name', 'equalto', 'mgmt') | list }}"
 
 root_password: >-
     {{ lookup('community.sops.sops', '../../.secrets/devices/bacon.yml', extract='["accounts"]["root"]["password"]') | trim }}
-
-networks:
-    - name: lan
-      device: "{{ bridge.name }}"
-      proto: dhcp # TODO: none if management vlan is added so bacon isn't reachable from pure LAN
-
-    # - name: management
-    #   device: "{{ bridge.name }}.<management-vlan>"
-    #   proto: dhcp
-
-    - name: guest
-      device: "{{ bridge.name }}"
-    #   device: "{{ bridge.name }}.<guest_vlan_id>"
-      proto: none
-
-    - name: iot
-      device: "{{ bridge.name }}"
-    #   device: "{{ bridge.name }}.<iot_vlan_id>"
-      proto: none
 
 radios:
     - name: radio0
       path: platform/soc/18000000.wifi
       band: 2g
       country: FR
-      channel: auto # or <1-14>
+      channel: 1
       htmode: HE20 # HE20/HE40/HE80
 
     - name: radio1
       path: platform/soc/18000000.wifi+1
       band: 5g
       country: FR
-      channel: auto # 36/40/44/48
+      channel: 36
       htmode: HE80 # HE20/HE40/HE80/HE160
 
 wifis:
     - name: main
-      network: lan
+      network: user
       ssid: AuMien
       encryption: sae-mixed # WPA2-PSK/WPA3-SAE
       ieee80211w: true # PMF; protects management frames.
@@ -53,9 +34,10 @@ wifis:
       password: >-
           {{ lookup('community.sops.sops', '../../.secrets/devices/bacon.yml', extract='["wifi"]["main"]["password"]') }}
       enabled: true
+      isolate: false
 
     - name: guest
-      network: guest
+      network: untrusted
       ssid: Victim
       encryption: sae-mixed # WPA2-PSK/WPA3-SAE
       ieee80211w: true # PMF; protects management frames.
@@ -66,9 +48,10 @@ wifis:
       password: >-
           {{ lookup('community.sops.sops', '../../.secrets/devices/bacon.yml', extract='["wifi"]["guest"]["password"]') }}
       enabled: true
+      isolate: true
 
     - name: iot
-      network: iot
+      network: iot_offline
       ssid: idIoT
       encryption: psk2 # WPA2-PSK
       ieee80211w: false # PMF; protects management frames.
@@ -79,3 +62,19 @@ wifis:
       password: >-
           {{ lookup('community.sops.sops', '../../.secrets/devices/bacon.yml', extract='["wifi"]["iot"]["password"]') }}
       enabled: true
+      isolate: true
+
+    - name: iot_cloud
+      ifname: cloud
+      network: iot_cloud
+      ssid: idIoT_cloud
+      encryption: psk2 # WPA2-PSK
+      ieee80211w: false # PMF; protects management frames.
+      ieee80211k: false # Neighbor reports; helps clients discover nearby AP/radios.
+      bss_transition: false # 802.11v; lets AP suggest a better AP/radio.
+      rrm_neighbor_report: false # Include neighbor list in 802.11k reports.
+      rrm_beacon_report: false # Let clients report beacon measurements.
+      password: >-
+          {{ lookup('community.sops.sops', '../../.secrets/devices/bacon.yml', extract='["wifi"]["iot_cloud"]["password"]') }}
+      enabled: true
+      isolate: true

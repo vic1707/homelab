@@ -1,0 +1,22 @@
+accounts:
+    admin:
+        password: ENC[AES256_GCM,data:s4f9G8cZivhsxR3QqwllmBdJquDELGwrcHzcu6TEE9oSuGgYXa1El02nXf+Bn9g=,iv:ecxanQCdEOVowmOw1Zok4xjZ1cIUofF8/Dp5tCyTWUg=,tag:o9qZ4DV2IjAcDQ4+JVlW5Q==,type:str]
+
+enable:
+    super_user_password: ENC[AES256_GCM,data:yhIyRgOY4S4zZ7RHblosH9bS/5P7kROVwtHiV3vqdjwt9pretare0Ghxr05I5XE=,iv:5TzkCPNC1jbfj1ojW26o6MueYjv9OW0pQGwearNiDsU=,tag:7ny4FsF0vwnrv2M8/j+mfg==,type:str]
+
+sops:
+    age:
+        - enc: |
+              -----BEGIN AGE ENCRYPTED FILE-----
+              YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSAxdnJPcXBwSmpieUhxUDVY
+              RUNTSzE3MkMxMVBCTXZTbmhIeXlsdWNSL0d3ClVsMHhhdEYwTWFIdWhmc3Q0bEtD
+              NU56dmRyVHJyaVhyRzlzeldPWTFSakUKLS0tIFRyM25KYjBobFhvNW1IdUdoSUpl
+              VWhJL0NjRmNOYkZ6cWZ6azdZZXdRblEKBqsVNhQJ5ecxHuIpYV53i4CzQ3+cHrZC
+              HaCKM3G5z0l4PBScFX2ZZgnJhb+fqqrVlWwRqNXXFzmCSBRxYI7DrA==
+              -----END AGE ENCRYPTED FILE-----
+          recipient: age1q9gm9fgduf5scr3dadl7yarh4wxzlr6psl4zp02k2r9edjngasssd266k4
+    encrypted_regex: (?i)(secret|token|password|key|mac)$
+    lastmodified: "2026-08-04T18:26:03Z"
+    mac: ENC[AES256_GCM,data:YOpX6To4Stl5GKXqbtBxGIlyAAOiSlfg5OPvI4i8UIQ5pYE9ilYLGYdIYzk082Ax8s+SfdETcddu5eTm36Bg9yWP97Wjl804LuZasG+XFtssc2yzah1AUSUMa5Fei98mnd04otNTwnJ9a7Pw3Apfbv9YZNUAOYBfUc/iTAUs/vk=,iv:hIkTmb5zdc2nlPNVyG5PsPoMQNW5dwJvDb462WRAED4=,tag:Mlw9NK08TcGChWhJz/sUFw==,type:str]
+    version: 3.13.3

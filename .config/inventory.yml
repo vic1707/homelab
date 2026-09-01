@@ -20,3 +20,18 @@ ipmi:
         hydra_ipmi:
             ansible_host: "{{ lookup('env', 'HYDRA_IPMI_HOST') | default('hydra_ipmi.lan', true) }}"
             ansible_python_interpreter: "{{ ansible_playbook_python }}"
+
+icx:
+    vars:
+        ansible_command_timeout: 60
+        ansible_connect_timeout: 30
+    hosts:
+        mycelium_uart:
+            ansible_host: mycelium_uart
+            icx_enable_password: >-
+                {{ lookup('community.sops.sops', '../../.secrets/devices/mycelium.yml', extract='["enable"]["super_user_password"]') }}
+            ansible_connection: bofzilla.icx.serial
+            ansible_network_os: bofzilla.icx.icx
+            ansible_serial_port: /dev/cu.usbserial-A9A2C0QQ
+            ansible_serial_baud: 9600
+            ansible_command_timeout: 300

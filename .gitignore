@@ -8,6 +8,11 @@
 !.config/inventory.yml
 !.config/requirements.yml
 !.config/tasks.mise.toml
+!.config/filter_plugins/
+!.config/filter_plugins/*.py
+
+!network/
+!network/*.yml
 
 !.custom-containers/
 !.custom-containers/import-libs.sh

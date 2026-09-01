@@ -1,0 +1,33 @@
+---
+- name: management | Configure local AAA
+  bofzilla.icx.auth:
+      users:
+          - name: admin
+            privilege: 0
+            password: >-
+                {{ lookup('community.sops.sops', '../../.secrets/devices/mycelium.yml', extract='["accounts"]["admin"]["password"]') }}
+            update_password: "{{ mycelium_update_password | default('on_create') }}"
+            enabled: true
+      enable_passwords:
+          super_user: >-
+              {{ lookup('community.sops.sops', '../../.secrets/devices/mycelium.yml', extract='["enable"]["super_user_password"]') }}
+          update_password: "{{ mycelium_update_password | default('on_create') }}"
+      aaa:
+          login_methods: []
+          enable_methods: [enable]
+          privilege_mode: false
+          enable_implicit_user: false
+      save_when: changed
+
+- name: management | Disable unused management services
+  bofzilla.icx.management_access:
+      ssh:
+          enabled: false
+      tftp:
+          enabled: false
+      telnet:
+          enabled: false
+      web:
+          http: false
+          https: false
+      save_when: changed

@@ -2,14 +2,24 @@
 - name: Manage fedex OpenWrt
   hosts: fedex
   gather_facts: false
+  force_handlers: true
 
   vars_files:
+      - ../../network/networks.yml
+      - ../../network/cabinet.yml
       - vars/openwrt.yml
       - vars/static_hosts.yml
+      - vars/firewall.yml
       - vars/nut.yml
       - vars/adguardhome.yml
 
   pre_tasks:
+      - name: Fedex | Validate network registry
+        ansible.builtin.import_tasks: ../../network/validate.tasks.yml
+
+      - name: Fedex | Validate firewall intent
+        ansible.builtin.import_tasks: ../../network/validate.firewall.tasks.yml
+
       - name: Fedex | Check OpenWrt access
         community.openwrt.ping:
 
@@ -20,14 +30,17 @@
       - name: Fedex | Configure Bbox WAN
         ansible.builtin.import_tasks: tasks/wan.yml
 
-      - name: Fedex | Configure temporary LAN
-        ansible.builtin.import_tasks: tasks/temp_lan.yml
+      - name: Fedex | Configure active routed networks
+        ansible.builtin.import_tasks: tasks/networks.yml
 
       - name: Fedex | Configure static DHCP hosts
         ansible.builtin.import_tasks: tasks/static_hosts.yml
 
       - name: Fedex | Configure firewall zones
         ansible.builtin.import_tasks: tasks/zones.yml
+
+      - name: Fedex | Configure mDNS reflection
+        ansible.builtin.import_tasks: tasks/mdns.yml
 
       - name: Fedex | Configure AdGuard Home
         ansible.builtin.import_tasks: tasks/adguardhome.yml
@@ -54,6 +67,11 @@
       - name: Fedex | Restart dnsmasq
         community.openwrt.service:
             name: dnsmasq
+            state: restarted
+
+      - name: Fedex | Restart sysntpd
+        community.openwrt.service:
+            name: sysntpd
             state: restarted
 
       - name: Fedex | Restart dropbear
@@ -86,4 +104,9 @@
       - name: Fedex | Restart NUT monitor
         community.openwrt.service:
             name: nut-monitor
+            state: restarted
+
+      - name: Fedex | Restart Avahi
+        community.openwrt.service:
+            name: avahi-daemon
             state: restarted

@@ -1,0 +1,16 @@
+---
+- name: features | ntp | Configure rule | {{ firewall_zone.name | upper }}
+  community.openwrt.uci:
+      command: section
+      config: firewall
+      type: rule
+      name: "{{ firewall_feature_sections[firewall_feature_name] | format(firewall_zone.name) }}"
+      value:
+          src: "{{ firewall_zone.name }}"
+          proto: udp
+          dest_ip: "{{ firewall_gateway }}"
+          dest_port: "123"
+          target: ACCEPT
+      replace: true
+      autocommit: true
+  notify: Fedex | Reload firewall

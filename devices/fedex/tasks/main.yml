@@ -1,10 +1,19 @@
 ---
-- name: Fedex | Set root password
+- name: Fedex | Check root password
+  community.openwrt.command:
+      cmd: grep -q '^root:[^!*:]' /etc/shadow
+      uses_shell: true
+  register: fedex_root_password_configured
+  changed_when: false
+  failed_when: false
+
+- name: Fedex | Update root password
   community.openwrt.command: # https://github.com/ansible-collections/community.openwrt/issues/143
       cmd: >-
           printf '%s\n%s\n' {{ root_password | quote }} {{ root_password | quote }} | passwd root
       uses_shell: true
   no_log: true
+  when: fedex_root_password_configured.rc != 0 or fedex_update_root_password | default(false)
 
 - name: Fedex | Keep firewall enabled
   community.openwrt.service:
@@ -22,7 +31,23 @@
       autocommit: true
   notify: Fedex | Restart dropbear
 
-- name: Fedex | Restrict LuCI to rescue
+- name: Fedex | Expose SSH on management network
+  community.openwrt.uci:
+      command: section
+      config: dropbear
+      type: dropbear
+      name: mgmt
+      value:
+          Interface: mgmt
+          PasswordAuth: "off"
+          RootPasswordAuth: "off"
+          RootLogin: "on"
+          Port: "22"
+      replace: true
+      autocommit: true
+  notify: Fedex | Restart dropbear
+
+- name: Fedex | Restrict LuCI to rescue and management
   community.openwrt.uci:
       command: section
       config: uhttpd
@@ -31,8 +56,10 @@
       value:
           listen_http:
               - 192.168.255.1:80
+              - "{{ mgmt_network.gateway }}:80"
           listen_https:
               - 192.168.255.1:443
+              - "{{ mgmt_network.gateway }}:443"
       replace: false
       autocommit: true
   notify: Fedex | Restart uhttpd

@@ -1,0 +1,76 @@
+---
+- name: networks | Configure Mycelium trunk VLAN devices
+  community.openwrt.uci:
+      command: section
+      config: network
+      type: device
+      name: "{{ fedex_network.name }}_vlan"
+      value:
+          name: "{{ fedex_interfaces.mycelium_trunk }}.{{ fedex_network.vlan_id }}"
+          type: 8021q
+          ifname: "{{ fedex_interfaces.mycelium_trunk }}"
+          vid: "{{ fedex_network.vlan_id }}"
+      replace: true
+      autocommit: true
+  loop: "{{ fedex_networks }}"
+  loop_control:
+      label: "{{ fedex_network.name }}"
+      loop_var: fedex_network
+  notify: Fedex | Reload network
+
+- name: networks | Configure gateways
+  community.openwrt.uci:
+      command: section
+      config: network
+      type: interface
+      name: "{{ fedex_network.name }}"
+      value:
+          device: "{{ fedex_interfaces.mycelium_trunk }}.{{ fedex_network.vlan_id }}"
+          proto: static
+          ipaddr: "{{ fedex_network.gateway }}"
+          netmask: "{{ fedex_network.subnet | subnet_netmask }}"
+          delegate: "0"
+      replace: true
+      autocommit: true
+  loop: "{{ fedex_networks }}"
+  loop_control:
+      label: "{{ fedex_network.name }}"
+      loop_var: fedex_network
+  notify:
+      - Fedex | Reload network
+      - Fedex | Restart dropbear
+      - Fedex | Restart uhttpd
+
+- name: networks | Configure DHCP
+  community.openwrt.uci:
+      command: section
+      config: dhcp
+      type: dhcp
+      name: "{{ fedex_network.name }}"
+      value:
+          interface: "{{ fedex_network.name }}"
+          start: "{{ fedex_network.dhcp.start }}"
+          limit: "{{ fedex_network.dhcp.limit }}"
+          leasetime: "{{ fedex_network.dhcp.leasetime }}"
+          dhcp_option: >-
+              {{ ['6,' ~ fedex_network.gateway]
+                  + (['3'] if not (fedex_network.dhcp.default_route | default(true)) else [])
+                  + (['121,' ~ (fedex_network.dhcp.routes | join(','))]
+                     if fedex_network.dhcp.routes | default([]) else []) }}
+      replace: true
+      autocommit: true
+  loop: "{{ fedex_networks | selectattr('dhcp', 'defined') | list }}"
+  loop_control:
+      label: "{{ fedex_network.name }}"
+      loop_var: fedex_network
+  notify: Fedex | Restart dnsmasq
+
+- name: networks | Enable local NTP service
+  community.openwrt.uci:
+      command: set
+      config: system
+      section: ntp
+      option: enable_server
+      value: "1"
+      autocommit: true
+  notify: Fedex | Restart sysntpd

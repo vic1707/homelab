@@ -3,6 +3,7 @@ _.path = "{{ config_root }}/bin"
 _.python.venv = { path = "{{ config_root }}/.venv", create = true }
 ANSIBLE_HOME = "{{ config_root }}/.ansible"
 ANSIBLE_INVENTORY = "{{ config_root }}/.config/inventory.yml"
+ANSIBLE_FILTER_PLUGINS = "{{ config_root }}/.config/filter_plugins"
 SOPS_AGE_KEY_FILE = "{{ config_root }}/.age-keys/master.age"
 SOPS_CONFIG = "{{ config_root }}/.config/.sops.yml"
 # TODO: enable only for a certain playbook (required by lookup purelymail ownership code because macos bug)

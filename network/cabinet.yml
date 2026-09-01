@@ -1,0 +1,102 @@
+---
+# ── Cabinet wiring ────────────────────────────────────────
+#
+# fedex (rj45_1..5 = eth0..eth4, sfp6..9 = eth5..eth8):
+#     sfp6   → Bouygues ONT (WAN)
+#     sfp8   → mycelium X1 (1/2/1)  [fedex↔mycelium trunk]
+#     rj45_5 → RESCUE
+#
+# mycelium:
+#     X1            → fedex sfp8 trunk
+#     X2            → LAN port
+#     1             → TV
+#     2             → mgmt + poe
+#     4,6,8,10,12   → mgmt
+#     38            → bacon AP trunk (mgmt / user / iot_offline / iot_cloud / untrusted)
+#     44,46,48      → automation: Home Assistant + 2× SLZB hubs
+#     every others  → parking (disabled)
+#     physical mgmt 1 stays disconnected
+
+fedex_interfaces:
+    bbox_wan: eth5
+    mycelium_trunk: eth7
+
+bacon_trunk_networks: [mgmt, user, iot_offline, iot_cloud, untrusted]
+
+mycelium_interface_profiles:
+    parking: &parking
+        mode: access
+        access_vlan: "{{ ['parking'] | vlan_ids(networks) | first }}"
+        enabled: false
+        description: parking
+    mgmt: &mgmt
+        mode: access
+        access_vlan: "{{ ['mgmt'] | vlan_ids(networks) | first }}"
+        enabled: true
+        description: mgmt
+    user: &user
+        mode: access
+        access_vlan: "{{ ['user'] | vlan_ids(networks) | first }}"
+        enabled: true
+        description: user
+    iot_cloud: &iot_cloud
+        description: iot_cloud
+        mode: access
+        access_vlan: "{{ ['iot_cloud'] | vlan_ids(networks) | first }}"
+        enabled: true
+    automation: &automation
+        description: automation
+        mode: access
+        access_vlan: "{{ ['automation'] | vlan_ids(networks) | first }}"
+        enabled: true
+        poe:
+            enabled: true
+
+_default_mycelium_ifaces: >-
+    {%- set ifaces = {} -%}
+    {%- for n in range(1, 49) -%}
+    {%-   set _ = ifaces.update({("1/1/%d" % n): dict(mycelium_interface_profiles.parking)}) -%}
+    {%- endfor -%}
+    {%- for n in range(1, 5) -%}
+    {%-   set _ = ifaces.update({("1/2/%d" % n): dict(mycelium_interface_profiles.parking)}) -%}
+    {%- endfor -%}
+    {{- ifaces -}}
+
+mycelium_interface_overrides:
+    1/2/1:
+        description: fedex
+        mode: trunk
+        allowed_vlans: >-
+            {{ networks | rejectattr('gateway', 'none') | map(attribute='vlan_id') | list }}
+        enabled: true
+
+    1/2/2: *user
+
+    1/1/1: *iot_cloud
+
+    1/1/3: *user
+
+    1/1/2:
+        <<: *mgmt
+        poe:
+            enabled: true
+
+    1/1/4: *mgmt
+    1/1/6: *mgmt
+    1/1/8: *mgmt
+    1/1/10: *mgmt
+    1/1/12: *mgmt
+
+    1/1/38:
+        description: bacon
+        mode: trunk
+        allowed_vlans: "{{ bacon_trunk_networks | vlan_ids(networks) }}"
+        enabled: true
+        poe:
+            enabled: true
+
+    1/1/44: *automation
+    1/1/46: *automation
+    1/1/48: *automation
+
+mycelium_interfaces: "{{ _default_mycelium_ifaces | combine(mycelium_interface_overrides) }}"
