@@ -1,26 +1,33 @@
-# ie: ansible-playbook devices/openwrt-sysupgrade.playbook.yml -e openwrt_device=bacon -e openwrt_version=25.12.5
+# Release: ansible-playbook devices/openwrt-sysupgrade.playbook.yml -e openwrt_device=bacon -e openwrt_version=25.12.5
+# Local: ansible-playbook devices/openwrt-sysupgrade.playbook.yml -e openwrt_device=bacon -e openwrt_local_file=build/bacon.bin
+# Reset: add -e openwrt_factory_reset=true
 ---
 - name: Upgrade an OpenWrt device
   hosts: "{{ openwrt_device | mandatory }}"
   gather_facts: false
   become: false
   vars:
-      openwrt_factory_reset: true
+      openwrt_factory_reset: false
       openwrt_artifact: "{{ openwrt_sysupgrade_artifact | default('sysupgrade.bin') }}"
       openwrt_release_base: https://github.com/vic1707/homelab/releases/download
       openwrt_image: "{{ openwrt_device }}-openwrt-{{ openwrt_version }}-{{ openwrt_artifact }}"
       openwrt_url: "{{ openwrt_release_base }}/openwrt-{{ openwrt_device }}-{{ openwrt_version }}/{{ openwrt_image }}"
-      openwrt_local_image: "/tmp/{{ openwrt_image }}"
-      openwrt_remote_image: "/tmp/{{ openwrt_image }}"
+      openwrt_local_image: >-
+          {{ openwrt_local_file | expanduser | realpath
+             if openwrt_local_file is defined else '/tmp/' ~ openwrt_image }}
+      openwrt_remote_image: "/tmp/{{ openwrt_local_image | basename }}"
 
   pre_tasks:
       - name: Validate upgrade arguments
         ansible.builtin.assert:
             that:
                 - openwrt_device | length > 0
-                - openwrt_version is match('^[0-9]+\\.[0-9]+\\.[0-9]+$')
+                - >-
+                    openwrt_local_file is defined or
+                    openwrt_version is match('^[0-9]+\\.[0-9]+\\.[0-9]+$')
             fail_msg: >-
-                Set -e openwrt_device=bacon -e openwrt_version=25.12.5.
+                Set -e openwrt_device=bacon and either -e openwrt_version=25.12.5
+                or -e openwrt_local_file=build/bacon.bin.
 
       - name: Fetch sysupgrade image on the controller
         ansible.builtin.get_url:
@@ -28,6 +35,7 @@
             dest: "{{ openwrt_local_image }}"
             mode: '0600'
         delegate_to: localhost
+        when: openwrt_local_file is not defined
 
   tasks:
       - name: Copy sysupgrade image to OpenWrt
@@ -38,9 +46,10 @@
 
       - name: Validate sysupgrade image
         community.openwrt.command:
-            cmd: "sysupgrade -T {{ openwrt_remote_image }}"
+            cmd: "sysupgrade -T {{ openwrt_remote_image | quote }}"
 
       - name: Start sysupgrade
         community.openwrt.nohup:
-            command: "sysupgrade {{ '-n' if openwrt_factory_reset | bool else '' }} {{ openwrt_remote_image }}"
+            command: >-
+                sysupgrade {{ '-n' if openwrt_factory_reset | bool else '' }} {{ openwrt_remote_image | quote }}
             delay: 2

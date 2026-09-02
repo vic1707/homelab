@@ -1,13 +1,21 @@
 ---
 firewall_zones:
-    - name: mgmt
-      features: [dhcp, dns, ping, router_management, rescue_access]
+    - name: rescue
+      features: [dhcp, dns, ping, router_management, mgmt_access]
       exceptions:
-          allow_mgmt_tv_adb:
-              origin: mgmt
+          allow_rescue_slzb_webui:
+              origin: rescue
+              destinations: [slzb_06u, slzb_mrw10u]
+              ports: [80]
+              protocols: [tcp]
+          allow_rescue_tv_adb:
+              origin: rescue
               destinations: [TV]
               ports: [5555]
               protocols: [tcp]
+
+    - name: mgmt
+      features: [dhcp, dns, ping]
 
     - name: user
       features: [dhcp, dns, ping, force_dns, block_dot_doq, internet, mdns]
@@ -16,11 +24,6 @@ firewall_zones:
               origin: user
               destinations: [homeassistant]
               ports: [8123]
-              protocols: [tcp]
-          allow_user_slzb_webui:
-              origin: user
-              destinations: [slzb_06u, slzb_mrw10u]
-              ports: [80]
               protocols: [tcp]
           allow_user_tv_airplay_tcp:
               origin: user
@@ -79,11 +82,11 @@ firewall_feature_sections:
     dns: "allow_%s_dns"
     force_dns: "redirect_%s_dns"
     internet: "%s_wan"
+    mgmt_access: ["%s_mgmt", "%s_mgmt_masq"]
     mdns: "allow_%s_mdns"
     ntp: "allow_%s_ntp"
     nut: "allow_%s_nut"
     ping: "allow_%s_ping"
-    rescue_access: "rescue_%s"
     router_management: "allow_%s_router"
 
 firewall_managed_sections: "{{ firewall_zones | firewall_section_ids(firewall_feature_sections) }}"

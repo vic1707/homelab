@@ -11,4 +11,6 @@ root_password: >-
     {{ lookup('community.sops.sops', '../../.secrets/devices/fedex.yml', extract='["accounts"]["root"]["password"]') | trim }}
 
 fedex_networks: "{{ networks | rejectattr('gateway', 'none') | list }}"
+rescue_network: "{{ fedex_networks | selectattr('name', 'equalto', 'rescue') | first }}"
 mgmt_network: "{{ fedex_networks | selectattr('name', 'equalto', 'mgmt') | first }}"
+automation_network: "{{ fedex_networks | selectattr('name', 'equalto', 'automation') | first }}"

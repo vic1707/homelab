@@ -1,5 +1,16 @@
 ---
 networks:
+    - name: rescue
+      vlan_id: null
+      subnet: 192.168.255.0/24
+      gateway: 192.168.255.1
+      dhcp:
+          start: 100
+          limit: 50
+          leasetime: 1h
+          default_route: false
+          routes: [mgmt, automation, iot_cloud] # zones that can reply to rescue
+
     - name: mgmt
       vlan_id: 10
       subnet: 10.0.10.0/24
@@ -11,7 +22,6 @@ networks:
           limit: 21
           leasetime: 12h
           default_route: false # Keep another interface as the controller's internet route.
-          routes: ["10.0.30.10/32,10.0.10.1", "10.0.32.10/32,10.0.10.1"]
 
     - name: user
       vlan_id: 20
@@ -97,5 +107,4 @@ network_forbidden_vlan_ids:
     - 100 # Bouygues WAN VLAN
 
 network_forbidden_subnets:
-    rescue: 192.168.255.0/24
     oob: 10.0.12.0/24
