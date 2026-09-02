@@ -9,6 +9,9 @@
       - ../../network/cabinet.yml
       - vars/openwrt.yml
 
+  vars:
+      bacon_safe_wifis: "{{ wifis | map('combine', {'password': 'REDACTED'}) | list }}"
+
   pre_tasks:
       - name: Bacon | Validate network registry
         ansible.builtin.import_tasks: ../../network/validate.tasks.yml
@@ -16,10 +19,10 @@
       - name: Bacon | Validate Wi-Fi interface names
         ansible.builtin.assert:
             that: >-
-                {{ (bacon_wifi_pair.1.name ~ '-'
-                    ~ (bacon_wifi_pair.0.ifname | default(bacon_wifi_pair.0.name))) | length <= 15 }}
+                (bacon_wifi_pair.1.name ~ '-'
+                ~ (bacon_wifi_pair.0.ifname | default(bacon_wifi_pair.0.name))) | length <= 15
             fail_msg: Wi-Fi interface names cannot exceed 15 characters
-        loop: "{{ wifis | product(radios) | list }}"
+        loop: "{{ bacon_safe_wifis | product(radios) | list }}"
         loop_control:
             label: "{{ bacon_wifi_pair.0.name }} on {{ bacon_wifi_pair.1.name }}"
             loop_var: bacon_wifi_pair
@@ -94,7 +97,7 @@
                 isolate: "{{ '1' if bacon_wifi_pair[0].isolate | default(false) else '0' }}"
             replace: true
             autocommit: true
-        loop: "{{ wifis | product(radios) | list }}"
+        loop: "{{ bacon_safe_wifis | product(radios) | list }}"
         loop_control:
             label: "{{ bacon_wifi_pair[0].name }} on {{ bacon_wifi_pair[1].name }}"
             loop_var: bacon_wifi_pair
@@ -166,7 +169,7 @@
             replace: true
             keep_keys: key
             autocommit: true
-        loop: "{{ wifis | product(radios) | list }}"
+        loop: "{{ bacon_safe_wifis | product(radios) | list }}"
         loop_control:
             label: "{{ bacon_wifi_pair[0].name }} on {{ bacon_wifi_pair[1].name }}"
             loop_var: bacon_wifi_pair
@@ -215,11 +218,6 @@
         notify: Bacon | Restart dropbear
 
   handlers:
-      - name: Bacon | Reload network
-        community.openwrt.service:
-            name: network
-            state: reloaded
-
       - name: Bacon | Reload wifi
         community.openwrt.command:
             cmd: wifi reload
@@ -228,3 +226,8 @@
         community.openwrt.service:
             name: dropbear
             state: restarted
+
+      - name: Bacon | Reload network (will timeout on first install)
+        community.openwrt.service:
+            name: network
+            state: reloaded

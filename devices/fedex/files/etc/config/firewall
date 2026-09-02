@@ -4,7 +4,7 @@ config defaults
 	option forward 'REJECT'
 	option synflood_protect '1'
 
-config zone
+config zone 'rescue'
 	option name 'rescue'
 	list network 'rescue'
 	option input 'ACCEPT'

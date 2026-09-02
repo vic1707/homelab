@@ -10,7 +10,7 @@ nut:
         - name: localhost
           address: 127.0.0.1
         - name: automation
-          address: "{{ (fedex_networks | selectattr('name', 'equalto', 'automation') | first).gateway }}"
+          address: "{{ automation_network.gateway }}"
     listen_port: "3493"
     monitor:
         username: local-monitor

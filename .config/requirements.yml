@@ -11,4 +11,4 @@ collections:
     type: git
   - name: https://github.com/vic1707/ansible-collection-brocade-icx#ansible_collections/bofzilla/icx
     type: git
-    version: 5631c64f2027c835c2eda07d25e4825da862930e
+    version: de31c9ee38a92cd0157aa69a31c8392dd8daddfe

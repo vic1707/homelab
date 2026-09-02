@@ -24,8 +24,8 @@
       - name: ICX | Configure management
         ansible.builtin.import_tasks: tasks/management.yml
 
-      - name: ICX | Configure VLANs
-        ansible.builtin.import_tasks: tasks/vlans.yml
-
       - name: ICX | Configure interfaces
         ansible.builtin.import_tasks: tasks/interfaces.yml
+
+      - name: ICX | Configure VLANs
+        ansible.builtin.import_tasks: tasks/vlans.yml

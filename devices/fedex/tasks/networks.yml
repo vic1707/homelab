@@ -12,7 +12,7 @@
           vid: "{{ fedex_network.vlan_id }}"
       replace: true
       autocommit: true
-  loop: "{{ fedex_networks }}"
+  loop: "{{ fedex_networks | selectattr('name', 'in', fedex_trunk_networks) | list }}"
   loop_control:
       label: "{{ fedex_network.name }}"
       loop_var: fedex_network
@@ -25,7 +25,9 @@
       type: interface
       name: "{{ fedex_network.name }}"
       value:
-          device: "{{ fedex_interfaces.mycelium_trunk }}.{{ fedex_network.vlan_id }}"
+          device: >-
+              {{ fedex_interfaces.rescue if fedex_network.vlan_id is none
+                 else fedex_interfaces.mycelium_trunk ~ '.' ~ fedex_network.vlan_id }}
           proto: static
           ipaddr: "{{ fedex_network.gateway }}"
           netmask: "{{ fedex_network.subnet | subnet_netmask }}"
@@ -36,10 +38,7 @@
   loop_control:
       label: "{{ fedex_network.name }}"
       loop_var: fedex_network
-  notify:
-      - Fedex | Reload network
-      - Fedex | Restart dropbear
-      - Fedex | Restart uhttpd
+  notify: Fedex | Reload network
 
 - name: networks | Configure DHCP
   community.openwrt.uci:
@@ -53,9 +52,11 @@
           limit: "{{ fedex_network.dhcp.limit }}"
           leasetime: "{{ fedex_network.dhcp.leasetime }}"
           dhcp_option: >-
-              {{ ['6,' ~ fedex_network.gateway]
+              {{ ['6,' ~ fedex_network.gateway, '119,lan']
                   + (['3'] if not (fedex_network.dhcp.default_route | default(true)) else [])
-                  + (['121,' ~ (fedex_network.dhcp.routes | join(','))]
+                  + (['121,' ~ (fedex_network.dhcp.routes
+                                 | dhcp_routes(fedex_network.gateway, networks, firewall_zones)
+                                 | join(','))]
                      if fedex_network.dhcp.routes | default([]) else []) }}
       replace: true
       autocommit: true

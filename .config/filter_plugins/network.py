@@ -18,6 +18,19 @@ def vlan_ids(names: list[str], networks: list[dict]) -> list[int]:
 	return [by_name[name] for name in names]
 
 
+def dhcp_routes(destinations: list[str], gateway: str, networks: list[dict], zones: list[dict]) -> list[str]:
+	zone_names = {zone["name"] for zone in zones}
+	subnets = {
+		network["name"]: network["subnet"]
+		for network in networks
+		if network["name"] in zone_names and network.get("subnet")
+	}
+	unknown = sorted(set(destinations) - subnets.keys())
+	if unknown:
+		raise ValueError(f"unknown DHCP route zones: {', '.join(unknown)}")
+	return [f"{subnets[name]},{gateway}" for name in destinations]
+
+
 def icx_vlans(networks: list[dict]) -> list[dict]:
 	return [
 		{"id": network["vlan_id"], "name": network["name"]}
@@ -52,15 +65,24 @@ def _firewall_endpoint(
 	if name in hosts:
 		address = hosts[name].get("ip")
 		return _network_for_ip(address, networks), address
-	if name in zones | {"rescue", "wan"}:
+	if name in zones | {"wan"}:
 		return name, None
 	return "", None
 
 
-def firewall_section_ids(zones: list[dict], feature_sections: dict[str, str]) -> list[str]:
+def firewall_section_ids(zones: list[dict], feature_sections: dict[str, str | list[str]]) -> list[str]:
 	return [
 		*[zone["name"] for zone in zones],
-		*(feature_sections[feature] % zone["name"] for zone in zones for feature in zone.get("features", [])),
+		*(
+			pattern % zone["name"]
+			for zone in zones
+			for feature in zone.get("features", [])
+			for pattern in (
+				[feature_sections[feature]]
+				if isinstance(feature_sections[feature], str)
+				else feature_sections[feature]
+			)
+		),
 		*(name for zone in zones for name in zone.get("exceptions", {})),
 	]
 
@@ -70,7 +92,7 @@ def firewall_config_errors(
 	hosts: list[dict],
 	networks: list[dict],
 	nut_clients: list[str],
-	feature_sections: dict[str, str],
+	feature_sections: dict[str, str | list[str]],
 ) -> list[str]:
 	errors: list[str] = []
 	host_names = [host["name"] for host in hosts]
@@ -90,13 +112,20 @@ def firewall_config_errors(
 		errors.append("static host IPs must be unique")
 	if len(host_macs) != len(set(host_macs)):
 		errors.append("static host MACs must be unique")
-	endpoint_collisions = sorted(set(host_names) & (zone_set | {"rescue", "wan"}))
+	endpoint_collisions = sorted(set(host_names) & (zone_set | {"wan"}))
 	if endpoint_collisions:
 		errors.append(f"static host names collide with firewall endpoints: {', '.join(endpoint_collisions)}")
 	if len(zone_names) != len(zone_set):
 		errors.append("firewall zone names must be unique")
 	if len(exception_names) != len(set(exception_names)):
 		errors.append("firewall exception names must be unique")
+	for network in networks:
+		try:
+			dhcp_routes(
+				network.get("dhcp", {}).get("routes", []), network.get("gateway", ""), networks, zones
+			)
+		except ValueError as error:
+			errors.append(f"network {network['name']}: {error}")
 	missing_zones = sorted(routed_networks - zone_set)
 	if missing_zones:
 		errors.append(f"routed networks have no firewall zone: {', '.join(missing_zones)}")
@@ -206,6 +235,7 @@ def interface_list(ifaces: dict[str, dict]) -> list[dict]:
 class FilterModule:
 	def filters(self) -> dict[str, object]:
 		return {
+			"dhcp_routes": dhcp_routes,
 			"firewall_config_errors": firewall_config_errors,
 			"firewall_exception_options": firewall_exception_options,
 			"firewall_section_ids": firewall_section_ids,

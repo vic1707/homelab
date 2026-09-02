@@ -3,7 +3,7 @@ http:
     pprof:
         port: 6060
         enabled: false
-    address: "{{ mgmt_network.gateway }}:3000"
+    address: "{{ rescue_network.gateway }}:3000"
     session_ttl: 720h
     doh:
         routes:
@@ -22,11 +22,7 @@ language: en
 theme: auto
 dns:
     bind_hosts:
-        - 127.0.0.1
-        - 192.168.255.1
-{% for network in fedex_networks %}
-        - "{{ network.gateway }}"
-{% endfor %}
+        - 0.0.0.0
     port: 53
     anonymize_client_ip: false
     ratelimit: 0
@@ -46,7 +42,6 @@ dns:
     fastest_timeout: 1s
     allowed_clients:
         - 127.0.0.0/8
-        - 192.168.255.0/24
 {% for network in fedex_networks %}
         - "{{ network.subnet }}"
 {% endfor %}
@@ -77,7 +72,6 @@ dns:
     upstream_timeout: 10s
     private_networks:
         - 127.0.0.0/8
-        - 192.168.255.0/24
 {% for network in fedex_networks %}
         - "{{ network.subnet }}"
 {% endfor %}
@@ -127,8 +121,8 @@ filters:
       id: 1
 whitelist_filters: []
 user_rules:
-    - "{{ mgmt_network.gateway }} fedex.lan"
-    - "{{ (fedex_networks | selectattr('name', 'equalto', 'automation') | first).gateway }} nut.fedex.lan"
+    - "{{ rescue_network.gateway }} fedex.lan"
+    - "{{ automation_network.gateway }} nut.fedex.lan"
 filtering:
     protection_enabled: true
     filtering_enabled: true

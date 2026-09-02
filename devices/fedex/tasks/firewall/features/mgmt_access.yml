@@ -1,0 +1,30 @@
+---
+- name: features | mgmt_access | Configure forwarding | {{ firewall_zone.name | upper }}
+  community.openwrt.uci:
+      command: section
+      config: firewall
+      type: forwarding
+      name: "{{ firewall_feature_sections[firewall_feature_name][0] | format(firewall_zone.name) }}"
+      value:
+          src: "{{ firewall_zone.name }}"
+          dest: mgmt
+      replace: true
+      autocommit: true
+  notify: Fedex | Reload firewall
+
+- name: features | mgmt_access | Masquerade management access | {{ firewall_zone.name | upper }}
+  community.openwrt.uci:
+      command: section
+      config: firewall
+      type: nat
+      name: "{{ firewall_feature_sections[firewall_feature_name][1] | format(firewall_zone.name) }}"
+      value:
+          src: mgmt
+          src_ip: "{{ rescue_network.subnet }}"
+          dest_ip: "{{ mgmt_network.subnet }}"
+          proto: all
+          target: MASQUERADE
+          family: ipv4
+      replace: true
+      autocommit: true
+  notify: Fedex | Reload firewall

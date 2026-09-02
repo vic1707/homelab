@@ -20,7 +20,9 @@
 fedex_interfaces:
     bbox_wan: eth5
     mycelium_trunk: eth7
+    rescue: eth4
 
+fedex_trunk_networks: [mgmt, user, automation, iot_offline, iot_cloud, untrusted]
 bacon_trunk_networks: [mgmt, user, iot_offline, iot_cloud, untrusted]
 
 mycelium_interface_profiles:
@@ -66,8 +68,7 @@ mycelium_interface_overrides:
     1/2/1:
         description: fedex
         mode: trunk
-        allowed_vlans: >-
-            {{ networks | rejectattr('gateway', 'none') | map(attribute='vlan_id') | list }}
+        allowed_vlans: "{{ fedex_trunk_networks | vlan_ids(networks) }}"
         enabled: true
 
     1/2/2: *user
