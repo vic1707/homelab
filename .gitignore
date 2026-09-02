@@ -67,6 +67,7 @@
 !devices/*/files/
 !devices/*/files/**
 !devices/tv/install.py
+!devices/hydra/firmware.yml
 
 !domains/
 !domains/bofzilla.dev

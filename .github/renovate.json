@@ -16,11 +16,26 @@
 			"matchStrings": [
 				"# renovate: datasource=(?<datasource>[\\w.-]+) depName=(?<depName>[^\\s]+)(?: packageName=(?<packageName>[^\\s]+))?(?: versioning=(?<versioning>[^\\s]+))? extractVersion=(?<extractVersion>[^\\n]+)\\n\\s+version: \\\"(?<currentValue>[^\\\"]+)\\\""
 			]
+		},
+		{
+			"customType": "regex",
+			"managerFilePatterns": ["/^devices/hydra/firmware\\.yml$/"],
+			"matchStrings": [
+				"# renovate: datasource=(?<datasource>custom\\.[\\w.-]+) depName=(?<depName>[^\\s]+) versioning=(?<versioning>[^\\s]+)\\n(?:\\s+\\w+:\\n)?\\s+version: \\\"(?<currentValue>[^\\\"]+)\\\""
+			]
 		}
 	],
 	"customDatasources": {
 		"apkmirror": {
 			"defaultRegistryUrlTemplate": "https://www.apkmirror.com/apk/{{packageName}}/",
+			"format": "html"
+		},
+		"supermicro-bios": {
+			"defaultRegistryUrlTemplate": "https://www.supermicro.com/support/resources/results.aspx?ProductName=H11SSL-i&Resource=BIOS",
+			"format": "html"
+		},
+		"supermicro-bmc": {
+			"defaultRegistryUrlTemplate": "https://www.supermicro.com/support/bios/firmware.aspx?ProductName=H11SSL-i&Resource=BMC",
 			"format": "html"
 		}
 	},
@@ -40,6 +55,18 @@
 		{
 			"matchDepNames": ["openwrt/openwrt"],
 			"groupName": "OpenWrt firmware"
+		},
+		{
+			"matchDatasources": ["custom.supermicro-bios"],
+			"extractVersion": "(?:BIOS|bios)[^\\d]*(?<version>\\d+(?:\\.\\d+)+)"
+		},
+		{
+			"matchDatasources": ["custom.supermicro-bmc"],
+			"extractVersion": "(?:BMC|bmc|IPMI|ipmi)[^\\d]*(?<version>\\d+(?:\\.\\d+)+)"
+		},
+		{
+			"matchDatasources": ["custom.supermicro-bios", "custom.supermicro-bmc"],
+			"groupName": "Hydra firmware"
 		},
 		{
 			"matchFileNames": ["devices/tv/settings.yml"],
