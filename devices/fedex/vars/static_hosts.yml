@@ -5,11 +5,11 @@ static_hosts:
       ip: 10.0.30.10
 
     - name: slzb_06u
-      mac: "8C:FD:49:B5:66:00"
+      mac: "8E:FD:49:B5:66:00"
       ip: 10.0.30.11
 
     - name: slzb_mrw10u
-      mac: "80:B5:4E:96:96:90"
+      mac: "82:B5:4E:96:96:90"
       ip: 10.0.30.12
 
     - name: x1c
