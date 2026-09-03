@@ -35,33 +35,13 @@
         tags: always
 
       - name: Hydra IPMI | Validate credentials
-        ansible.builtin.assert:
-            that:
-                - ipmi_username | length > 0
-                - ipmi_username != ipmi_factory_username
-                - ipmi_account_ids | unique | length == ipmi_account_ids | length
-                - ipmi_usernames | unique | length == ipmi_usernames | length
-                - ipmi_passwords | unique | length == ipmi_passwords | length
-                - ipmi_password_lengths | min >= 12
-                - ipmi_password_lengths | max <= 20
-                - >-
-                    ipmi_passwords
-                    | select('match', '.*[A-Z].*')
-                    | length == ipmi_passwords | length
-            fail_msg: >-
-                BMC account IDs, usernames, and passwords must be unique;
-                passwords must contain 12-20 characters including an uppercase letter.
+        ansible.builtin.import_tasks: tasks/validate-credentials.yml
         vars:
-            ipmi_account_ids: >-
-                {{ [ipmi_administrator_id]
-                   + (ipmi_accounts | map(attribute='id') | map('string') | list) }}
-            ipmi_usernames: >-
-                {{ [ipmi_factory_username, ipmi_username]
+            bmc_usernames: >-
+                {{ [ipmi_username]
                    + (ipmi_accounts | map(attribute='username') | list) }}
-            ipmi_passwords: >-
+            bmc_passwords: >-
                 {{ [ipmi_password] + (ipmi_accounts | map(attribute='password') | list) }}
-            ipmi_password_lengths: "{{ ipmi_passwords | map('length') | list }}"
-        no_log: true
         tags: always
 
   tasks:
