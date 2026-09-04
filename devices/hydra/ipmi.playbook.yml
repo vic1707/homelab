@@ -25,16 +25,23 @@
           return_content: true
 
   pre_tasks:
+      - name: Hydra IPMI | Check BMC reachability
+        ansible.builtin.wait_for:
+            host: "{{ ansible_host }}"
+            port: 443
+            connect_timeout: 3
+            timeout: 10
+            msg: Hydra BMC is not reachable at {{ ansible_host }}:443.
+        tags: always
+
       - name: Hydra IPMI | Validate credentials
-        ansible.builtin.assert:
-            that:
-                - ipmi_username | length > 0
-                - ipmi_factory_password | length >= 8
-                - ipmi_password | length >= 12
-                - ipmi_password | length <= 20
-            fail_msg: >-
-                BMC credentials must be present and the desired password must contain 12-20 characters.
-        no_log: true
+        ansible.builtin.import_tasks: tasks/validate-credentials.yml
+        vars:
+            bmc_usernames: >-
+                {{ [ipmi_username]
+                   + (ipmi_accounts | map(attribute='username') | list) }}
+            bmc_passwords: >-
+                {{ [ipmi_password] + (ipmi_accounts | map(attribute='password') | list) }}
         tags: always
 
   tasks:

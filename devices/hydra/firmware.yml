@@ -1,0 +1,7 @@
+---
+# renovate: datasource=custom.supermicro-bios depName=H11SSL-i-BIOS versioning=loose
+bios:
+    version: "3.4"
+# renovate: datasource=custom.supermicro-bmc depName=H11SSL-i-BMC versioning=loose
+bmc:
+    version: "01.52.23"

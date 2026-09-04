@@ -50,6 +50,24 @@
       label: "{{ firewall_zone.name }}"
       loop_var: firewall_zone
 
+- name: zones | Masquerade Home Assistant access to Hydra IPMI
+  community.openwrt.uci:
+      command: section
+      config: firewall
+      type: nat
+      name: allow_home_assistant_hydra_redfish_masq
+      value:
+          src: mgmt
+          src_ip: "{{ (static_hosts | selectattr('name', 'equalto', 'homeassistant') | first).ip }}"
+          dest_ip: "{{ (static_hosts | selectattr('name', 'equalto', 'hydra_ipmi') | first).ip }}"
+          proto: tcp
+          dest_port: "443"
+          target: MASQUERADE
+          family: ipv4
+      replace: true
+      autocommit: true
+  notify: Fedex | Reload firewall
+
 - name: zones | Remove stale managed sections
   community.openwrt.uci:
       command: absent
