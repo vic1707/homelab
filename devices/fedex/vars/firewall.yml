@@ -94,4 +94,6 @@ firewall_feature_sections:
     ping: "allow_%s_ping"
     router_management: "allow_%s_router"
 
-firewall_managed_sections: "{{ firewall_zones | firewall_section_ids(firewall_feature_sections) }}"
+firewall_managed_sections: >-
+    {{ firewall_zones | firewall_section_ids(firewall_feature_sections)
+       + ['allow_home_assistant_hydra_redfish_masq'] }}

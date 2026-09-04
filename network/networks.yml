@@ -9,7 +9,7 @@ networks:
           limit: 50
           leasetime: 1h
           default_route: false
-          routes: [mgmt, automation, iot_cloud] # zones that can reply to rescue
+          routes: [mgmt, automation, iot_cloud] # routes advertised to rescue clients
 
     - name: mgmt
       vlan_id: 10
@@ -22,6 +22,7 @@ networks:
           limit: 21
           leasetime: 12h
           default_route: false # Keep another interface as the controller's internet route.
+          routes: [automation] # routes advertised to management clients
 
     - name: user
       vlan_id: 20
