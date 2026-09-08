@@ -21,11 +21,12 @@ rest:
     username: homeassistant
     password: !secret hydra_bmc_password
     verify_ssl: false
-    scan_interval: 15
+    scan_interval: 30
+    timeout: 8
     sensor:
       - name: Hydra power state
         unique_id: hydra_power_state
-        value_template: "{{ value_json.PowerState }}"
+        value_template: "{{ value_json.PowerState if value_json is defined and value_json.PowerState is defined else 'Unavailable' }}"
 
 rest_command:
   hydra_power:
