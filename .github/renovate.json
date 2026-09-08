@@ -21,7 +21,7 @@
 			"customType": "regex",
 			"managerFilePatterns": ["/^devices/hydra/firmware\\.yml$/"],
 			"matchStrings": [
-				"# renovate: datasource=(?<datasource>custom\\.[\\w.-]+) depName=(?<depName>[^\\s]+) versioning=(?<versioning>[^\\s]+)\\n(?:\\s+\\w+:\\n)?\\s+version: \\\"(?<currentValue>[^\\\"]+)\\\""
+				"# renovate: datasource=(?<datasource>custom\\.[\\w.-]+) depName=(?<depName>[^\\s]+) versioning=(?<versioning>[^\\s]+)\\n(?:\\w+:\\n)?\\s+version: \\\"(?<currentValue>[^\\\"]+)\\\""
 			]
 		}
 	],
