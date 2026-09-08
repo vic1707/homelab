@@ -1,7 +1,15 @@
 bmc:
-    username: ADMIN
-    factory_password: ENC[AES256_GCM,data:i9zq12QdZ6nJng==,iv:fXO/cGlBJbf4vTUjHAWhbhOH61q/UHbN8JSPXLKh6DE=,tag:zdi/2Dhq+2q0pVJWRj74RQ==,type:str]
-    password: ENC[AES256_GCM,data:NtWj+dJb8RergyXsVA68a8+9+cg=,iv:jj+8PtWn3/zpwYh9YmJNShA1/I0GaZobDCT/5KaMsAM=,tag:w+pFIDz1J8MYDsp0WzcTQA==,type:str]
+    factory_password: ENC[AES256_GCM,data:kZlt0W+8p2KYBg==,iv:6xbdtzzLSaYwZXs2Z+8KyjQfim0EcU9vIoEUNm1Zf20=,tag:uUp+LDuzOMpfjphdslfYdw==,type:str]
+    password: ENC[AES256_GCM,data:9BMAGWTZ+BIffl7IML/b,iv:ZH7WYKmLuweSw2NhKFnu5EKGuDnpFmOsVz87vJPuazo=,tag:Gc1LgFNm5AGxT1idNx+KJA==,type:str]
+
+    # roles:
+    # - Administrator: full BMC, account, network, firmware, BIOS, and power control.
+    # - Operator: status access and power/component operations, but no user or BMC management.
+    # - ReadOnly: status, inventory, sensors, and logs; no power control or configuration.
+    accounts:
+        - role: Operator
+          username: homeassistant
+          password: ENC[AES256_GCM,data:QB2YBaWvHs4/vWnaACV4,iv:iL0Ou2cbH8sPxkVM1p4mPh4P3UlYvQaQDaV6hcA66E8=,tag:5o+yM9IIJ7yJqtmgKowd6w==,type:str]
 
 sops:
     age:
@@ -15,6 +23,6 @@ sops:
               -----END AGE ENCRYPTED FILE-----
           recipient: age1q9gm9fgduf5scr3dadl7yarh4wxzlr6psl4zp02k2r9edjngasssd266k4
     encrypted_regex: (?i)(secret|token|password|key|mac)$
-    lastmodified: "2026-08-01T13:30:18Z"
-    mac: ENC[AES256_GCM,data:AdF+7KTj4I/d3S21viReWvqeay4zhoMR4J9woeSrGIm8jKvenm407+vJMuZ8uznK+EqEEot119mYGjpeUTHTR3ZErslCr5tCNTtHnA4a8ws5dXE4F4mhdrPiNCz+Y9RdXWwkf4TKOsEwlczYycn+qHK9O0PaaVX6YAfyI6RXXsM=,iv:50d+4mc3LWx+mdVdEeZ9NAx75/6eum1Jer9UXvN23q0=,tag:i2gJJFjPKsMzfxkmUXLIGg==,type:str]
-    version: 3.13.2
+    lastmodified: "2026-09-02T15:22:24Z"
+    mac: ENC[AES256_GCM,data:nU6LoQCEkAaDg7aAzPDP0qtOmuvzoPH4/3R+waaTht+WzWR0jBIC/Z/jkf4KZxeLwnAm6bWBt/OZWFSjpDrp8u0timUobGNEjrdHya3esoKu/76kPHpaA3dVBuf/6t8njOZUPmz8KEFsujVFT1dRNpMJcARLIpJVltvMyq2/tvk=,iv:NqIq3SH9g4eMYe6Lw+JsiQDJYFASeX2ihqRL2R4Jdrg=,tag:AARDxApyEVgm4tgaym7wkQ==,type:str]
+    version: 3.13.3

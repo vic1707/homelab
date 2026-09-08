@@ -1,14 +1,15 @@
 ---
 - name: bmc | Check desired credentials
   community.general.redfish_info:
-      category: [Accounts]
-      command: [ListUsers]
+      category: [Manager]
+      command: [GetManagerInventory]
   register: ipmi_desired_access
   failed_when: false
   no_log: true
 
 - name: bmc | Check factory credentials
   community.general.redfish_info:
+      username: ADMIN
       password: "{{ ipmi_factory_password }}"
       category: [Accounts]
       command: [ListUsers]
@@ -28,6 +29,7 @@
 
 - name: bmc | Set administrator password
   community.general.redfish_command:
+      username: ADMIN
       password: "{{ ipmi_factory_password }}"
       category: Accounts
       command: [UpdateUserPassword]
@@ -36,6 +38,26 @@
   when:
       - ipmi_desired_access.redfish_facts is not defined
       - ipmi_factory_access.redfish_facts is defined
+  no_log: true
+
+- name: bmc | Verify administrator credentials
+  community.general.redfish_info:
+      category: [Manager]
+      command: [GetManagerInventory]
+  when: ipmi_desired_access.redfish_facts is not defined
+  no_log: true
+
+- name: bmc | Create and enable managed accounts
+  community.general.redfish_command:
+      category: Accounts
+      command: [AddUser, EnableUser, UpdateUserRole]
+      new_username: "{{ ipmi_account.username }}"
+      new_password: "{{ ipmi_account.password }}"
+      roleid: "{{ ipmi_account.role }}"
+  loop: "{{ ipmi_accounts }}"
+  loop_control:
+      label: "{{ ipmi_account.username }}"
+      loop_var: ipmi_account
   no_log: true
 
 - name: bmc | Configure account lockout
@@ -75,3 +97,21 @@
               NTPServers:
                   - 0.pool.ntp.org
                   - 1.pool.ntp.org
+  register: ipmi_network_protocols
+
+- name: bmc | Wait for HTTPS to stop after network service changes # noqa: no-handler
+  ansible.builtin.wait_for:
+      host: "{{ ansible_host }}"
+      port: 443
+      state: stopped
+      timeout: 30
+  when: ipmi_network_protocols.changed
+
+- name: bmc | Wait for HTTPS to recover after network service changes # noqa: no-handler
+  ansible.builtin.wait_for:
+      host: "{{ ansible_host }}"
+      port: 443
+      connect_timeout: 3
+      state: started
+      timeout: 60
+  when: ipmi_network_protocols.changed
