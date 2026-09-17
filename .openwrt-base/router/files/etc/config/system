@@ -2,6 +2,7 @@ config system
 	option hostname '${OPENWRT_HOSTNAME}'
 	option zonename 'Europe/Paris'
 	option timezone 'CET-1CEST,M3.5.0,M10.5.0/3'
+	option ttylogin '1'
 
 config timeserver 'ntp'
 	option enabled '1'
