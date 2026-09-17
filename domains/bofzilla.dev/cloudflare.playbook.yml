@@ -165,7 +165,7 @@
         loop: >-
             {{
               dns_records
-              | combine(purelymail_dns_records)
+              | combine(purelymail_dns_records, recursive=true, list_merge='append')
               | moreati.jq.jq('to_entries | map(.value[] + { type: .key })')
             }}
         loop_control:
