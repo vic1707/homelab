@@ -11,6 +11,7 @@
 
   vars_files:
       - vars/cf/purelymail.dns-records.yml
+      - vars/cf/dns-records.yml
       - vars/cf/waf.yml
 
   tasks:
@@ -163,7 +164,8 @@
             comment: "{{ item.comment | default(omit) }}"
         loop: >-
             {{
-              purelymail_dns_records_map
+              dns_records
+              | combine(purelymail_dns_records)
               | moreati.jq.jq('to_entries | map(.value[] + { type: .key })')
             }}
         loop_control:

@@ -1,0 +1,6 @@
+---
+dns_records:
+    CNAME:
+        - record: "displate-tracker.bofzilla.dev"
+          value: "vic1707.github.io"
+          proxied: false
