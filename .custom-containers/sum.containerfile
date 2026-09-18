@@ -14,7 +14,7 @@ FROM ghcr.io/jguer/yay-builder:latest AS sum
     RUN /bin/import-libs.sh /sum/pkg/supermicro-update-manager/usr/bin/supermicro-update-manager
 
 # FS
-    FROM docker.io/library/alpine:3.24.1 AS fs
+    FROM docker.io/library/alpine:3.24.2 AS fs
 
     RUN mkdir -p \
         /FS/bin \
