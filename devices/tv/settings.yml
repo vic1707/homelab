@@ -40,7 +40,7 @@ packages:
         smarttube:
             repository: yuliskov/SmartTube
             # renovate: datasource=github-releases depName=yuliskov/SmartTube extractVersion=^(?<version>\d+\.\d+)s$
-            version: "32.38"
+            version: "32.47"
             release_tag: "{version}s"
             asset: "SmartTube_stable_{version}_armeabi-v7a.apk"
             package: org.smarttube.stable
@@ -48,14 +48,14 @@ packages:
         arclauncher:
             repository: meddouribadis/arclauncher
             # renovate: datasource=github-releases depName=meddouribadis/arclauncher extractVersion=^(?<version>\d+\.\d+\.\d+)$
-            version: "1.0.6"
+            version: "1.0.8"
             asset: "arclauncher-{version}-armeabi-v7a.apk"
             package: com.omeda.arc
 
         keymapper:
             repository: keymapperorg/KeyMapper
             # renovate: datasource=github-releases depName=keymapperorg/KeyMapper extractVersion=^v(?<version>\d+\.\d+\.\d+)$
-            version: "4.3.1"
+            version: "4.5.0"
             release_tag: "v{version}"
             asset: "keymapper-{version}-foss.apk"
             package: io.github.sds100.keymapper
