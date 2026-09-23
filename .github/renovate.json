@@ -26,9 +26,9 @@
 		}
 	],
 	"customDatasources": {
-		"apkmirror": {
-			"defaultRegistryUrlTemplate": "https://www.apkmirror.com/apk/{{packageName}}/",
-			"format": "html"
+		"apkpure": {
+			"defaultRegistryUrlTemplate": "https://apkpure.com/p/{{packageName}}",
+			"format": "plain"
 		},
 		"supermicro-bios": {
 			"defaultRegistryUrlTemplate": "https://www.supermicro.com/en/support/resources/downloadcenter/firmware/MBD-H11SSL-I/BIOS",
