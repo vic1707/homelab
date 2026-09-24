@@ -40,7 +40,7 @@ packages:
         smarttube:
             repository: yuliskov/SmartTube
             # renovate: datasource=github-releases depName=yuliskov/SmartTube extractVersion=^(?<version>\d+\.\d+)s$
-            version: "32.47"
+            version: "32.56"
             release_tag: "{version}s"
             asset: "SmartTube_stable_{version}_armeabi-v7a.apk"
             package: org.smarttube.stable
