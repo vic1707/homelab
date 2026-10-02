@@ -60,16 +60,16 @@ packages:
 
     apkeep:
         anexplorer:
-            # renovate: datasource=custom.apkpure depName=anexplorer packageName=dev.dworks.apps.anexplorer versioning=loose extractVersion="version":"(?<version>\d+\.\d+\.\d+)"
+            # renovate: datasource=custom.apkpure depName=anexplorer packageName=dev.dworks.apps.anexplorer versioning=loose extractVersion=(?<version>\d+\.\d+\.\d+(?:\.\d+)?)
             version: "6.0.6"
             package: dev.dworks.apps.anexplorer
         twitch:
-            # renovate: datasource=custom.apkpure depName=twitch-android-tv packageName=tv.twitch.android.app versioning=loose extractVersion="version":"(?<version>\d+\.\d+\.\d+\.\d+)"
+            # renovate: datasource=custom.apkpure depName=twitch-android-tv packageName=tv.twitch.android.app versioning=loose extractVersion=(?<version>\d+\.\d+\.\d+\.\d+)
             version: "13.0.0.2"
             abi: armeabi-v7a
             package: tv.twitch.android.app
         vlc:
-            # renovate: datasource=custom.apkpure depName=vlc packageName=org.videolan.vlc versioning=loose extractVersion="version":"(?<version>\d+\.\d+\.\d+)"
+            # renovate: datasource=custom.apkpure depName=vlc packageName=org.videolan.vlc versioning=loose extractVersion=(?<version>\d+\.\d+\.\d+(?:\.\d+)?)
             version: "3.7.1"
             abi: armeabi-v7a
             package: org.videolan.vlc

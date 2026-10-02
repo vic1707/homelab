@@ -14,7 +14,7 @@
 			"customType": "regex",
 			"managerFilePatterns": ["/^devices/tv/settings\\.yml$/"],
 			"matchStrings": [
-				"# renovate: datasource=(?<datasource>[\\w.-]+) depName=(?<depName>[^\\s]+)(?: packageName=(?<packageName>[^\\s]+))?(?: versioning=(?<versioning>[^\\s]+))? extractVersion=(?<extractVersion>[^\\n]+)\\n\\s+version: \\\"(?<currentValue>[^\\\"]+)\\\""
+				"# renovate: datasource=(?<datasource>[\\w.-]+) depName=(?<depName>[^\\s]+)(?: packageName=(?<packageName>[^\\s]+))?(?: versioning=(?<versioning>[^\\s]+))?(?: extractVersion=(?<extractVersion>[^\\n]+))?\\n\\s+version: \\\"(?<currentValue>[^\\\"]+)\\\""
 			]
 		},
 		{
@@ -28,7 +28,10 @@
 	"customDatasources": {
 		"apkpure": {
 			"defaultRegistryUrlTemplate": "https://apkpure.com/p/{{packageName}}",
-			"format": "plain"
+			"format": "plain",
+			"transformTemplates": [
+				"{\"releases\":[{\"version\":$match($join(releases.version), /class=\\\"version one-line\\\">([^<]+)/).groups[0]}]}"
+			]
 		},
 		"supermicro-bios": {
 			"defaultRegistryUrlTemplate": "https://www.supermicro.com/en/support/resources/downloadcenter/firmware/MBD-H11SSL-I/BIOS",
