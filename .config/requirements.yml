@@ -9,6 +9,7 @@ collections:
     version: 0.2.1
   - name: https://github.com/vic1707/ansible-collection-purelymail#ansible_collections/bofzilla/purelymail
     type: git
+    version: 5bf0617248cd3ca2a47bd8c40da9eb449d1c6f06
   - name: https://github.com/vic1707/ansible-collection-brocade-icx#ansible_collections/bofzilla/icx
     type: git
     version: de31c9ee38a92cd0157aa69a31c8392dd8daddfe
