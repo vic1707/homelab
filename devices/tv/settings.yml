@@ -40,7 +40,7 @@ packages:
         smarttube:
             repository: yuliskov/SmartTube
             # renovate: datasource=github-releases depName=yuliskov/SmartTube extractVersion=^(?<version>\d+\.\d+)s$
-            version: "32.47"
+            version: "32.56"
             release_tag: "{version}s"
             asset: "SmartTube_stable_{version}_armeabi-v7a.apk"
             package: org.smarttube.stable
@@ -53,23 +53,23 @@ packages:
         keymapper:
             repository: keymapperorg/KeyMapper
             # renovate: datasource=github-releases depName=keymapperorg/KeyMapper extractVersion=^v(?<version>\d+\.\d+\.\d+)$
-            version: "4.5.0"
+            version: "4.6.0"
             release_tag: "v{version}"
             asset: "keymapper-{version}-foss.apk"
             package: io.github.sds100.keymapper
 
-    apkeep:
+    playstore:
         anexplorer:
-            # renovate: datasource=custom.apkpure depName=anexplorer packageName=dev.dworks.apps.anexplorer versioning=loose extractVersion=(?<version>\d+\.\d+\.\d+(?:\.\d+)?)
-            version: "6.0.6"
+            # renovate: datasource=custom.apkmirror depName=anexplorer packageName=dworks/anexplorer-tv-file-manager-android-tv versioning=loose extractVersion=^/apk/dworks/anexplorer-tv-file-manager-android-tv/[^/]+-(?<version>\d+(?:-\d+){2})-release/$
+            version: "6-0-6"
             package: dev.dworks.apps.anexplorer
         twitch:
-            # renovate: datasource=custom.apkpure depName=twitch-android-tv packageName=tv.twitch.android.app versioning=loose extractVersion=(?<version>\d+\.\d+\.\d+\.\d+)
-            version: "13.0.0.2"
-            abi: armeabi-v7a
+            # renovate: datasource=custom.apkmirror depName=twitch-android-tv packageName=twitch-interactive-inc/twitch-android-tv versioning=loose extractVersion=^/apk/twitch-interactive-inc/twitch-android-tv/[^/]+-(?<version>\d+(?:-\d+){3})-release/$
+            version: "13-0-0-2"
             package: tv.twitch.android.app
+    fdroid:
         vlc:
-            # renovate: datasource=custom.apkpure depName=vlc packageName=org.videolan.vlc versioning=loose extractVersion=(?<version>\d+\.\d+\.\d+(?:\.\d+)?)
+            # renovate: datasource=custom.fdroid depName=vlc packageName=org.videolan.vlc versioning=loose
             version: "3.7.1"
             abi: armeabi-v7a
             package: org.videolan.vlc

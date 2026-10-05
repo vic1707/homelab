@@ -26,11 +26,15 @@
 		}
 	],
 	"customDatasources": {
-		"apkpure": {
-			"defaultRegistryUrlTemplate": "https://apkpure.net/p/{{packageName}}",
-			"format": "plain",
+		"apkmirror": {
+			"defaultRegistryUrlTemplate": "https://www.apkmirror.com/apk/{{packageName}}/",
+			"format": "html"
+		},
+		"fdroid": {
+			"defaultRegistryUrlTemplate": "https://f-droid.org/api/v1/packages/{{packageName}}",
+			"format": "json",
 			"transformTemplates": [
-				"{\"releases\":[{\"version\":$match($join(releases.version), /data-title=\\\"LatestVersion\\\">Latest Version<\\/div><div class=\\\"additional-info\\\">([^<]+)/).groups[0]}]}"
+				"{\"releases\":$map($distinct(packages.versionName), function($v) { {\"version\":$v} })}"
 			]
 		},
 		"supermicro-bios": {

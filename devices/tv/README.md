@@ -8,12 +8,18 @@ turns off developer options and ADB, and reboots the TV.
 
 ## App updates
 
-Install the APK versions pinned in `settings.yml` without reconfiguring or
-rebooting the TV:
+Install the current Google Play APKs and pinned F-Droid version without
+reconfiguring or rebooting the TV:
 
 ```sh
 ./devices/tv/install.py update-apps
 ```
+
+AnExplorer and Twitch use mise-managed `goopdl` (installed through uv) with an
+Android TV profile and anonymous Aurora authentication; no personal Google
+credentials are needed. APKMirror versions refresh their download cache rather
+than pinning the Play build. VLC uses `apkeep` to download its pinned F-Droid
+version. Downloads use separate caches for each source.
 
 ## Mappings
 

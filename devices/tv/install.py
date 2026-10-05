@@ -4,7 +4,6 @@
 import argparse
 import json
 import os
-import shlex
 import shutil
 import subprocess
 import time
@@ -215,7 +214,7 @@ def restore() -> None:
 
 def setup_automatic_backup(data: dict) -> None:
     keymapper = data["packages"]["github"]["keymapper"]["package"]
-    anexplorer = data["packages"]["apkeep"]["anexplorer"]["package"]
+    anexplorer = data["packages"]["playstore"]["anexplorer"]["package"]
     log("configure Key Mapper automatic backup")
     shell("rm", "-f", REMOTE_BACKUP)
     shell("appops", "set", anexplorer, "MANAGE_EXTERNAL_STORAGE", "allow")
@@ -264,49 +263,50 @@ def setup_automatic_backup(data: dict) -> None:
     log("Key Mapper automatic backup configured")
 
 
-def download_apkeep(app: dict, destination: Path) -> list[Path]:
-    apkeep = shutil.which("apkeep")
-    if apkeep is None:
-        raise SystemExit("apkeep is required to download APKs")
+def download_store(app: dict, destination: Path, source: str) -> list[Path]:
     destination.mkdir(parents=True, exist_ok=True)
-    for xapk in destination.glob("*.xapk"):
-        with zipfile.ZipFile(xapk) as archive:
-            for name in archive.namelist():
-                if name.endswith(".apk"):
-                    archive.extract(name, destination)
     cached = sorted(destination.rglob("*.apk"))
-    if cached:
-        return cached
-    version = app["version"].replace("-", ".")
-    package = f"{app['package']}@{version}"
-    command = [apkeep, "-a", package]
-    if abi := app.get("abi"):
-        command.extend(("-o", f"arch={abi}"))
-    command.extend(shlex.split(os.environ.get("APKEEP_ARGS", "")))
-    command.append(str(destination))
-    subprocess.run(command, check=True)
-    for xapk in destination.glob("*.xapk"):
-        with zipfile.ZipFile(xapk) as archive:
-            for name in archive.namelist():
-                if name.endswith(".apk"):
-                    archive.extract(name, destination)
-    return sorted(destination.rglob("*.apk"))
+    if not cached:
+        if source == "fdroid":
+            command = [
+                "apkeep", "-a", f"{app['package']}@{app['version']}", "-d", "f-droid"
+            ]
+            if abi := app.get("abi"):
+                command.extend(("-o", f"arch={abi}"))
+            command.append(str(destination))
+        else:
+            # ponytail: APKMirror versions refresh the cache; fetch the current TV build.
+            command = [
+                "goopdl", "download", app["package"], "--arch", "tv", "--splits", "--no-extras",
+                "--integrity-manifest", str(destination / "integrity.json"),
+                "--output", str(destination),
+            ]
+        subprocess.run(command, check=True)
+        cached = sorted(destination.rglob("*.apk"))
+    if source == "fdroid" and (abi := app.get("abi")):
+        # ponytail: apkeep's F-Droid v2 index ignores arch; reject mismatched APKs.
+        for apk in cached:
+            with zipfile.ZipFile(apk) as archive:
+                if not any(name.startswith(f"lib/{abi}/") for name in archive.namelist()):
+                    raise SystemExit(f"{apk} is not built for {abi}")
+    return cached
 
 
 def install_apps(data: dict) -> None:
     packages = data["packages"]
     github_apps = packages["github"]
-    apkeep_apps = packages["apkeep"]
 
     temporary = ROOT / ".download"
     temporary.mkdir(exist_ok=True)
-    apkeep_apks = {}
-    for name, app in apkeep_apps.items():
-        log(f"prepare {name}")
-        apkeep_apks[name] = download_apkeep(
-            app, temporary / name / app["version"]
-        )
-    for name, apks in apkeep_apks.items():
+    store_apks = {}
+    for source in ("playstore", "fdroid"):
+        for name, app in packages[source].items():
+            log(f"prepare {name}")
+            store_apks[name] = download_store(
+                app, temporary / ("goopdl" if source == "playstore" else source)
+                / name / app["version"], source
+            )
+    for name, apks in store_apks.items():
         if not apks:
             raise SystemExit(f"no {name} APKs downloaded")
         log(f"{name}: {len(apks)} APK file(s) ready")
@@ -327,7 +327,7 @@ def install_apps(data: dict) -> None:
     for apk in github_apks:
         log(f"install {apk.stem}")
         run("install", "-r", str(apk))
-    for name, app_apks in apkeep_apks.items():
+    for name, app_apks in store_apks.items():
         log(f"install {name} ({len(app_apks)} APK file(s))")
         if len(app_apks) == 1:
             run("install", "-r", str(app_apks[0]))

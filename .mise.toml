@@ -22,6 +22,7 @@ dockle = "0.4.15"
 envsubst = "1.4.3"
 grype = "0.120.0"
 jq = "1.8.2"
+"pypi:goopdl" = { version = "1.2.1", uvx = true }
 python = "3.14.8"
 rg = "15.2.0"
 shellcheck = "0.11.0"
