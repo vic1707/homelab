@@ -27,10 +27,10 @@
 	],
 	"customDatasources": {
 		"apkpure": {
-			"defaultRegistryUrlTemplate": "https://apkpure.com/p/{{packageName}}",
+			"defaultRegistryUrlTemplate": "https://apkpure.net/p/{{packageName}}",
 			"format": "plain",
 			"transformTemplates": [
-				"{\"releases\":[{\"version\":$match($join(releases.version), /class=\\\"version one-line\\\">([^<]+)/).groups[0]}]}"
+				"{\"releases\":[{\"version\":$match($join(releases.version), /data-title=\\\"LatestVersion\\\">Latest Version<\\/div><div class=\\\"additional-info\\\">([^<]+)/).groups[0]}]}"
 			]
 		},
 		"supermicro-bios": {
