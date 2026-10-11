@@ -47,13 +47,13 @@ packages:
         arclauncher:
             repository: meddouribadis/arclauncher
             # renovate: datasource=github-releases depName=meddouribadis/arclauncher extractVersion=^(?<version>\d+\.\d+\.\d+)$
-            version: "1.0.8"
+            version: "1.0.9"
             asset: "arclauncher-{version}-armeabi-v7a.apk"
             package: com.omeda.arc
         keymapper:
             repository: keymapperorg/KeyMapper
             # renovate: datasource=github-releases depName=keymapperorg/KeyMapper extractVersion=^v(?<version>\d+\.\d+\.\d+)$
-            version: "4.6.0"
+            version: "4.6.1"
             release_tag: "v{version}"
             asset: "keymapper-{version}-foss.apk"
             package: io.github.sds100.keymapper
@@ -61,7 +61,7 @@ packages:
     playstore:
         anexplorer:
             # renovate: datasource=custom.apkmirror depName=anexplorer packageName=dworks/anexplorer-tv-file-manager-android-tv versioning=loose extractVersion=^/apk/dworks/anexplorer-tv-file-manager-android-tv/[^/]+-(?<version>\d+(?:-\d+){2})-release/$
-            version: "6-0-6"
+            version: "6-0-9"
             package: dev.dworks.apps.anexplorer
         twitch:
             # renovate: datasource=custom.apkmirror depName=twitch-android-tv packageName=twitch-interactive-inc/twitch-android-tv versioning=loose extractVersion=^/apk/twitch-interactive-inc/twitch-android-tv/[^/]+-(?<version>\d+(?:-\d+){3})-release/$
