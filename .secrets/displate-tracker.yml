@@ -1,0 +1,19 @@
+CLOUDFLARE_API_TOKEN: ENC[AES256_GCM,data:2b+xm8YECir3AkigUWTC+w87QWx30JZkPZZvwk0+HxhX7W2QWyDbHKDWViNUktWDirzdz6LU,iv:+ziK45oIl2xsLF986Cnu42PncZcp7dy3Ldznfy9nhO4=,tag:DtwQmo7WckqpjhSQLKvWSA==,type:str] # Account.Workers_Observability, Account.Workers_Scripts
+CLOUDFLARE_ACCOUNT_ID: 12f043169e3ccd1f2e16a79b8842b4bd
+WORKER_GITHUB_TOKEN: ENC[AES256_GCM,data:3GBdi1zF14EJTIyNl9tEyurWOAPRfM4Vyu42NlBGJaiSYYyHXK9j62cX6L0CBexaAR43jP42vMiedSSBOrVlnfGYRHt7rF9QbmMFSDUdZF+cqNIILYPm12S4QfSFzA==,iv:y/3lkF6BUznTbqVu7UiueWY7T3RVBWEo8f633jgYb5w=,tag:1BSRv87w/9nJs8TupXQucA==,type:str] # Read and Write access to workfLows
+
+sops:
+    age:
+        - enc: |
+              -----BEGIN AGE ENCRYPTED FILE-----
+              YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSA5b0ltVXVTYWZDKzAyTS96
+              NHp0SWxDbEFhcVQ0RFJvRWZWZmY1RTFleFVNCmRSVVlVeVZMSCtWdSs3ak5xN0I3
+              eTlQVWg0QWpVS3Q2Wk4xNDRiN0NMd3cKLS0tIFFSSDhFcUlRTUlibERoWW8xcTF0
+              SUVkNmd3YXZXeHg5NUcrQmU1WkU2WHMKdCohMIGzLRgEK+WinqA2TY0YPH9IiVxn
+              VjTgHokahGr+2sVGFyo6OOlq+6r1dFOuWMkvDwi1K6UixBCj9567UA==
+              -----END AGE ENCRYPTED FILE-----
+          recipient: age1q9gm9fgduf5scr3dadl7yarh4wxzlr6psl4zp02k2r9edjngasssd266k4
+    encrypted_regex: (?i)(secret|token|password|key|mac)$
+    lastmodified: "2026-10-14T09:35:37Z"
+    mac: ENC[AES256_GCM,data:djEKP7q50i7gsVk19tmUNwWgDQRp1X8tOhgBySkpkEKCwBUmZDmjwqzvocigLMy8DCiUvfBMwamxW78LM1sZ/Iy7e7jUhc2lmbEfd5M8GwdKWu3gOYgV1lWQJT2txjFt/RhXIOaIhgPWq4B+IHvDzE24vnFT/Zj1nNDpGRsDTss=,iv:615NDTaCpuYna1AiuXNLIHMeuMEKaxlaZscKE74WKow=,tag:IhFHcyNOGaQ0ln8prUcweg==,type:str]
+    version: 3.13.3

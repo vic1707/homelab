@@ -39,6 +39,7 @@
 
 !.secrets/
 !.secrets/bofzilla.dev.yml
+!.secrets/displate-tracker.yml
 !.secrets/devices/
 !.secrets/devices/*.yml
 
