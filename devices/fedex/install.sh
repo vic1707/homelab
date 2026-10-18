@@ -8,7 +8,7 @@
 set -eu
 
 # renovate: datasource=github-tags depName=openwrt/openwrt extractVersion=^v(?<version>\d+\.\d+\.\d+)$
-VERSION=25.12.5
+VERSION=25.12.6
 IMAGE="fedex-openwrt-$VERSION-ext4-combined-efi.img.gz"
 URL="https://github.com/vic1707/homelab/releases/download/openwrt-fedex-$VERSION/$IMAGE"
 
