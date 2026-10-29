@@ -14,7 +14,7 @@ dir = "{{ config_root }}"
 includes = [".config/tasks.mise.toml"]
 
 [tools]
-actionlint = "1.7.12"
+"github:kjanat/actionlint" = "1.17.0"
 "cargo:apkeep" = "1.1.0"
 age = "1.3.2"
 dive = "0.13.1"
@@ -30,11 +30,7 @@ shfmt = "3.14.1"
 sops = "3.13.3"
 typos = "1.51.1"
 uv = "0.13.5"
-zizmor = "1.31.1"
-
-[tool_alias]
-zizmor = "asdf:vic1707/asdf-zizmor"
-# apkeep = "asdf:vic1707/asdf-any-cargo-quickinstall" # not built for linux
+"github:zizmorcore/zizmor" = "1.31.1"
 
 [settings.python]
 compile = false     ## Forces download of precompiled bin
