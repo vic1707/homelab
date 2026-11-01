@@ -2,7 +2,7 @@
 purelymail_api_token: >-
     {{ lookup('community.sops.sops', '../../.secrets/bofzilla.dev.yml', extract='["purelymail"]["api_token"]') }}
 purelymail_ownership_record: >-
-    {{ lookup('bofzilla.purelymail.purelymail_ownership_code', api_token=purelymail_api_token).record }}
+    {{ lookup('vic1707.purelymail.purelymail_ownership_code', api_token=purelymail_api_token).record }}
 
 purelymail_dns_records:
     CNAME:

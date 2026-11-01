@@ -31,8 +31,8 @@ icx:
             ansible_host: mycelium_uart
             icx_enable_password: >-
                 {{ lookup('community.sops.sops', '../../.secrets/devices/mycelium.yml', extract='["enable"]["super_user_password"]') }}
-            ansible_connection: bofzilla.icx.serial
-            ansible_network_os: bofzilla.icx.icx
+            ansible_connection: vic1707.icx.serial
+            ansible_network_os: vic1707.icx.icx
             ansible_serial_port: /dev/cu.usbserial-A9A2C0QQ
             ansible_serial_baud: 9600
             ansible_command_timeout: 300

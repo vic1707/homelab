@@ -4,7 +4,7 @@
   gather_facts: false
 
   module_defaults:
-      group/bofzilla.icx.all:
+      group/vic1707.icx.all:
           enable_password: "{{ icx_enable_password }}"
 
   pre_tasks:
@@ -17,7 +17,7 @@
 
   tasks:
       - name: ICX | Configure system
-        bofzilla.icx.system:
+        vic1707.icx.system:
             hostname: mycelium
             save_when: changed
 

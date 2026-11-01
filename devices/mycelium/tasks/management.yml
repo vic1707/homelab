@@ -1,6 +1,6 @@
 ---
 - name: management | Configure local AAA
-  bofzilla.icx.auth:
+  vic1707.icx.auth:
       users:
           - name: admin
             privilege: 0
@@ -20,7 +20,7 @@
       save_when: changed
 
 - name: management | Disable unused management services
-  bofzilla.icx.management_access:
+  vic1707.icx.management_access:
       ssh:
           enabled: false
       tftp:
