@@ -1,6 +1,6 @@
 version = 1
 revision = 5
-requires-python = "==3.14.9"
+requires-python = "==3.15.2"
 
 [[package]]
 name = "annotated-types"
@@ -13,14 +13,14 @@ wheels = [
 
 [[package]]
 name = "ansible"
-version = "14.5.0"
+version = "14.6.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "ansible-core" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/dd/bf/9e39662e848e3162641ee33332787b7c156be63d20c84869ca69e83e503a/ansible-14.5.0.tar.gz", hash = "sha256:daeafe730cb2cf82ebe1a1a30960dcdfc0d624c497eb96d57d81713ec19ef19f", size = 51396854, upload-time = "2026-10-06T18:51:37.336Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/86/91/8d1eee9e7c065a60119845c2919d6762dd5b734d784ac8be1180fa5c506a/ansible-14.6.0.tar.gz", hash = "sha256:47cd013f4b6462f15b65485d09b713ae64697036733078f0623f636a94f5df45", size = 53253957, upload-time = "2026-11-04T20:12:16.828Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ee/aa/3ce05576b36ceb86591dc0ab3bb187b4333b65b6de3e64dae535fb7a1354/ansible-14.5.0-py3-none-any.whl", hash = "sha256:245623ccc2d31d0f6f4bdb63168d550cad305fb032cc43d96e8f61ce8ab0ba84", size = 51399217, upload-time = "2026-10-06T18:51:32.421Z" },
+    { url = "https://files.pythonhosted.org/packages/b0/c0/75a74f279e36569fc11626c3b7a5628dfc249c7115dc85f5c950882f46a2/ansible-14.6.0-py3-none-any.whl", hash = "sha256:a9d06a68d73a06eb4651ac7ea0c3b0ad18ddffbdb4feb745855dea70e8891e75", size = 53238676, upload-time = "2026-11-04T20:12:10.583Z" },
 ]
 
 [[package]]
@@ -41,7 +41,7 @@ wheels = [
 
 [[package]]
 name = "ansible-core"
-version = "2.21.5"
+version = "2.21.6"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "cryptography" },
@@ -50,14 +50,14 @@ dependencies = [
     { name = "pyyaml" },
     { name = "resolvelib" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/0b/27/d02c3f75e9f1468b5efbe49667574f68331b17e8a9f2bb99e1d18be70052/ansible_core-2.21.5.tar.gz", hash = "sha256:65bb3148c58ebb843cd5074004c805f404f152114d98476dd823324616c9c6cb", size = 3395026, upload-time = "2026-10-05T15:11:00.15Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ed/9f/c3f578633cd374db6ed981f8abc401885819e94e3d6a8548a1bd0095c575/ansible_core-2.21.6.tar.gz", hash = "sha256:3fa05b4b1af69f2fa19b49dde8edd5a23e693c2c1c3bda2d85fce73bd6cfc36d", size = 3399162, upload-time = "2026-11-02T17:33:27.104Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/57/6f/7321059b2d1a5ea3c7e60807a5269942d93b2c11a2fc89ba8e4a3e827891/ansible_core-2.21.5-py3-none-any.whl", hash = "sha256:08886f9f3e23d129aa98a01271c4a47833516e1cb7c737a246788cb474f41222", size = 2457267, upload-time = "2026-10-05T15:10:58.444Z" },
+    { url = "https://files.pythonhosted.org/packages/20/5a/9e6cc7686b40bec066211200b6c393a7a333dfcfa91aa67a07c031df87c8/ansible_core-2.21.6-py3-none-any.whl", hash = "sha256:c1fc3cbe821176ba4227b1cae8c748e1d28d42dde605e807d23c58f71b6d1a74", size = 2457874, upload-time = "2026-11-02T17:33:24.88Z" },
 ]
 
 [[package]]
 name = "ansible-lint"
-version = "26.10.1"
+version = "26.11.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "ansible-compat" },
@@ -77,9 +77,9 @@ dependencies = [
     { name = "wcmatch" },
     { name = "yamllint" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/fe/55/94814bfe335b58e1f65c0b2e6c8d0676737eadd7cc1466d8fe7213345a13/ansible_lint-26.10.1.tar.gz", hash = "sha256:a746c6f3cb5719d1c202bc14e956ef3b0eca704025d1aa92707a27fc73ed73ea", size = 829069, upload-time = "2026-10-13T12:45:06.196Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/bc/22/4db7a3ab031c7f08f6b1340df9fbc7b730a2ee25ec21047c1a3da445af0a/ansible_lint-26.11.0.tar.gz", hash = "sha256:74813203aa5450d720c3d86b9d0d4ddc51d30e36ac69e1f0d9f7650f5a3b5dd3", size = 876436, upload-time = "2026-11-05T08:50:53.758Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f3/c7/80a6ac01d970257979f8f18e34e5a1a4c1ad356ea8507425fe74ea9178bc/ansible_lint-26.10.1-py3-none-any.whl", hash = "sha256:cc26d405ee38c3390e80ec18c4137b5685c36d03ce7d4d8233b0470d9a0e21e9", size = 342245, upload-time = "2026-10-13T12:45:04.243Z" },
+    { url = "https://files.pythonhosted.org/packages/92/74/15896e47ad1087c1549f7d863631d05d661df0123747622e4cdab88c1428/ansible_lint-26.11.0-py3-none-any.whl", hash = "sha256:b778ea87fa873384b373e8c3fe53a06b3acc7b72ac283e2d2070f76fdf9f8358", size = 349253, upload-time = "2026-11-05T08:50:51.623Z" },
 ]
 
 [[package]]
@@ -208,7 +208,7 @@ wheels = [
 
 [[package]]
 name = "cloudflare"
-version = "5.9.0"
+version = "5.10.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
@@ -218,9 +218,9 @@ dependencies = [
     { name = "sniffio" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/4b/52/5e736d63637e79c2381045250dbb6154a1fb4da8f3fd47518bff406c24d2/cloudflare-5.9.0.tar.gz", hash = "sha256:1c9b9e243602c754e03636204272422dc45776f3babdc67f8341ca4d559d49e8", size = 3664424, upload-time = "2026-10-03T02:55:24.989Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/0c/e8/5188c42b346a29f018b397d3b4cd587cf386902b459d04bed5774915c525/cloudflare-5.10.0.tar.gz", hash = "sha256:3e1ac8f71f5098dc3541bfd77ae0d3abd710aebef48093021e7d37f6bb584ca0", size = 3797753, upload-time = "2026-11-05T21:53:28.667Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/13/d4/6d3ed77313ce1fbcf209c4aca50407c338114e71d864cbc49b1cd686b966/cloudflare-5.9.0-py3-none-any.whl", hash = "sha256:70f0c966c26802837fe7ebe95a7b4a14c723159e742bc49d34642b21a2dc11b5", size = 7707263, upload-time = "2026-10-03T02:55:22.596Z" },
+    { url = "https://files.pythonhosted.org/packages/9e/99/79f0a4b4c578aba2900101ac7dafc1e14a4c9c27d851e0e0eaeba04510fa/cloudflare-5.10.0-py3-none-any.whl", hash = "sha256:a5441bf00050e35fcf589123ecbfb740c22b54207d3ee27b0b1857fc7427e525", size = 7935466, upload-time = "2026-11-05T21:53:26.503Z" },
 ]
 
 [[package]]
@@ -327,10 +327,10 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "ansible", specifier = "==14.5.0" },
-    { name = "ansible-lint", specifier = "==26.10.1" },
+    { name = "ansible", specifier = "==14.6.0" },
+    { name = "ansible-lint", specifier = "==26.11.0" },
     { name = "bcrypt", specifier = "==5.0.0" },
-    { name = "cloudflare", specifier = "==5.9.0" },
+    { name = "cloudflare", specifier = "==5.10.0" },
     { name = "jmespath", specifier = "==1.1.0" },
     { name = "jq", specifier = "==1.13.0" },
     { name = "pyserial", specifier = "==3.5" },
