@@ -40,14 +40,14 @@ packages:
         smarttube:
             repository: yuliskov/SmartTube
             # renovate: datasource=github-releases depName=yuliskov/SmartTube extractVersion=^(?<version>\d+\.\d+)s$
-            version: "32.68"
+            version: "32.71"
             release_tag: "{version}s"
             asset: "SmartTube_stable_{version}_armeabi-v7a.apk"
             package: org.smarttube.stable
         arclauncher:
             repository: meddouribadis/arclauncher
             # renovate: datasource=github-releases depName=meddouribadis/arclauncher extractVersion=^(?<version>\d+\.\d+\.\d+)$
-            version: "1.0.10"
+            version: "1.2.1"
             asset: "arclauncher-{version}-armeabi-v7a.apk"
             package: com.omeda.arc
         keymapper:
