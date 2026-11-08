@@ -123,6 +123,8 @@ whitelist_filters: []
 user_rules:
     - "{{ rescue_network.gateway }} fedex.lan"
     - "{{ automation_network.gateway }} nut.fedex.lan"
+    # TCL TV (com.tcl.ttvs) BI/telemetry upload; the rest of leiniao.com may carry firmware updates.
+    - "||on-hweudc-o.api.leiniao.com^"
 filtering:
     protection_enabled: true
     filtering_enabled: true

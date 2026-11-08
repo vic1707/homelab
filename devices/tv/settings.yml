@@ -17,6 +17,7 @@ settings:
         charging_sounds_enabled: "0"
         install_non_market_apps: "0" # Disable unknown-source installs
         location_mode: "0" # Also enforced through the location service
+        network_location_opt_in: "0" # Declined; unset, Play Services asks for location consent at every boot
     global:
         ble_scan_always_enabled: "0"
         dock_sounds_enabled: "0"
@@ -35,55 +36,118 @@ settings:
         network_recommendations_enabled: "0"
         wifi_scan_always_enabled: "0"
 
+# Home screen configuration for packages.github.launcher.
+launcher:
+    # Accessibility helper that maps the remote's app buttons. Any key-filtering service on this
+    # G08 firmware turns a held Volume key into one step per press; the buttons are worth more.
+    key_services:
+        - HomeKeyService
+    # Pushed as the launcher's theme config.json; keys documented in the upstream themes/README.md.
+    theme:
+        columns: 5
+        dock_apps:
+            - org.smarttube.stable
+            - tv.twitch.android.app
+            - com.amazon.amazonvideo.livingroom
+            - com.netflix.ninja
+            - com.tcl.ui_mediaCenter
+        # System apps that must stay installed, kept off the grid.
+        hidden_apps:
+            - com.android.vending # Play Store: Play Services updates
+            - com.tcl.suspension # Quick panel: runs the Input key
+            - com.tcl.guard # Safety Guard: retried every 5 s when gone
+            - com.tcl.tv # TV: the HDMI player
+            - com.android.tv.settings # Settings pill and gear key cover it
+        live_tv_package: com.tcl.tv
+        background_color: "#000000"
+        settings_key_keycodes: [83] # Gear
+        app_keys:
+            - "4065:org.smarttube.stable" # YouTube
+            - "4062:com.netflix.ninja" # Netflix
+            - "4099:com.amazon.amazonvideo.livingroom" # Prime Video
+            - "4020:tv.twitch.android.app" # TCL Channel
+            - "4090:com.tcl.ui_mediaCenter" # Media
+            - "4001:input:com.tcl.tvinput/.TvPassThroughService/HW16" # Dashboard -> PC
+
 packages:
     github:
         smarttube:
             repository: yuliskov/SmartTube
             # renovate: datasource=github-releases depName=yuliskov/SmartTube extractVersion=^(?<version>\d+\.\d+)s$
-            version: "32.68"
+            version: "32.71"
             release_tag: "{version}s"
             asset: "SmartTube_stable_{version}_armeabi-v7a.apk"
             package: org.smarttube.stable
-        arclauncher:
-            repository: meddouribadis/arclauncher
-            # renovate: datasource=github-releases depName=meddouribadis/arclauncher extractVersion=^(?<version>\d+\.\d+\.\d+)$
-            version: "1.0.10"
-            asset: "arclauncher-{version}-armeabi-v7a.apk"
-            package: com.omeda.arc
-        keymapper:
-            repository: keymapperorg/KeyMapper
-            # renovate: datasource=github-releases depName=keymapperorg/KeyMapper extractVersion=^v(?<version>\d+\.\d+\.\d+)$
-            version: "4.6.2"
+        launcher:
+            # Clean Your TV launcher (Gathin23/cleanyourtv), built and signed by vic1707/cleanyourtv-launcher.
+            repository: vic1707/cleanyourtv-launcher
+            # renovate: datasource=github-releases depName=vic1707/cleanyourtv-launcher extractVersion=^v(?<version>\d+\.\d+\.\d+)$
+            version: "3.4.0"
             release_tag: "v{version}"
-            asset: "keymapper-{version}-foss.apk"
-            package: io.github.sds100.keymapper
+            asset: "cleanyourtv-launcher-{version}.apk"
+            package: com.gathin.tvhome
+            attested: true # Checked with `gh attestation verify` before installing
 
     playstore:
-        anexplorer:
-            # renovate: datasource=custom.apkmirror depName=anexplorer packageName=dworks/anexplorer-tv-file-manager-android-tv versioning=loose extractVersion=^/apk/dworks/anexplorer-tv-file-manager-android-tv/[^/]+-(?<version>\d+(?:-\d+){2})-release/$
-            version: "6-0-9"
-            package: dev.dworks.apps.anexplorer
         twitch:
             # renovate: datasource=custom.apkmirror depName=twitch-android-tv packageName=twitch-interactive-inc/twitch-android-tv versioning=loose extractVersion=^/apk/twitch-interactive-inc/twitch-android-tv/[^/]+-(?<version>\d+(?:-\d+){3})-release/$
             version: "13-0-0-2"
             package: tv.twitch.android.app
-    fdroid:
-        vlc:
-            # renovate: datasource=custom.fdroid depName=vlc packageName=org.videolan.vlc versioning=loose
-            version: "3.7.2"
-            abi: armeabi-v7a
-            package: org.videolan.vlc
 
+    # Kept on purpose: com.tcl.ttvs (firmware updates; also TCL BI telemetry, block that in DNS),
+    # com.tcl.suspension / com.tcl.interactive (Input key panel and its overlay), com.tcl.autopair
+    # (remote pairing), com.tcl.guard (retried every 5 s when gone), com.tcl.partnercustomizer (TCL key),
+    # com.tcl.miracast (phone screen mirroring), AirPlay (com.mediatek.AirplayAPK, com.mediatek.airplaydaemon,
+    # com.tcl.airplay2), com.tcl.ui_mediaCenter, com.tcl.tv / com.tcl.tvinput (HDMI).
     disabled:
         - com.google.android.apps.tv.launcherx
-        - com.google.android.tungsten.setupwraith
-        - com.tcl.eva # TCL camera gesture service
+        - com.google.android.tungsten.setupwraith # Claims Home once launcherx is off
+        - com.tcl.eva # TCL voice/camera gesture layer
         - com.tcl.initsetup # Completed setup and Samba ACR consent
-        - com.tcl.ttvs # TCL telemetry, casting, cloud, and updater services
 
+    # `pm uninstall --user 0`: survives firmware updates; `install.py debloat` reapplies after one,
+    # `adb shell cmd package install-existing <package>` brings one back.
     removed:
-        - com.google.android.apps.tv.dreamx
+        # Basic TV setup hides and disables these (pm then answers "not installed for 0");
+        # listed so a full Google TV setup loses them too.
+        - com.google.android.apps.mediashell # Chromecast receiver
+        - com.google.android.katniss # Assistant / voice
+        - com.google.android.play.games
+        - com.google.android.videos
+        - com.google.android.youtube.tvmusic
+        - com.google.android.youtube.tv
+        # Google extras
+        - com.google.android.apps.tv.dreamx # Photo screensaver
         - com.google.android.feedback
         - com.google.android.onetimeinitializer
+        - com.google.android.partnersetup # RLZ partner-attribution pings
+        - com.google.android.syncadapters.calendar
+        - com.google.android.tts
+        - com.google.android.marvin.talkback
         - com.google.android.tv.remote.service
-        - com.google.android.youtube.tv
+        - com.android.printspooler
+        # TCL telemetry, pushes, content and demo
+        - com.tcl.logkit # Log capture and upload
+        - com.tcl.dashboard # Home-screen push messages
+        - com.tcl.messagebox
+        - com.tcl.usercenter # TCL account
+        - com.tcl.tv.tclhome_passive # Account/home push receiver
+        - com.tcl.channelplus # TCL Live free channels (Plex, Pluto, ...)
+        - com.tcl.waterfall.overseas # Recommendation browser
+        - com.tcl.exhibit # Store demo
+        - com.tcl.esticker # Retail sticker
+        - com.tcl.ocean.instructions # Tips overlay
+        - com.tcl.repairguide
+        - com.tcl.hearaid
+        - com.tcl.t_solo
+        - com.tcl.gamebar
+        - com.tcl.gallery
+        - com.tcl.smartalexa
+        - com.tcl.magiconnectfree # Phone app pairing
+        - com.tcl.UpdatePeripheral # Peripheral firmware helper
+        # Duplicate webviews (com.google.android.webview is used) and MediaTek leftovers
+        - com.tcl.android.webview
+        - com.iplayer.android.webview
+        - com.mediatek.support.webview
+        - com.mediatek.backgrounddetection
+        - com.mediatek.network

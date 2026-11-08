@@ -8,7 +8,7 @@ import shutil
 import subprocess
 import time
 import urllib.request
-import xml.etree.ElementTree as ET
+import uuid
 import zipfile
 from pathlib import Path
 
@@ -16,14 +16,9 @@ import yaml
 
 ROOT = Path(__file__).parent
 CONFIG = ROOT / "settings.yml"
-FILES = ROOT / "files"
-MAPPINGS = FILES / "remaps.json"
-REMOTE_BACKUP = "/sdcard/Download/key_mapper.zip"
-BACKUP_URI = (
-    "content://dev.dworks.apps.anexplorer.externalstorage.documents/document/"
-    "primary%3ADownload%2Fkey_mapper.zip"
-)
+DOWNLOADS = ROOT / ".download"
 TV = os.environ.get("TV", "TV.lan:5555")
+HOME_INTENT = ("-a", "android.intent.action.MAIN", "-c", "android.intent.category.HOME")
 
 
 def log(message: str) -> None:
@@ -31,79 +26,24 @@ def log(message: str) -> None:
 
 
 def config() -> dict:
-    return yaml.safe_load(CONFIG.read_text())
+    data = yaml.safe_load(CONFIG.read_text())
+    data["launcher"]["package"] = data["packages"]["github"]["launcher"]["package"]
+    return data
 
 
-def run(*args: str, capture: bool = False) -> str:
+def run(*args: str, capture: bool = False, check: bool = True) -> str:
     result = subprocess.run(
-        ["adb", "-s", TV, *args], check=True, text=True, capture_output=capture
+        ["adb", "-s", TV, *args], check=check, text=True, capture_output=capture
     )
     return result.stdout.strip() if capture else ""
 
 
-def shell(*args: str, capture: bool = False) -> str:
-    return run("shell", *args, capture=capture)
+def shell(*args: str, capture: bool = False, check: bool = True) -> str:
+    return run("shell", *args, capture=capture, check=check)
 
 
 def setting(namespace: str, key: str, value: str) -> None:
     shell("settings", "put", namespace, key, value)
-
-
-def ui_dump() -> ET.Element:
-    shell("uiautomator", "dump", "/sdcard/install-ui.xml")
-    return ET.fromstring(shell("cat", "/sdcard/install-ui.xml", capture=True))
-
-
-def ui_matches(
-    node: ET.Element, *, text: str | None = None, description: str | None = None
-) -> bool:
-    """Return whether a node matches a supplied label.
-
-    >>> node = ET.fromstring('<node text="Settings" />')
-    >>> ui_matches(node, text="Settings")
-    True
-    >>> ui_matches(node, description="More")
-    False
-    """
-    if text is None and description is None:
-        raise ValueError("text or description is required")
-    return (text is not None and node.get("text") == text) or (
-        description is not None and node.get("content-desc") == description
-    )
-
-
-def ui_tap(*, text: str | None = None, description: str | None = None) -> None:
-    for _ in range(20):
-        root = ui_dump()
-        parents = {child: parent for parent in root.iter() for child in parent}
-        for node in root.iter():
-            if not ui_matches(node, text=text, description=description):
-                continue
-            target = node
-            while target is not None and target.get("clickable") != "true":
-                target = parents.get(target)
-            if target is None:
-                target = node
-            left, top, right, bottom = (
-                int(value)
-                for value in target.get("bounds", "")
-                .replace("][", ",")
-                .replace("[", "")
-                .replace("]", "")
-                .split(",")
-            )
-            shell("input", "tap", str((left + right) // 2), str((top + bottom) // 2))
-            return
-        time.sleep(0.25)
-    wanted = text or description
-    raise SystemExit(f"UI element not found: {wanted}")
-
-
-def ui_has(*, text: str | None = None, description: str | None = None) -> bool:
-    root = ui_dump()
-    return any(
-        ui_matches(node, text=text, description=description) for node in root.iter()
-    )
 
 
 def download(url: str, target: Path) -> None:
@@ -122,145 +62,124 @@ def configure(data: dict) -> None:
             setting(namespace, key, value)
 
 
-def enable_accessibility(data: dict) -> None:
-    keymapper = data["packages"]["github"]["keymapper"]["package"]
-    service = f"{keymapper}/.system.accessibility.MyAccessibilityService"
+def debloat(data: dict) -> None:
+    packages = data["packages"]
+    for package in packages["disabled"]:
+        log(f"disable {package}")
+        shell("pm", "disable-user", "--user", "0", package, check=False)
+    for package in packages["removed"]:
+        log(f"remove {package}")
+        shell("pm", "uninstall", "--user", "0", package, check=False)
+    # Android writes package state about ten seconds after a change; a reboot before that loses it.
+    shell("sync")
+    installed = shell("pm", "list", "packages", capture=True).splitlines()
+    enabled = shell("pm", "list", "packages", "-e", capture=True).splitlines()
+    left = [p for p in packages["removed"] if f"package:{p}" in installed]
+    left += [p for p in packages["disabled"] if f"package:{p}" in enabled]
+    if left:
+        log(f"still present: {', '.join(left)}")
+
+
+# Launcher
+
+
+def push_theme(launcher: dict) -> None:
+    package = launcher["package"]
+    files = f"/sdcard/Android/data/{package}/files"
+    uri = f"content://{package}.theme"
+    staging = DOWNLOADS / "theme"
+    staging.mkdir(parents=True, exist_ok=True)
+    (staging / "config.json").write_text(json.dumps(launcher["theme"], indent=2))
+    # A new revision makes the launcher drop on-TV layout choices in favour of the theme.
+    (staging / "theme_revision").write_text(uuid.uuid4().hex)
+    for name in ("config.json", "theme_revision"):
+        staged = f"/data/local/tmp/cyt-theme-{name}"
+        run("push", str(staging / name), staged, capture=True)
+        # Only through the launcher's provider: a file the shell copies into Android/data stays
+        # shell-owned and the launcher cannot read it (EACCES).
+        for _ in range(5):
+            output = shell(
+                f"rm -f {files}/{name} 2>/dev/null; "
+                f"content write --uri {uri}/{name} < {staged} 2>&1; ls -n {files}/{name} 2>&1",
+                capture=True,
+                # The first write right after an install can fail; retry instead of stopping.
+                check=False,
+            )
+            if "Error" not in output and "No such file" not in output:
+                break
+            time.sleep(1)
+        else:
+            raise SystemExit(f"theme push of {name} failed: {output}")
+        shell("rm", "-f", staged)
+
+
+def allow_auto_start(package: str) -> None:
+    # TCL's TclAppBoot refuses to start a stopped app's provider or bind its accessibility
+    # service without this app-op, and only writes it to disk on write-settings.
+    for op in ("AUTO_START", "APP_AUTO_START"):
+        shell("cmd", "appops", "set", package, op, "allow", capture=True, check=False)
+    shell("appops", "write-settings", capture=True, check=False)
+
+
+def enable_key_services(launcher: dict) -> None:
+    package = launcher["package"]
+    allow_auto_start(package)
     current = shell(
         "settings", "get", "secure", "enabled_accessibility_services", capture=True
     )
-    services = [] if current in ("", "null") else current.split(":")
-    if service not in services:
-        setting(
-            "secure", "enabled_accessibility_services", ":".join([*services, service])
-        )
-    setting("secure", "accessibility_enabled", "1")
-    shell("cmd", "appops", "set", keymapper, "APP_AUTO_START", "allow")
-    shell("dumpsys", "deviceidle", "whitelist", f"+{keymapper}")
-    shell("am", "set-inactive", keymapper, "false")
-
-
-def finish(data: dict) -> None:
-    launcher = data["packages"]["github"]["arclauncher"]["package"]
-    configure(data)
-    enable_accessibility(data)
-    shell(
-        "cmd",
-        "role",
-        "add-role-holder",
-        "--user",
-        "0",
-        "android.app.role.HOME",
-        launcher,
-        "0",
-    )
-    shell(
-        "cmd",
-        "package",
-        "set-home-activity",
-        "--user",
-        "0",
-        f"{launcher}/.MainActivity",
-    )
-    for package in data["packages"]["disabled"]:
-        shell("pm", "disable-user", "--user", "0", package)
-    home = shell(
-        "cmd", "package", "resolve-activity", "--brief",
-        "-a", "android.intent.action.MAIN",
-        "-c", "android.intent.category.HOME",
-        capture=True,
-    )
-    if home.splitlines()[-1] != f"{launcher}/.MainActivity":
-        raise SystemExit(f"failed to set home launcher: {home}")
-    shell("cmd", "location", "set-location-enabled", "false", "--user", "0")
-    shell("cmd", "sensor_privacy", "enable", "0", "microphone")
-    shell("cmd", "sensor_privacy", "enable", "0", "camera")
-    subprocess.run(
-        [
-            "adb",
-            "-s",
-            TV,
-            "shell",
-            "sh",
-            "-c",
-            "settings put global development_settings_enabled 0 && settings put global adb_enabled 0 && reboot",
-        ],
-        check=False,
-    )
-
-
-def restore() -> None:
-    temporary = ROOT / ".download"
-    temporary.mkdir(exist_ok=True)
-    backup = temporary / "key_mapper.zip"
-    with zipfile.ZipFile(backup, "w", zipfile.ZIP_DEFLATED) as archive:
-        archive.write(MAPPINGS, "data.json")
-    run("push", str(backup), REMOTE_BACKUP)
-    shell(
-        "am",
-        "start",
-        "-a",
-        "android.intent.action.VIEW",
-        "-d",
-        BACKUP_URI,
-        "-t",
-        "application/zip",
-        "-n",
-        "io.github.sds100.keymapper/.base.backup.RestoreKeyMapsActivity",
-    )
-    time.sleep(2)
-    ui_tap(text="Replace")
-    print("Key Mapper mappings restored")
-
-
-def setup_automatic_backup(data: dict) -> None:
-    keymapper = data["packages"]["github"]["keymapper"]["package"]
-    anexplorer = data["packages"]["playstore"]["anexplorer"]["package"]
-    log("configure Key Mapper automatic backup")
-    shell("rm", "-f", REMOTE_BACKUP)
-    shell("appops", "set", anexplorer, "MANAGE_EXTERNAL_STORAGE", "allow")
-    shell("input", "keyevent", "KEYCODE_BACK")
-    shell("am", "force-stop", keymapper)
-    log("warm AnExplorer")
-    shell(
-        "am", "start", "-a", "android.intent.action.MAIN",
-        "-c", "android.intent.category.LEANBACK_LAUNCHER",
-        "-n", f"{anexplorer}/.DocumentsActivity",
-    )
-    for _ in range(20):
-        if ui_has(text="Downloads"):
-            break
-        time.sleep(0.25)
-    shell("am", "start", "-n", f"{keymapper}/.MainActivity")
-    time.sleep(2)
-    if ui_has(text="OK"):
-        log("dismiss Key Mapper dialog")
-        ui_tap(text="OK")
-        time.sleep(0.5)
-    log("open Key Mapper settings")
-    ui_tap(description="More")
-    ui_tap(text="Settings")
-    for _ in range(5):
-        if ui_has(text="Change automatic backup location") or ui_has(
-            text="Turn on automatic backup"
-        ):
-            break
-        shell("input", "swipe", "960", "850", "960", "300", "500")
-        time.sleep(0.25)
-    ui_tap(text="Change automatic backup location") if ui_has(
-        text="Change automatic backup location"
-    ) else ui_tap(text="Turn on automatic backup")
-    time.sleep(0.5)
-    if ui_has(text="Change"):
-        ui_tap(text="Change")
+    others = [
+        s for s in current.split(":")
+        if s and s != "null" and not s.startswith(f"{package}/")
+    ]
+    wanted = [f"{package}/.{name}" for name in launcher["key_services"]]
+    # A service refused while its APK was replaced only binds again once the list changes.
+    shell("settings put secure enabled_accessibility_services ''")
+    setting("secure", "accessibility_enabled", "0")
     time.sleep(1)
-    if ui_has(text="AnExplorer"):
-        ui_tap(text="AnExplorer")
-    if ui_has(text="Always"):
-        ui_tap(text="Always")
-    ui_tap(text="Download") if ui_has(text="Download") else ui_tap(text="Downloads")
-    ui_tap(description="Save")
+    setting("secure", "enabled_accessibility_services", ":".join([*others, *wanted]))
+    setting("secure", "accessibility_enabled", "1")
+    shell("pm", "revoke", package, "android.permission.WRITE_SECURE_SETTINGS", check=False)
+    for _ in range(20):
+        bound = shell("dumpsys", "accessibility", capture=True)
+        if all(f"{name}" in bound.split("Bound services", 1)[-1] for name in launcher["key_services"]):
+            return
+        time.sleep(0.5)
+    log("warning: key services enabled but not bound yet")
+
+
+def set_home(launcher: dict) -> None:
+    package = launcher["package"]
+    shell("cmd", "role", "add-role-holder", "--user", "0", "android.app.role.HOME", package, "0")
+    shell("cmd", "package", "set-home-activity", "--user", "0", f"{package}/.MainActivity")
+
+
+def verify_home(launcher: dict) -> None:
+    package = launcher["package"]
+    home = shell("cmd", "package", "resolve-activity", "--brief", *HOME_INTENT, capture=True)
+    if home.splitlines()[-1] != f"{package}/.MainActivity":
+        raise SystemExit(f"failed to set home launcher: {home}")
+    # resolve-activity can name the launcher while Home still opens something else.
+    shell("input", "keyevent", "KEYCODE_HOME")
     time.sleep(2)
-    log("Key Mapper automatic backup configured")
+    focus = shell("dumpsys", "activity", "activities", capture=True)
+    focused = next((l for l in focus.splitlines() if "mFocusedApp" in l), "")
+    if package not in focused:
+        raise SystemExit(f"Home did not open the launcher: {focused.strip()}")
+
+
+def restart_launcher(launcher: dict) -> None:
+    shell("am", "force-stop", launcher["package"])
+    enable_key_services(launcher)
+    shell("input", "keyevent", "KEYCODE_HOME")
+
+
+def configure_launcher(launcher: dict) -> None:
+    allow_auto_start(launcher["package"])
+    push_theme(launcher)
+    set_home(launcher)
+
+
+# Apps
 
 
 def download_store(app: dict, destination: Path, source: str) -> list[Path]:
@@ -296,14 +215,13 @@ def install_apps(data: dict) -> None:
     packages = data["packages"]
     github_apps = packages["github"]
 
-    temporary = ROOT / ".download"
-    temporary.mkdir(exist_ok=True)
+    DOWNLOADS.mkdir(exist_ok=True)
     store_apks = {}
     for source in ("playstore", "fdroid"):
-        for name, app in packages[source].items():
+        for name, app in (packages.get(source) or {}).items():
             log(f"prepare {name}")
             store_apks[name] = download_store(
-                app, temporary / ("goopdl" if source == "playstore" else source)
+                app, DOWNLOADS / ("goopdl" if source == "playstore" else source)
                 / name / app["version"], source
             )
     for name, apks in store_apks.items():
@@ -313,7 +231,7 @@ def install_apps(data: dict) -> None:
 
     github_apks = []
     for name, app in github_apps.items():
-        target = temporary / f"{name}.apk"
+        target = DOWNLOADS / f"{name}.apk"
         version = app["version"]
         tag = app.get("release_tag", "{version}").format(version=version)
         asset = app["asset"].format(**app)
@@ -322,6 +240,13 @@ def install_apps(data: dict) -> None:
             f"https://github.com/{app['repository']}/releases/download/{tag}/{asset}",
             target,
         )
+        if app.get("attested"):
+            # Build provenance: the APK came from that repository's workflow, unmodified.
+            subprocess.run(
+                ["gh", "attestation", "verify", str(target), "--repo", app["repository"]],
+                check=True,
+                stdout=subprocess.DEVNULL,
+            )
         github_apks.append(target)
 
     for apk in github_apks:
@@ -341,64 +266,68 @@ def install_apps(data: dict) -> None:
             )
 
 
+# Commands
+
+
+def finish(data: dict) -> None:
+    configure(data)
+    shell("cmd", "location", "set-location-enabled", "false", "--user", "0")
+    shell("cmd", "sensor_privacy", "enable", "0", "microphone")
+    shell("cmd", "sensor_privacy", "enable", "0", "camera")
+    log("disable ADB and reboot")
+    subprocess.run(
+        [
+            "adb",
+            "-s",
+            TV,
+            "shell",
+            "sh",
+            "-c",
+            # Detached: turning ADB off kills this shell, and a `reboot` chained after it with it.
+            "sync; setsid sh -c 'sleep 2; settings put global development_settings_enabled 0;"
+            " settings put global adb_enabled 0; sleep 1; reboot' </dev/null >/dev/null 2>&1 &",
+        ],
+        check=False,
+    )
+
+
 def install() -> None:
     data = config()
-    packages = data["packages"]
-    keymapper = packages["github"]["keymapper"]["package"]
-    keymapper_was_installed = (
-        f"package:{keymapper}"
-        in shell("pm", "list", "packages", capture=True).splitlines()
-    )
     install_apps(data)
-    for package in packages["removed"]:
-        log(f"remove {package}")
-        subprocess.run(
-            ["adb", "-s", TV, "shell", "pm", "uninstall", "--user", "0", package],
-            check=False,
-            stdout=subprocess.DEVNULL,
-        )
-    if not keymapper_was_installed:
-        setup_automatic_backup(data)
-        if MAPPINGS.exists():
-            log("restore Key Mapper mappings")
-            restore()
-    log("apply TV settings, disable ADB, and reboot")
+    configure_launcher(data["launcher"])
+    debloat(data)
+    enable_key_services(data["launcher"])
+    verify_home(data["launcher"])
     finish(data)
 
 
-def save_mappings() -> None:
-    if subprocess.run(
-        ["adb", "-s", TV, "shell", "test", "-e", REMOTE_BACKUP], check=False
-    ).returncode:
-        raise SystemExit(
-            f"configure Key Mapper automatic backup at {REMOTE_BACKUP}, then retry"
-        )
-    FILES.mkdir(exist_ok=True)
-    temporary = ROOT / ".download" / "key_mapper.zip"
-    temporary.parent.mkdir(exist_ok=True)
-    run("pull", REMOTE_BACKUP, str(temporary))
-    with zipfile.ZipFile(temporary) as archive:
-        mappings = json.loads(archive.read("data.json"))
-    MAPPINGS.write_text(json.dumps(mappings, indent=2) + "\n")
+def update_apps() -> None:
+    data = config()
+    install_apps(data)
+    configure_launcher(data["launcher"])
+    restart_launcher(data["launcher"])
+    verify_home(data["launcher"])
+
+
+def theme() -> None:
+    launcher = config()["launcher"]
+    push_theme(launcher)
+    restart_launcher(launcher)
 
 
 def main() -> None:
+    commands = {
+        "install": install,
+        "update-apps": update_apps,
+        "debloat": lambda: debloat(config()),
+        "theme": theme,
+    }
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "command",
-        nargs="?",
-        default="install",
-        choices=("install", "update-apps", "save-mappings"),
-    )
+    parser.add_argument("command", nargs="?", default="install", choices=commands)
     args = parser.parse_args()
     subprocess.run(["adb", "connect", TV], check=True, stdout=subprocess.DEVNULL)
     run("wait-for-device")
-    if args.command == "install":
-        install()
-    elif args.command == "update-apps":
-        install_apps(config())
-    else:
-        save_mappings()
+    commands[args.command]()
 
 
 if __name__ == "__main__":
