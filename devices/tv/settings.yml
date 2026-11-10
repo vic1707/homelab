@@ -58,6 +58,7 @@ launcher:
             - com.tcl.guard # Safety Guard: retried every 5 s when gone
             - com.tcl.tv # TV: the HDMI player
             - com.android.tv.settings # Settings pill and gear key cover it
+            - com.tcl.partnercustomizer # "TCL Channel": switches its own launcher icon on days later
         live_tv_package: com.tcl.tv
         background_color: "#000000"
         settings_key_keycodes: [83] # Gear
