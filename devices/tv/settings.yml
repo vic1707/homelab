@@ -92,7 +92,7 @@ packages:
     playstore:
         twitch:
             # renovate: datasource=custom.apkmirror depName=twitch-android-tv packageName=twitch-interactive-inc/twitch-android-tv versioning=loose extractVersion=^/apk/twitch-interactive-inc/twitch-android-tv/[^/]+-(?<version>\d+(?:-\d+){3})-release/$
-            version: "13-0-0-2"
+            version: "13-0-0-3"
             package: tv.twitch.android.app
 
     # Kept on purpose: com.tcl.ttvs (firmware updates; also TCL BI telemetry, block that in DNS),
