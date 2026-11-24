@@ -50,6 +50,7 @@
 !uv.lock
 
 !devices/
+!devices/miscs.toml
 !devices/*/
 !devices/*/install.sh
 !devices/*/openwrt.env

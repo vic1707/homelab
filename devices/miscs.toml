@@ -1,0 +1,9 @@
+[RetroTink4k]
+# Use packageName=4k-experimental to track experimental releases instead.
+# renovate: datasource=custom.retrotink-4k depName=RetroTink4k packageName=4k
+version = "v1.6.9"
+
+[Sanni-OSCR]
+# The new oscartreader/oscr-firmware repository is still experimental.
+# renovate: datasource=github-releases depName=Sanni-OSCR packageName=sanni/cartreader extractVersion=^[vV](?<version>\d+\.\d+(?:\.\d+)?)$
+version = "14.3"

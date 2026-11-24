@@ -13,9 +13,9 @@
 		},
 		{
 			"customType": "regex",
-			"managerFilePatterns": ["/^devices/tv/settings\\.yml$/"],
+			"managerFilePatterns": ["devices/tv/settings.yml", "devices/miscs.toml"],
 			"matchStrings": [
-				"# renovate: datasource=(?<datasource>[\\w.-]+) depName=(?<depName>[^\\s]+)(?: packageName=(?<packageName>[^\\s]+))?(?: versioning=(?<versioning>[^\\s]+))?(?: extractVersion=(?<extractVersion>[^\\n]+))?\\n\\s+version: \\\"(?<currentValue>[^\\\"]+)\\\""
+				"(?m)^[ \\t]*# renovate: datasource=(?<datasource>[\\w.-]+) depName=(?<depName>\\S+)(?: packageName=(?<packageName>\\S+))?(?: versioning=(?<versioning>\\S+))?(?: extractVersion=(?<extractVersion>[^\\r\\n]+))?[ \\t]*\\r?\\n[ \\t]*version(?:[ \\t]*=[ \\t]*|:[ \\t]+)\"(?<currentValue>[^\"\\r\\n]+)\""
 			]
 		},
 		{
@@ -50,6 +50,13 @@
 			"format": "plain",
 			"transformTemplates": [
 				"{\"releases\":[{\"version\": $match($join(releases.version), /<dt>BMC Firmware Revision:<\\/dt><dd[^>]*>([^<]+)/).groups[0]}]}"
+			]
+		},
+		"retrotink-4k": {
+			"defaultRegistryUrlTemplate": "https://retrotink-llc.github.io/firmware/{{packageName}}.html",
+			"format": "plain",
+			"transformTemplates": [
+				"{\"releases\":[$match($join(releases.version, '\\n'), /<h2[^>]*>Version (\\d+\\.\\d+\\.\\d+) \\(/).{\"version\": \"v\" & groups[0]}]}"
 			]
 		}
 	},
