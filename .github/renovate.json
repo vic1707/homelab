@@ -2,6 +2,7 @@
 	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
 	"extends": ["config:recommended"],
 	"timezone": "Europe/Paris",
+	"reviewers": ["vic1707"],
 	"customManagers": [
 		{
 			"customType": "regex",
