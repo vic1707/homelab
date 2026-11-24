@@ -1,5 +1,4 @@
 [env]
-_.path = "{{ config_root }}/bin"
 _.python.venv = { path = "{{ config_root }}/.venv", create = true }
 ANSIBLE_HOME = "{{ config_root }}/.ansible"
 ANSIBLE_INVENTORY = "{{ config_root }}/.config/inventory.yml"

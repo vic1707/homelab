@@ -1,0 +1,201 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/vic1707/wiiform/main/docs/wiiform.recipe.schema.json
+nand:
+    menu: 4.3E
+
+    wifi:
+        set:
+            ssid: idIoT_cloud
+            security: wpa2_aes
+            passphrase:
+                text: ENC[AES256_GCM,data:K+xPHc/eaHrs8GNsHXXsJOGTa01awLtZrLiWQr8x67Evdrug7mKCAL+X1k2NsIMkiBI=,iv:EeNwe/s1AVi17TkGaDKnma8PPuBYrmxtYD8t3xe+Voc=,tag:uMCjHhjHy1iH6MNnauh1dQ==,type:str]
+
+    wiimotes: keep
+
+    remove:
+        - forecast-channel
+        - news-channel
+        - wii-shop-channel
+        - photo-channel
+
+    setup:
+        nickname: Wii # TODO better
+        language: en
+        country: FR
+        sensor_bar: below
+        display:
+            aspect: "4:3"
+            progressive: true
+            pal60: true
+
+    titles:
+        ios:
+            - { slot: 9, version: 1034 }
+
+    hbc:
+        reborn:
+            # renovate: datasource=github-releases depName=Monsterray/hbc-reborn extractVersion=^v(?<version>\d+\.\d+\.\d+)$
+            version: 1.16.0
+            sha256: 81ed7e395f586a3e4c20a84c86de99d074ba8cbb55dd6b479f259631a71f4850 # the wad file
+
+    rvloader:
+        # renovate: datasource=github-tags depName=Aurelio92/RVLoader extractVersion=^v(?<version>\d+\.\d+)$
+        version: "2.1"
+        sha256: 30be3599e13f91bba0d5060a316d13bb428ea4d71ba7b35ebe89682cdedd94d7 # installer/data/bootloader.dol of that release.
+        wd_sha256: 6b7f6c95ec886899b43dcb5ca3dc15e20bbaa7c8c4e617e21166876f01cdb7b8 # installer/data/wd.bin of that release.
+        patch_out_wifi: false
+        vga: false
+
+    bootmii: {}
+
+    priiloader:
+        # autoboot: system_menu # incompatible with rvloader
+        # return_to: system_menu # incompatible with rvloader
+        shutdown_to: none
+        preferred_mount_point: auto
+        stop_disc: true
+        lid_slot_on_error: true
+        ignore_shutdown_mode: true
+        white_background: false
+        dump_gecko_text: false
+        show_rc_updates: false
+        hacks:
+            - fix_480p
+            - block_online_updates
+            - block_disc_updates
+            - block_disc_autoboot
+            # - auto_press_a # no need with `replace_health_screen`
+            - remove_deflicker
+            - move_disc_channel
+            # - remove_nocopy_save_protection
+            - replace_health_screen
+            # - no_background_music
+            - wiimmfi
+            - region_free_everything
+            # - re_enable_bannerbomb
+            # - usb_gecko_report
+            # - usb_gecko_report_geckoos
+            # - force_data_management
+            # - force_recovery_mode
+            # - remove_diagnostic_disc_check
+            - no_delete_homebrew
+            # - force_disc_ios248
+            # - force_disc_ios249
+            # - force_disc_ios250
+            # - force_disc_ios251
+            # - unblock_service_discs
+            # - remove_ios16_disc_error
+            - mark_network_tested
+        background_music: no_sfx_and_background_music
+
+sd:
+    bootmii: { video: ntsc, autoboot: sysmenu, boot_delay: 5 }
+    bundles:
+        - url: https://wii.hacks.guide/assets/files/bootmii_sd_files.zip
+          sha256: 02973f1403f4de00c5f615eaa99ccc9e032476b378f1a18f62d64a056628e9e0
+          unzip: /
+
+usb:
+    apps:
+        cleanrip:
+            # renovate: datasource=github-releases depName=emukidid/cleanrip
+            # github: { repo: emukidid/cleanrip, tag: "2.4", asset: CleanRip-v2.4.zip }
+            # sha256: 95e02c5e5d4c06334853d0f46a412634059c083fe73a5a35e48f5b2de82db8a5
+            ### Allows dumps into subfolders
+            # renovate: datasource=github-releases depName=vic1707/cleanrip depType=prerelease versioning=loose
+            github: { repo: vic1707/cleanrip, tag: 2.5-unofficial.1, asset: CleanRip-v2.5-unofficial.1.zip }
+            sha256: ee8fb06217d8aa3c845d1ef6cf06760b2033f33d8ecd7cef19e2acdf22a4e883
+        # No releases: loose files pinned to a commit.
+        nintendont:
+            files:
+                boot.dol:
+                    # renovate: datasource=git-refs depName=FIX94/Nintendont ref=master
+                    url: https://raw.githubusercontent.com/FIX94/Nintendont/7a183459939653cb7bcf59ab137c2758a9f9fae0/loader/loader.dol
+                    sha256: d56e3bda5235dc6ccfd90321a482b00b89fe6e2524933cc19458bda50c42b31e
+                meta.xml:
+                    # renovate: datasource=git-refs depName=FIX94/Nintendont ref=master
+                    url: https://raw.githubusercontent.com/FIX94/Nintendont/7a183459939653cb7bcf59ab137c2758a9f9fae0/nintendont/meta.xml
+                    sha256: 32daae1ee5d0d38b0b5e5bbcdc9485d4c30de8b33164b06cbce6717010aa0008
+                icon.png:
+                    # renovate: datasource=git-refs depName=FIX94/Nintendont ref=master
+                    url: https://raw.githubusercontent.com/FIX94/Nintendont/7a183459939653cb7bcf59ab137c2758a9f9fae0/nintendont/icon.png
+                    sha256: 419d3c533dc53cc6c4228d7dd3e273cbf18082c5362e70b061c9af64180b4dc6
+        # dead but only option?
+        savegamemanagergx:
+            url: https://wiidatabase.de/downloads/wii-tools/savegame-manager-gx-beta/?dl=int
+            sha256: c6e6a375fed874b62a1fcc8181b40bb4c5cc5a5199b2d549e429bf370105590b
+            folder: "*"
+        gcmmex:
+            files:
+                boot.dol:
+                    # renovate: datasource=github-releases depName=alexishida/gcmm-ex versioning=loose
+                    github: { repo: alexishida/gcmm-ex, tag: v1.0.1, asset: gcmm_ex_WII.dol }
+                    sha256: b814a2e8f313785001ef9176fe1c2f2a597cc2f4ea3386ff0febc0a18a07072a
+                meta.xml:
+                    # renovate: datasource=github-releases depName=alexishida/gcmm-ex versioning=loose
+                    url: https://raw.githubusercontent.com/alexishida/gcmm-ex/v1.0.1/hbc/meta.xml
+                    sha256: 82b8192a63d2f607a6bb57052053e40e1b183fa411593bf17f5cfbe70812180b
+                icon.png:
+                    # renovate: datasource=github-releases depName=alexishida/gcmm-ex versioning=loose
+                    url: https://raw.githubusercontent.com/alexishida/gcmm-ex/v1.0.1/hbc/icon.png
+                    sha256: 4cbdd62d7f4b48f07dd4749718f1fdebaac0c1bf6862f19113a720f70bc982ed
+
+    bundles:
+        # renovate: datasource=github-releases depName=Aurelio92/RVLoader
+        # - github: { repo: Aurelio92/RVLoader, tag: v2.1, asset: RVLoader_v2.1.zip }
+        #   sha256: 31802b749b1658e45a402264d378f7a5b738abf8a4183cf1eb527551d811b404
+        # Fixes NeoMarioGalaxy & MKW RR + default config files per media
+        # renovate: datasource=github-releases depName=vic1707/RVLoader depType=prerelease versioning=loose
+        - github: { repo: vic1707/RVLoader, tag: v2.2-unofficial.3, asset: RVLoader_v2.2-unofficial.3.zip }
+          sha256: b9d1a1c7af819b8aab4b4f98c7ba3f7f76308ba707e723b8073485ec96637d43
+          extract:
+              "*/apps/RVLoader/**": /apps/RVLoader/
+              "*/rvloader/**": /rvloader/
+              "*/LCDDriver.bit": /
+
+        ## Games covers - collisions overwrite, JP then FR then USA
+        # renovate: datasource=custom.gametdb-wii-covers depName=GameTDB-Wii-covers-JA packageName=JA
+        - url: https://www.gametdb.com/download.php?FTP=GameTDB-wii_cover-JA-2026-11-11.zip
+          sha256: 96eb1def18f94ceeca85768f0116c41d8a255ae32e2a2bc9b8f79b48089790c4
+          extract:
+              wii/cover/JA/**: /rvloader/covers/
+        # renovate: datasource=custom.gametdb-wii-covers depName=GameTDB-Wii-covers-FR packageName=FR
+        - url: https://www.gametdb.com/download.php?FTP=GameTDB-wii_cover-FR-2026-11-11.zip
+          sha256: 0e2e29dabc468d8d82f9763caf078421b210bdb8f7b5dd8a8c615d1b8e616bc0
+          extract:
+              wii/cover/FR/**: /rvloader/covers/
+        # renovate: datasource=custom.gametdb-wii-covers depName=GameTDB-Wii-covers-US packageName=US
+        - url: https://www.gametdb.com/download.php?FTP=GameTDB-wii_cover-US-2026-11-11.zip
+          sha256: 82c6f0f1348295864355f41dc179a15d0b4af42122129c4d97c16fc1da382180
+          extract:
+              wii/cover/US/**: /rvloader/covers/
+        # VC the missing link
+        - url: https://cdn2.steamgriddb.com/grid/d02f5e7b9dc88dd48a207c74e24652e4.png
+          sha256: 22c58243cc2e43ad836883188535c1bbe1055744e69d020bdbf5d56a050810c4
+          to: /rvloader/covers/NZTE.png
+
+        ## Custom default configs
+        - path: ./rvloader-defaults/chan.cfg
+          to: /rvloader/defaults/chan.cfg
+        - path: ./rvloader-defaults/vc.cfg
+          to: /rvloader/defaults/vc.cfg
+        - path: ./rvloader-defaults/gc.cfg
+          to: /rvloader/defaults/gc.cfg
+        - path: ./rvloader-defaults/wii.cfg
+          to: /rvloader/defaults/wii.cfg
+
+# yaml-language-server-disable Property sops is not allowed.
+sops:
+    age:
+        - enc: |
+              -----BEGIN AGE ENCRYPTED FILE-----
+              YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSAreklVWTFDMDdDRFVGbitw
+              VFN0T040TVlpeGp1WEVkUFZuTTFyLzFHS1hRCmNDWm5rTjh6RkNlVTI5b2wxWllG
+              NjVCelI4RzVGZEpPMko5WWdlUTIyL0UKLS0tIEZWUEdORXkrWS9hcklieHZydGZU
+              SXN5MXdDemwxYTJ5Lzc5TFdJOFRyMWsKE5zCc14vkKzkIR/BVTG16Hs61TUoBHPM
+              oL+8EaU05DpdbXvG0zPH+AkKWFN6ZTOuR4ROnMi3N6BskiiRPgJy0A==
+              -----END AGE ENCRYPTED FILE-----
+          recipient: age155cnp27a85z8exqgjvzflnvztsxv9vqk4ff5z242f0p4xx2k05tqefq0sx
+    encrypted_regex: ^(passphrase)$
+    lastmodified: "2026-11-24T19:18:26Z"
+    mac: ENC[AES256_GCM,data:iGNl8siYVd4df39omZomtlaA07x1mjvcJ9K8T0N7dItel7WEug0vh55M/O3cxtSeilcmxxVwsjvETKvUOhwlSQgRTXfG9A3TqnoC8Baasole27JtORCEBnk1hhadeiBxdcyfYyB4undVYRFXe1eRe7Wx/hv11Qh4T8J9FI6zCIk=,iv:2sQ7M8jk0BX3oazNi4A5AtdD882VlyC0N3cTcVIq9D0=,tag:4LUCjMDRK9RAv9EleiYYfg==,type:str]
+    version: 3.13.3

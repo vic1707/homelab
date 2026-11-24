@@ -1,0 +1,6 @@
+[env]
+SOPS_AGE_KEY_FILE = "{{ config_root }}/.wiis.age"
+SOPS_CONFIG = "{{ config_root }}/.sops.yml"
+
+[tools]
+'github:vic1707/wit-releases' = "3.05a"

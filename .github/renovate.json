@@ -6,11 +6,21 @@
 	"customManagers": [
 		{
 			"customType": "regex",
-			"description": "Device version pins with a # renovate: annotation on the preceding line",
+			"description": "Annotated device versions, GitHub asset tags and versioned download URLs",
 			"managerFilePatterns": ["devices/**/*.{env,sh,toml,yaml,yml}"],
 			"matchStrings": [
-				"(?m)^[ \\t]*# renovate: datasource=(?<datasource>[\\w.-]+) depName=(?<depName>\\S+)(?: packageName=(?<packageName>\\S+))?(?: versioning=(?<versioning>\\S+))?(?: extractVersion=(?<extractVersion>[^\\r\\n]+?))?[ \\t]*\\r?\\n[ \\t]*[\\w-]+[ \\t]*[:=][ \\t]*[\"']?(?<currentValue>[^\\s\"'#]+)"
+				"(?m)^[ \\t]*# renovate: datasource=(?<datasource>[\\w.-]+) depName=(?<depName>\\S+)(?: packageName=(?<packageName>\\S+))?(?: depType=(?<depType>\\S+))?(?: versioning=(?<versioning>\\S+))?(?: extractVersion=(?<extractVersion>[^\\r\\n]+?))?[ \\t]*\\r?\\n[ \\t]*(?:-[ \\t]+)?(?:github: \\{ repo: [^,\\r\\n]+, tag: |url: https://(?:raw\\.githubusercontent\\.com/[^/\\s]+/[^/\\s]+/|www\\.gametdb\\.com/download\\.php\\?FTP=GameTDB-wii_cover-[A-Z]{2}-)|[\\w-]+[ \\t]*[:=][ \\t]*)[\"']?(?<currentValue>[\\w.+-]+?)(?:[\"',/# \\t]|\\.zip|\\r?$)[^\\r\\n]*"
 			]
+		},
+		{
+			"customType": "regex",
+			"description": "Annotated raw GitHub URLs pinned to a commit",
+			"managerFilePatterns": ["devices/wiis/*/recipe.yml"],
+			"matchStrings": [
+				"(?m)^[ \\t]*# renovate: datasource=git-refs depName=(?<depName>\\S+) ref=(?<currentValue>\\S+)[ \\t]*\\r?\\n[ \\t]*(?:-[ \\t]+)?url: https://raw\\.githubusercontent\\.com/(?<packageName>[^/\\s]+/[^/\\s]+)/(?<currentDigest>[a-f0-9]{40})/[^\\s]+"
+			],
+			"packageNameTemplate": "https://github.com/{{{packageName}}}",
+			"datasourceTemplate": "git-refs"
 		}
 	],
 	"customDatasources": {
@@ -45,6 +55,13 @@
 			"transformTemplates": [
 				"{\"releases\":[$match($join(releases.version, '\\n'), /<h2[^>]*>Version (\\d+\\.\\d+\\.\\d+) \\(/).{\"version\": \"v\" & groups[0]}]}"
 			]
+		},
+		"gametdb-wii-covers": {
+			"defaultRegistryUrlTemplate": "https://www.gametdb.com/Wii/Downloads",
+			"format": "plain",
+			"transformTemplates": [
+				"{\"releases\":[$distinct($match($join(releases.version, '\\n'), /GameTDB-wii_cover-{{{packageName}}}-(\\d{4}-\\d{2}-\\d{2})\\.zip/).groups[0]).{\"version\": $}]}"
+			]
 		}
 	},
 	"packageRules": [
@@ -71,6 +88,24 @@
 		{
 			"matchFileNames": ["devices/tv/settings.yml"],
 			"groupName": "TV APKs",
+			"separateMajorMinor": false
+		},
+		{
+			"matchFileNames": ["devices/wiis/*/recipe.yml"],
+			"automerge": false,
+			"prBodyNotes": [
+				"Before merging, verify the new asset names and refresh every affected SHA-256 pin. For each SOPS-encrypted recipe, review the diff, then use `sops edit --ignore-mac <recipe>` to update the checksums and regenerate the SOPS MAC with your local key. Verify that normal SOPS decryption succeeds."
+			]
+		},
+		{
+			"matchFileNames": ["devices/wiis/*/recipe.yml"],
+			"matchDepTypes": ["prerelease"],
+			"ignoreUnstable": false
+		},
+		{
+			"matchDatasources": ["custom.gametdb-wii-covers"],
+			"versioning": "regex:^(?<major>\\d{4})-(?<minor>\\d{2})-(?<patch>\\d{2})$",
+			"groupName": "Wii GameTDB cover packs",
 			"separateMajorMinor": false
 		}
 	]

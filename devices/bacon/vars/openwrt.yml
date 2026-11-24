@@ -13,6 +13,7 @@ radios:
       country: FR
       channel: 1
       htmode: HE20 # HE20/HE40/HE80
+      legacy_rates: "1" # Keep 802.11b rates available for the Wii.
 
     - name: radio1
       path: platform/soc/18000000.wifi+1

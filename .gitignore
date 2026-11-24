@@ -70,6 +70,16 @@
 !devices/*/files/**
 !devices/tv/install.py
 !devices/hydra/firmware.yml
+!devices/wiis/*/
+!devices/wiis/.sops.yml
+!devices/wiis/build.sh
+!devices/wiis/.scripts/gc.sh
+!devices/wiis/.scripts/wii.sh
+!devices/wiis/*/seed.yml
+!devices/wiis/recipe.yml
+!devices/wiis/*/recipe.yml
+!devices/wiis/*/rvloader-defaults/
+!devices/wiis/*/rvloader-defaults/*
 
 !domains/
 !domains/bofzilla.dev

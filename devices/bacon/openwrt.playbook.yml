@@ -136,6 +136,7 @@
                 country: "{{ bacon_radio.country }}"
                 channel: "{{ bacon_radio.channel }}"
                 htmode: "{{ bacon_radio.htmode }}"
+                legacy_rates: "{{ bacon_radio.legacy_rates | default(omit) }}"
                 disabled: "0"
             replace: true
             autocommit: true

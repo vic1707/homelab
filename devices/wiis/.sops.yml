@@ -1,0 +1,7 @@
+creation_rules:
+  - path_regex: 'seed.ya?ml$'
+    encrypted_regex: '^(tmd|ticket|content|xz|blob|passphrase)$'
+    age: age155cnp27a85z8exqgjvzflnvztsxv9vqk4ff5z242f0p4xx2k05tqefq0sx
+  - path_regex: 'recipe\.ya?ml$'
+    encrypted_regex: '^(passphrase)$'
+    age: age155cnp27a85z8exqgjvzflnvztsxv9vqk4ff5z242f0p4xx2k05tqefq0sx
