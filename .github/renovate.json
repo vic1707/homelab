@@ -6,23 +6,10 @@
 	"customManagers": [
 		{
 			"customType": "regex",
-			"managerFilePatterns": ["/^devices/[^/]+/(openwrt\\.env|install\\.sh)$/"],
+			"description": "Device version pins with a # renovate: annotation on the preceding line",
+			"managerFilePatterns": ["devices/**/*.{env,sh,toml,yaml,yml}"],
 			"matchStrings": [
-				"# renovate: datasource=(?<datasource>[\\w.-]+) depName=(?<depName>[^\\s]+)(?: versioning=(?<versioning>[^\\s]+))? extractVersion=(?<extractVersion>[^\\n]+)\\n(?:OPENWRT_VERSION|VERSION)=(?<currentValue>[^\\s]+)"
-			]
-		},
-		{
-			"customType": "regex",
-			"managerFilePatterns": ["devices/tv/settings.yml", "devices/miscs.toml"],
-			"matchStrings": [
-				"(?m)^[ \\t]*# renovate: datasource=(?<datasource>[\\w.-]+) depName=(?<depName>\\S+)(?: packageName=(?<packageName>\\S+))?(?: versioning=(?<versioning>\\S+))?(?: extractVersion=(?<extractVersion>[^\\r\\n]+))?[ \\t]*\\r?\\n[ \\t]*version(?:[ \\t]*=[ \\t]*|:[ \\t]+)\"(?<currentValue>[^\"\\r\\n]+)\""
-			]
-		},
-		{
-			"customType": "regex",
-			"managerFilePatterns": ["/^devices/hydra/firmware\\.yml$/"],
-			"matchStrings": [
-				"# renovate: datasource=(?<datasource>custom\\.[\\w.-]+) depName=(?<depName>[^\\s]+) versioning=(?<versioning>[^\\s]+)\\n(?:\\w+:\\n)?\\s+version: \\\"(?<currentValue>[^\\\"]+)\\\""
+				"(?m)^[ \\t]*# renovate: datasource=(?<datasource>[\\w.-]+) depName=(?<depName>\\S+)(?: packageName=(?<packageName>\\S+))?(?: versioning=(?<versioning>\\S+))?(?: extractVersion=(?<extractVersion>[^\\r\\n]+?))?[ \\t]*\\r?\\n[ \\t]*[\\w-]+[ \\t]*[:=][ \\t]*[\"']?(?<currentValue>[^\\s\"'#]+)"
 			]
 		}
 	],
