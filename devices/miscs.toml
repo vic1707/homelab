@@ -1,7 +1,7 @@
 [RetroTink4k]
-# Use packageName=4k-experimental to track experimental releases instead.
-# renovate: datasource=custom.retrotink-4k depName=RetroTink4k packageName=4k
-version = "v1.6.9"
+# Use packageName=4k to track stable releases instead.
+# renovate: datasource=custom.retrotink-4k depName=RetroTink4k packageName=4k-experimental
+version = "v1.95.0" # rt discord - #profile-roundup - Mr. Moro
 
 [Sanni-OSCR]
 # The new oscartreader/oscr-firmware repository is still experimental.
