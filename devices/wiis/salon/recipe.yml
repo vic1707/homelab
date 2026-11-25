@@ -7,7 +7,7 @@ nand:
             ssid: idIoT_cloud
             security: wpa2_aes
             passphrase:
-                text: ENC[AES256_GCM,data:K+xPHc/eaHrs8GNsHXXsJOGTa01awLtZrLiWQr8x67Evdrug7mKCAL+X1k2NsIMkiBI=,iv:EeNwe/s1AVi17TkGaDKnma8PPuBYrmxtYD8t3xe+Voc=,tag:uMCjHhjHy1iH6MNnauh1dQ==,type:str]
+                text: ENC[AES256_GCM,data:mHWbz86r2yjrrkzFN2RNjn3adykeTJmen1uE8tJv717qEibkiRpqmc/kjRuhmcsGAqg=,iv:UCdkQUuvuSCRwnpKgoi9ChOXeWGehWp4azEN/K2czJI=,tag:ixzGrSP5WuIBnnrMaXfeHw==,type:str]
 
     wiimotes: keep
 
@@ -188,14 +188,15 @@ sops:
     age:
         - enc: |
               -----BEGIN AGE ENCRYPTED FILE-----
-              YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSAreklVWTFDMDdDRFVGbitw
-              VFN0T040TVlpeGp1WEVkUFZuTTFyLzFHS1hRCmNDWm5rTjh6RkNlVTI5b2wxWllG
-              NjVCelI4RzVGZEpPMko5WWdlUTIyL0UKLS0tIEZWUEdORXkrWS9hcklieHZydGZU
-              SXN5MXdDemwxYTJ5Lzc5TFdJOFRyMWsKE5zCc14vkKzkIR/BVTG16Hs61TUoBHPM
-              oL+8EaU05DpdbXvG0zPH+AkKWFN6ZTOuR4ROnMi3N6BskiiRPgJy0A==
+              YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSB4VXFhQmZJMHhQRlFLc29w
+              WjJXbFJ1cUFCME1xeDdVK0JiejlFTEgzbXdZCnkvLy9LSnVIdmx3SVd6Z0dVU3Rh
+              RmxCZVlDUFZjSjYvcW5hdWtrRlozQkkKLS0tIDNabzRLYlJmSUpNL09ONjdZa1Ju
+              eXR1MHhOTEg0bGgyeDFaQURCdUxrOEEK2gCuQyoMO8jklvSz6RPdT26byAM4xlj0
+              sNdU94ARDs0eFTYi9EA32umN8yiCMcz0O4P9+p1Lb8yh3AhdROezrw==
               -----END AGE ENCRYPTED FILE-----
           recipient: age155cnp27a85z8exqgjvzflnvztsxv9vqk4ff5z242f0p4xx2k05tqefq0sx
     encrypted_regex: ^(passphrase)$
-    lastmodified: "2026-11-24T19:18:26Z"
-    mac: ENC[AES256_GCM,data:iGNl8siYVd4df39omZomtlaA07x1mjvcJ9K8T0N7dItel7WEug0vh55M/O3cxtSeilcmxxVwsjvETKvUOhwlSQgRTXfG9A3TqnoC8Baasole27JtORCEBnk1hhadeiBxdcyfYyB4undVYRFXe1eRe7Wx/hv11Qh4T8J9FI6zCIk=,iv:2sQ7M8jk0BX3oazNi4A5AtdD882VlyC0N3cTcVIq9D0=,tag:4LUCjMDRK9RAv9EleiYYfg==,type:str]
+    lastmodified: "2026-11-25T15:18:08Z"
+    mac: ENC[AES256_GCM,data:fjkVBCFpW5GEdPpXUQ+elbBCHe0FGWeM0itt9aTb1z6nvm/93nL5PAo7v6yJ6Md5iUJmcO/0/dAv/nW34tZoInhBNTveb65hgLao8zAsTDsegDPrHleDopeoZhb3GIvxqKGfKU4Q/7STj5okMsw+EzllDbeFgtobizbkxgdQ5YY=,iv:l7/J+KfXwpyF09MRl/rkqx/thq/EjZ+v5ANwuJM3OnQ=,tag:rRyT7g3WNrLe0oQzucAXww==,type:str]
+    mac_only_encrypted: true
     version: 3.13.3
