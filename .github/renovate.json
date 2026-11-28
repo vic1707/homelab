@@ -62,6 +62,13 @@
 			"transformTemplates": [
 				"{\"releases\":[$distinct($match($join(releases.version, '\\n'), /GameTDB-wii_cover-{{{packageName}}}-(\\d{4}-\\d{2}-\\d{2})\\.zip/).groups[0]).{\"version\": $}]}"
 			]
+		},
+		"smlight-slzb-os": {
+			"defaultRegistryUrlTemplate": "https://updates.smlight.tech/firmware/slzb06x/core/",
+			"format": "plain",
+			"transformTemplates": [
+				"{\"releases\":[$distinct($match($join(releases.version, '\\n'), /{{{packageName}}}-v(\\d+\\.\\d+\\.\\d+)-ota\\.bin/).groups[0]).{\"version\": \"v\" & $}]}"
+			]
 		}
 	},
 	"packageRules": [

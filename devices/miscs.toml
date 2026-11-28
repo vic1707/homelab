@@ -7,3 +7,11 @@ version = "v1.95.0" # rt discord - #profile-roundup - Mr. Moro
 # The new oscartreader/oscr-firmware repository is still experimental.
 # renovate: datasource=github-releases depName=Sanni-OSCR packageName=sanni/cartreader extractVersion=^[vV](?<version>\d+\.\d+(?:\.\d+)?)$
 version = "14.3"
+
+[slzb_mrw10u]
+# renovate: datasource=custom.smlight-slzb-os depName=slzb_mrw10u packageName=slzb-os-u versioning=semver
+version = "v3.3.1"
+
+[slzb_06u]
+# renovate: datasource=custom.smlight-slzb-os depName=slzb_06u packageName=slzb-os-u versioning=semver
+version = "v3.3.1"
