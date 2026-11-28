@@ -14,4 +14,4 @@ version = "v3.3.1"
 
 [slzb_06u]
 # renovate: datasource=custom.smlight-slzb-os depName=slzb_06u packageName=slzb-os-u versioning=semver
-version = "v3.3.1"
+version = "v3.4.6"
