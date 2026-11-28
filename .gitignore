@@ -73,6 +73,7 @@
 !devices/wiis/*/
 !devices/wiis/.sops.yml
 !devices/wiis/build.sh
+!devices/wiis/mods.toml
 !devices/wiis/.scripts/gc.sh
 !devices/wiis/.scripts/wii.sh
 !devices/wiis/*/seed.yml

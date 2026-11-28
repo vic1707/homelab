@@ -63,6 +63,27 @@
 				"{\"releases\":[$distinct($match($join(releases.version, '\\n'), /GameTDB-wii_cover-{{{packageName}}}-(\\d{4}-\\d{2}-\\d{2})\\.zip/).groups[0]).{\"version\": $}]}"
 			]
 		},
+		"retro-rewind": {
+			"defaultRegistryUrlTemplate": "https://update.rwfc.net/RetroRewind/RetroRewindVersion.txt",
+			"format": "plain",
+			"transformTemplates": [
+				"{\"releases\":[$distinct($match($join(releases.version, '\\n'), /(\\d+\\.\\d+\\.\\d+)\\s+https/).groups[0]).{\"version\": $}]}"
+			]
+		},
+		"newer-smbw": {
+			"defaultRegistryUrlTemplate": "https://newerteam.com/wii/changelog.html",
+			"format": "plain",
+			"transformTemplates": [
+				"{\"releases\":[$distinct($match($join(releases.version, '\\n'), /<h2[^>]*>(\\d+\\.\\d+(\\.\\d+)?) \\(/).groups[0]).{\"version\": $}]}"
+			]
+		},
+		"hero-of-law": {
+			"defaultRegistryUrlTemplate": "https://newerteam.com/hol/patchHoL.js",
+			"format": "plain",
+			"transformTemplates": [
+				"{\"releases\":[$distinct($match($join(releases.version, '\\n'), /currentRelease\\s*=\\s*\"(\\d+\\.\\d+(\\.\\d+)*)\"/).groups[0]).{\"version\": $}]}"
+			]
+		},
 		"smlight-slzb-os": {
 			"defaultRegistryUrlTemplate": "https://updates.smlight.tech/firmware/slzb06x/core/",
 			"format": "plain",

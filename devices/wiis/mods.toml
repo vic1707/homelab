@@ -1,0 +1,53 @@
+# ROMhack versions; Renovate annotations mark entries with a public version feed.
+
+[[mods]]
+name = "SSBB REX ZERO HALF"
+version = "0½ Hotfix 1"
+source = "https://www.rexbuild.site/downloads"
+note = "Manual: this release label is not sortable."
+
+[[mods]]
+name = "SSBB Project+"
+source = "https://github.com/Project-Plus-Development-Team/PPlusReleases/releases"
+# renovate: datasource=github-releases depName=Project-Plus-Development-Team/PPlusReleases extractVersion=^v(?<version>\d+\.\d+\.\d+)$
+version = "3.2.1"
+
+[[mods]]
+name = "SSBB Project M"
+version = "3.6"
+status = "discontinued"
+
+[[mods]]
+name = "MKW Deluxe"
+version = "v10"
+source = "Discord"
+note = "Manual: no public release feed."
+
+[[mods]]
+name = "MKW Retro Rewind"
+source = "https://rwfc.net/downloads"
+# renovate: datasource=custom.retro-rewind depName=retro-rewind
+version = "6.13.5"
+
+[[mods]]
+name = "Neo Mario Galaxy"
+version = "1.6.0"
+source = "https://aurumsmods.com/nmg/"
+note = "Manual: the download page does not expose a version."
+
+[[mods]]
+name = "Newer Super Mario Bros. Wii"
+source = "https://newerteam.com/wii/download.html"
+# renovate: datasource=custom.newer-smbw depName=newer-smbw
+version = "1.30"
+
+[[mods]]
+name = "Newer Super Mario Bros. Wii Deluxe"
+source = "https://newerteam.com/wiidx/"
+status = "coming soon"
+
+[[mods]]
+name = "Hero of Law"
+source = "https://newerteam.com/en/hol/index.html"
+# renovate: datasource=custom.hero-of-law depName=hero-of-law
+version = "1.21"
