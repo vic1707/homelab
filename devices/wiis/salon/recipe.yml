@@ -145,7 +145,7 @@ usb:
         #   sha256: 31802b749b1658e45a402264d378f7a5b738abf8a4183cf1eb527551d811b404
         # Fixes NeoMarioGalaxy & MKW RR + default config files per media
         # renovate: datasource=github-releases depName=vic1707/RVLoader depType=prerelease versioning=loose
-        - github: { repo: vic1707/RVLoader, tag: v2.2-unofficial.3, asset: RVLoader_v2.2-unofficial.3.zip }
+        - github: { repo: vic1707/RVLoader, tag: v2.2-unofficial.4, asset: RVLoader_v2.2-unofficial.4.zip }
           sha256: b9d1a1c7af819b8aab4b4f98c7ba3f7f76308ba707e723b8073485ec96637d43
           extract:
               "*/apps/RVLoader/**": /apps/RVLoader/
